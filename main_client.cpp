@@ -16,7 +16,7 @@ int main(int argc, char ** argv)
     int lostRequestsorAcks = 0,  RequestsNum = 0;
     while(!stop)
     {
-        cin>>input;
+        getline(cin,input);
         stop = input == "q";
         status = c.execute(&input[0], true, ++RequestsNum);
 
