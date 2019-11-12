@@ -1,6 +1,23 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 #include <string>
+#include "base64.h"
+#include <stdio.h>
+#include "base64.h"
+#include <iomanip>
+#include <sstream>
+#include <iostream>
+#include <string>
+#include <string.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <cstring> 
+#include <fstream>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h> 
+#include <sys/types.h>
+#include <netdb.h>
 using namespace std;
 enum MessageType { Request, Reply, Ack};
 
@@ -21,21 +38,19 @@ char * message;
 
 public:
 
-Message(int operation, void * p_message, size_t p_message_size,int p_rpc_id);
+Message(int operation, MessageType message_type,  char * message, unsigned int message_size, int rpc_id, unsigned int fragmentTotal, unsigned int fragmentCount, int port, string destIP, string sourceIP);
 Message(char * marshalled_base64);
 char * marshal ();
-int getOperation ();
-ing getRPCId();
+unsigned int getOperation ();
+unsigned int getRPCId();
 char * getMessage();
 unsigned int getMessageSize();
 MessageType getMessageType();
-void setOperation (int _operation);
-void setMessage (void * message, size_t message_size);
+void setOperation (unsigned int _operation);
+void setMessage (char * message, unsigned int message_size);
 void setMessageType (MessageType message_type);
 ~Message();
 
 };
 #include "Message.cpp"
 #endif // MESSAGE_H
-
-/*
