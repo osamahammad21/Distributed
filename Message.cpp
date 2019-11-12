@@ -1,21 +1,6 @@
 #include "Message.h"
 #include <string>
 
-template< typename T >
-std::string int_to_hex( T i ){
-    
-    std::stringstream stream;
-    stream<< std::setfill ('0') << std::setw(sizeof(T)*2)<< std::hex << i;
-    return stream.str();
-    
-}
-
-template <typename T>
-void hex_to_T(std::string sz, T & pnt){
-    sz = "0x" + sz;
-    std::istringstream iss(sz);
-    iss >> std::hex >> pnt;
-}
 
 Message :: Message(int operation, MessageType message_type,  char * message, unsigned int message_size, int rpc_id, unsigned int fragmentTotal, unsigned int fragmentCount, int port, string destIP, string sourceIP)
 {

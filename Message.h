@@ -3,7 +3,6 @@
 #include <string>
 #include "base64.h"
 #include <stdio.h>
-#include "base64.h"
 #include <iomanip>
 #include <sstream>
 #include <iostream>
@@ -18,9 +17,25 @@
 #include <netinet/ip.h> 
 #include <sys/types.h>
 #include <netdb.h>
+
 using namespace std;
 enum MessageType { Request, Reply, Ack};
 
+template< typename T >
+std::string int_to_hex( T i ){
+    
+    stringstream stream;
+    stream << (setfill ('0')) << (setw(sizeof(T)*2)) <<  (hex) << (i);
+    return stream.str();
+    
+}
+
+template <typename T>
+void hex_to_T(string sz, T & pnt){
+    sz = "0x" + sz;
+    istringstream iss(sz);
+    iss >> (hex) >> (pnt);
+}
 class Message
 {
 private:
@@ -52,5 +67,4 @@ void setMessageType (MessageType message_type);
 ~Message();
 
 };
-#include "Message.cpp"
 #endif // MESSAGE_H
