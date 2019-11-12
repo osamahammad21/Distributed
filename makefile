@@ -3,4 +3,4 @@
 # init_client:
 # 	@g++ -pthread UDPSocket.h UDPClientSocket.h Client.h main_client.cpp -o client
 init_message:
-	@g++ Message.h Message.cpp message_test.cpp
+	@g++ Message.h Message.cpp base64.h base64.cpp message_test.cpp -o message
