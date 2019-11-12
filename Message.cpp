@@ -19,6 +19,7 @@ void hex_to_T(std::string sz, T & pnt){
 
 Message :: Message(int operation, MessageType message_type,  char * message, unsigned int message_size, int rpc_id, unsigned int fragmentTotal, unsigned int fragmentCount, int port, string destIP, string sourceIP)
 {
+    
     this->message_type = message_type;
     this->operation = operation; //Which function to call on server side
     this->message = message;         
