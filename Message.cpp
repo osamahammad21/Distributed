@@ -21,8 +21,8 @@ Message :: Message(char * marshalled_base64)
     string serialized_msg(marshalled_base64);
     string decoded_serialized_msg = base64_decode(serialized_msg);
     unsigned int source_IP_size, dest_IP_size;
-    //Unmarshel
-    hex_to_T(decoded_serialized_msg.substr(0,0), this->message_type);
+    //Unmarshal
+    this->message_type = (MessageType)(decoded_serialized_msg[0] - 48);
     hex_to_T(decoded_serialized_msg.substr(1, 8), this->fragmentCount);
     hex_to_T(decoded_serialized_msg.substr(9, 16), this->fragmentTotal); 
     hex_to_T(decoded_serialized_msg.substr(17, 24), source_IP_size); 
