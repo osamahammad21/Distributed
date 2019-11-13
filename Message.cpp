@@ -1,7 +1,6 @@
 #include "Message.h"
 #include <string>
 
-
 Message :: Message(MessageType _message_type,  unsigned int _fragmentCount, unsigned int  _fragmentTotal, string _sourceIP, string _destIP, unsigned int _port, unsigned int _rpc_id, unsigned int _operation, long long _message_size,  char * _message)
 {    
     this->message_type = _message_type;

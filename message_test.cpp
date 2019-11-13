@@ -4,7 +4,6 @@ using namespace std;
 
 int main()
 {
-
     Message m (Request, 1, 3, "10.1", "10.2", 6666, 9, 8, 10, "MEEEEEEEEH");
     char * s = new char [1024]; 
     s = m.marshal();
@@ -19,8 +18,6 @@ int main()
     cout << newM.getOperation()<< endl;
     cout << newM.getMessageSize()<< endl;
     cout << newM.getMessage()<< endl;
-
-        printf("%s\n", s);
 
     return 0;
 }
