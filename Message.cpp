@@ -2,19 +2,18 @@
 #include <string>
 
 
-Message :: Message(int operation, MessageType message_type,  char * message, unsigned int message_size, int rpc_id, unsigned int fragmentTotal, unsigned int fragmentCount, int port, string destIP, string sourceIP)
-{
-    
-    this->message_type = message_type;
-    this->operation = operation; //Which function to call on server side
-    this->message = message;         
-    this->message_size = message_size;    
-    this->rpc_id = rpc_id;
-    this->fragmentTotal = fragmentTotal;
-    this->fragmentCount = fragmentCount;
-    this->port = port;
-    this->destIP = destIP;
-    this->sourceIP = sourceIP;
+Message :: Message(MessageType _message_type,  unsigned int _fragmentCount, unsigned int  _fragmentTotal, string _sourceIP, string _destIP, unsigned int _port, unsigned int _rpc_id, unsigned int _operation, long long _message_size,  char * _message)
+{    
+    this->message_type = _message_type;
+    this->fragmentCount = _fragmentCount;
+    this->fragmentTotal = _fragmentTotal;
+    this->sourceIP = _sourceIP;
+    this->destIP = _destIP;
+    this->port = _port;
+    this->rpc_id = _rpc_id;
+    this->operation = _operation; //Which function to call on server side
+    this->message_size = _message_size;
+    this->message = _message;
 }
 
 Message :: Message(char * marshalled_base64)
@@ -29,7 +28,7 @@ Message :: Message(char * marshalled_base64)
     hex_to_T(decoded_serialized_msg.substr(9, 8), this->fragmentTotal);
     hex_to_T(decoded_serialized_msg.substr(17, 8), source_IP_size); 
     this->sourceIP = decoded_serialized_msg.substr(25,source_IP_size);
-    int shift = 25 +source_IP_size-1;
+    int shift = 25 + source_IP_size-1;
     hex_to_T(decoded_serialized_msg.substr(shift + 1, 8), dest_IP_size); 
     this->destIP = decoded_serialized_msg.substr(shift+ 9, dest_IP_size);
     shift = shift + 9 + dest_IP_size-1;
@@ -40,8 +39,6 @@ Message :: Message(char * marshalled_base64)
     
     this->message = new char[this->message_size+1];
     std::strcpy((char *)this->message , decoded_serialized_msg.substr(shift+25+16).c_str());
-
-    printf("%s\n", this->message);
 }
 
 char * Message :: marshal ()
@@ -67,40 +64,81 @@ char * Message :: marshal ()
 
     return encoded_string_ptr;
 }
-unsigned int Message :: getOperation ()
+MessageType Message :: getMessageType()
 {
-    return this->operation;
+    return this->message_type;
+}
+void Message :: setMessageType(MessageType type)
+{
+    this->message_type = type;
+}
+unsigned int Message :: getFragmentCount()
+{
+    return this->fragmentCount;
+}
+unsigned int Message :: getFragmentTotal()
+{
+    return this->fragmentTotal;
+}
+string Message :: getSourceIP()
+{
+    return this->sourceIP;
+}
+void Message :: setSourceIP(string ip)
+{
+    this->sourceIP = ip;
+}
+string Message :: getDestinationIP()
+{
+    return this->destIP;
+}
+void Message :: setDestinationIP(string ip)
+{
+    this->destIP = ip;
+}
+unsigned int Message :: getPort()
+{
+    return this->port;
+}
+void Message :: setPort(unsigned int port)
+{
+    this->port = port;
 }
 unsigned int Message :: getRPCId()
 {
     return this->rpc_id;
 }
-
-char * Message :: getMessage()
+void Message :: setRPCID(unsigned int RPCID)
 {
-    return this->message;
+    this->rpc_id = RPCID;
+}
+unsigned int Message :: getOperation ()
+{
+    return this->operation;
+}
+void Message :: setOperation (unsigned int op)
+{
+    this->operation = op;
 }
 unsigned int Message :: getMessageSize()
 {
     return this->message_size;
 }
-MessageType Message :: getMessageType()
+char * Message :: getMessage()
 {
-    return this->message_type;
+    return this->message;
 }
-void Message :: setOperation (unsigned int _operation)
+void Message :: setMessage(char * p)
 {
-    this->operation = _operation;
+    this->message = p;
 }
+
 void Message :: setMessage (char * message, unsigned int message_size)
 {
-this->message = message;
-this->message_size = message_size;
+    this->message = message;
+    this->message_size = message_size;
 }
-void Message :: setMessageType (MessageType message_type)
+
+Message::~Message()
 {
-    this->message_type = message_type;
-}
-Message::~Message(){
-    
 }

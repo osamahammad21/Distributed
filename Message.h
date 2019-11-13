@@ -53,17 +53,29 @@ char * message;
 
 public:
 
-Message(int operation, MessageType message_type,  char * message, unsigned int message_size, int rpc_id, unsigned int fragmentTotal, unsigned int fragmentCount, int port, string destIP, string sourceIP);
+Message(MessageType _message_type,  unsigned int fragmentCount, unsigned int  fragmentTotal, string _sourceIP, string _destIP, unsigned int _port, unsigned int _rpc_id, unsigned int _operation, long long _message_size,  char * _message);
 Message(char * marshalled_base64);
 char * marshal ();
-unsigned int getOperation ();
-unsigned int getRPCId();
-char * getMessage();
-unsigned int getMessageSize();
+
 MessageType getMessageType();
-void setOperation (unsigned int _operation);
+void setMessageType(MessageType type);
+unsigned int getFragmentCount();
+unsigned int getFragmentTotal();
+string getSourceIP();
+void setSourceIP(string ip);
+string getDestinationIP();
+void setDestinationIP(string ip);
+unsigned int getPort();
+void setPort(unsigned int port);
+unsigned int getRPCId();
+void setRPCID(unsigned int RPCID);
+unsigned int getOperation ();
+void setOperation (unsigned int op);
+unsigned int getMessageSize();
+char * getMessage();
+void setMessage(char * p);
 void setMessage (char * message, unsigned int message_size);
-void setMessageType (MessageType message_type);
+
 ~Message();
 
 };
