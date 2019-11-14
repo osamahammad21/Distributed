@@ -13,8 +13,6 @@ int Client :: execute(char * _message, bool activateTimeout, int requestNum)
     {
     snprintf(request, sizeof request, "%s", _message);
     }
-    
-
     int n = udpSocket.writeToSocket(request, (unsigned)strlen(request));
     if(n<0)
         return -1;//error send

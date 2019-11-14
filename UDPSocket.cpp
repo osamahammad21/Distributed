@@ -114,7 +114,6 @@ int UDPSocket ::readFromSocketWithBlock (char * buffer,  int maxBytes )
     aLength = sizeof(peerAddr);
 
     int n;
-
     struct timeval tv;
     tv.tv_sec = 0;
     tv.tv_usec = 0;
@@ -128,7 +127,6 @@ int UDPSocket ::readFromSocketWithBlock (char * buffer,  int maxBytes )
         buffer[n]='\0';
         //printf("%s \n", buffer);
     }
-
     return n;
 }
 
@@ -157,6 +155,29 @@ int UDPSocket ::getMyPort (){
 }
 int UDPSocket ::getPeerPort (){
     return peerPort;
+}
+void UDPSocket::fragmentMsg(Message FullMessage, vector<Message *> & frags)
+{
+    string MessageWithoutHeader = string(FullMessage.getMessage());
+    unsigned int NumberOfFrags = ceil((float)FullMessage.getMessageSize()/FRAG_MSG_SIZE);
+
+    vector<string> subMessagesWithoutHeader;
+
+    for(int i=0;i<NumberOfFrags; i++)
+        subMessagesWithoutHeader.push_back(MessageWithoutHeader.substr(i*FRAG_MSG_SIZE, FRAG_MSG_SIZE));
+
+    for(unsigned int i=0; i<NumberOfFrags; i++)
+    {
+        Message fragi;
+        fragi.setDestinationIP(FullMessage.getDestinationIP());
+        fragi.setFragState(i, NumberOfFrags);
+        fragi.setMessage((char *)(subMessagesWithoutHeader[i].c_str()));
+        fragi.setSourceIP(FullMessage.getSourceIP());
+        fragi.setRPCID(FullMessage.getRPCId());
+        fragi.setMessageType(FullMessage.getMessageType());
+        fragi.setPort(FullMessage.getPort());
+        frags.push_back(&fragi);
+    }
 }
 UDPSocket :: ~UDPSocket ( ){
     close(sock);

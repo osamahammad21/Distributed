@@ -55,12 +55,14 @@ public:
 
 Message(MessageType _message_type,  unsigned int fragmentCount, unsigned int  fragmentTotal, string _sourceIP, string _destIP, unsigned int _port, unsigned int _rpc_id, unsigned int _operation, long long _message_size,  char * _message);
 Message(char * marshalled_base64);
+Message();
 char * marshal ();
 
 MessageType getMessageType();
 void setMessageType(MessageType type);
 unsigned int getFragmentCount();
 unsigned int getFragmentTotal();
+void setFragState(unsigned int curr_frag, unsigned int totalFrags);
 string getSourceIP();
 void setSourceIP(string ip);
 string getDestinationIP();
@@ -75,6 +77,7 @@ unsigned int getMessageSize();
 char * getMessage();
 void setMessage(char * p);
 void setMessage (char * message, unsigned int message_size);
+
 
 ~Message();
 

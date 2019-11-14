@@ -1,11 +1,10 @@
 #ifndef UDPSOCKET_Hclass
 #define UDPSOCKET_Hclass 
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <cstring>
+#include "string.h"
 #include <thread>         // std::thread
 #include <mutex>  
 #include <queue>
@@ -13,6 +12,10 @@
 #include <stdio.h>      /* printf, fopen */
 #include <stdlib.h>     /* exit, EXIT_FAILURE */
 #include <netinet/in.h> 
+#include "Message.h"
+#include <algorithm>
+#include <math.h>
+#define FRAG_MSG_SIZE 3
 class UDPSocket
 {
     protected:
@@ -39,6 +42,7 @@ class UDPSocket
     bool initializeClient (char * _peerAddr, int _peerPort);
     int writeToSocket (char * buffer,  int maxBytes );
     int writeToSocketToAddr (char * buffer,  int maxBytes ,struct sockaddr_in targetAddr);
+    void fragmentMsg(Message FullMessage, vector<Message *> &frags);
     // int writeToSocketAndWait (char * buffer, int  maxBytes,int microSec ); 
     // int readFromSocketWithNoBlock (char * buffer, int  maxBytes );
     int readFromSocketWithTimeout (char * buffer, int maxBytes, struct timeval tv);

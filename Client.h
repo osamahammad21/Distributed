@@ -5,8 +5,8 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
-#include<cstring>
-#include<unistd.h>
+#include <cstring>
+#include <unistd.h>
 #include <stdio.h>      /* printf, fopen */
 #include <stdlib.h>     /* exit, EXIT_FAILURE */
 
