@@ -5,26 +5,37 @@ using namespace std;
 
 int main(int argc, char ** argv)
 {
-    char * ip= argv[1];
-    
+    char * ip= argv[1];    
     int port = stoi(argv[2]);
+
     Client c(ip,port);
     c.setTimeout(0, 10000);
+
     string input;
     int status=1;
     bool stop = false;
     int lostRequestsorAcks = 0,  RequestsNum = 0;
+    cout << "Before msg1 \n" << endl;
+
     while(!stop)
     {
-        getline(cin,input);
+        cout << "2\n" << endl;
+
+        string input;
+        cin >> input;                
+        cout << "3\n" << endl;
+        Message m (Request, 1, 3, "10.1", "10.2", 6666, 9, 8, 10, &input[0]);
         stop = input == "q";
-        status = c.execute(&input[0], true, ++RequestsNum);
+        cout << "4 \n" << endl;
+        cout << "before execute\n" << endl;
+        status = c.execute(&m);
 
         if(status == -2)
         {
             cout<<"Lost request or no acknowledgement."<<endl;
             lostRequestsorAcks++;
-        }else if(status==-3)
+        }
+        else if(status==-3)
         {
             cout<<"Received Irrelevant Reply"<<endl;
             lostRequestsorAcks++;

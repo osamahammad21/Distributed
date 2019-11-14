@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <stdio.h>      /* printf, fopen */
 #include <stdlib.h>     /* exit, EXIT_FAILURE */
+#include "Message.h"
 
 class Client
 {
@@ -21,6 +22,7 @@ public:
 Client(char * _hostname, int _port);
 // Message * execute(Message * _message);
 int execute(char * _message, bool activateTimeout, int requestNum);
+int execute(Message * m);
 void setTimeout(int timeoutSec, int timeoutMicro);
 ~Client();
 

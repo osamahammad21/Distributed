@@ -22,16 +22,16 @@ using namespace std;
 enum MessageType { Request, Reply, Ack};
 
 template< typename T >
-std::string int_to_hex( T i ){
-    
+std::string int_to_hex( T i )
+{    
     stringstream stream;
     stream << (setfill ('0')) << (setw(sizeof(T)*2)) <<  (hex) << (i);
-    return stream.str();
-    
+    return stream.str();    
 }
 
 template <typename T>
-void hex_to_T(string sz, T & pnt){
+void hex_to_T(string sz, T & pnt)
+{
     sz = "0x" + sz;
     istringstream iss(sz);
     iss >> (hex) >> (pnt);
@@ -39,23 +39,21 @@ void hex_to_T(string sz, T & pnt){
 class Message
 {
 private:
-
-MessageType message_type;
-unsigned int fragmentCount; 
-unsigned int fragmentTotal;
-string sourceIP; 
-string destIP; 
-int port;
-unsigned int rpc_id;
-unsigned int operation; //Which function to call on server side
-unsigned int message_size;    
-char * message;         
+    MessageType message_type;
+    unsigned int fragmentCount; 
+    unsigned int fragmentTotal;
+    string sourceIP; 
+    string destIP; 
+    int port;
+    unsigned int rpc_id;
+    unsigned int operation; //Which function to call on server side
+    unsigned int message_size;    
+    char * message;         
 
 public:
-
-Message(MessageType _message_type,  unsigned int fragmentCount, unsigned int  fragmentTotal, string _sourceIP, string _destIP, unsigned int _port, unsigned int _rpc_id, unsigned int _operation, long long _message_size,  char * _message);
-Message(char * marshalled_base64);
 Message();
+Message(MessageType _message_type,  unsigned int _fragmentCount, unsigned int  _fragmentTotal, string _sourceIP, string _destIP, unsigned int _port, unsigned int _rpc_id, unsigned int _operation, long long _message_size,  char * _message);
+Message(char * marshalled_base64);
 char * marshal ();
 
 MessageType getMessageType();
@@ -82,4 +80,5 @@ void setMessage (char * message, unsigned int message_size);
 ~Message();
 
 };
-#endif // MESSAGE_H
+//#include "Message.cpp"
+#endif MESSAGE_H

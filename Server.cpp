@@ -1,16 +1,34 @@
 #include "Server.h"
-Server :: Server(char * _listen_hostname, int _listen_port){
+#include "Message.h"
+Server :: Server(char * _listen_hostname, int _listen_port)
+{
     bool success = udpServerSocket.initializeServer(_listen_hostname, _listen_port);
+    printf("heren");
     if(success)
         getRequest();
 }
-void Server :: getRequest(){
+void Server :: getRequest()
+{
     const int SIZE = 1024;
     char message[SIZE];  
     bool stop;
-    do{
+    do
+    {
         udpServerSocket.readFromSocketWithBlock (message,  SIZE);
+
         printf("Received message from client: %s\n",message);
+            Message newM(message);
+            cout << newM.getMessageType()<< endl;
+            cout << newM.getFragmentCount()<< endl;
+            cout << newM.getFragmentTotal()<< endl;
+            cout << newM.getSourceIP()<< endl;
+            cout << newM.getDestinationIP()<< endl;
+            cout << newM.getPort()<< endl;
+            cout << newM.getRPCId()<< endl;
+            cout << newM.getOperation()<< endl;
+            cout << newM.getMessageSize()<< endl;
+            cout << newM.getMessage()<< endl;
+            
         inputMessageMtx.lock();
         inputMessageQueue.push(message);
         inputMessageMtx.unlock();

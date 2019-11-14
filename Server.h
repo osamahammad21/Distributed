@@ -12,6 +12,7 @@
 #include <stdio.h>      /* printf, fopen */
 #include <stdlib.h>     /* exit, EXIT_FAILURE */
 #include <pthread.h>
+#include "Message.h"
 class Server
 {
 

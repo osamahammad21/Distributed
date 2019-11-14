@@ -22,6 +22,8 @@ void UDPSocket :: setBroadcast(int s)
     }
     #endif
 }
+
+
 void UDPSocket :: makeLocalSA(struct sockaddr_in *sa)
 {
     sa->sin_family  =  AF_INET;
@@ -42,7 +44,8 @@ void UDPSocket :: makeDestSA(struct sockaddr_in * sa, char *hostname, int port)
     sa->sin_port = htons(port);
 }
 
-bool UDPSocket ::initializeServer (char * _myAddr, int _myPort){
+bool UDPSocket ::initializeServer (char * _myAddr, int _myPort)
+{
 
     struct sockaddr_in myAddr, peerAddr;
     //setting class variables
@@ -150,35 +153,53 @@ int UDPSocket ::readFromSocketWithTimeout (char * buffer, int maxBytes, struct t
     return n;
 }
 
-int UDPSocket ::getMyPort (){
+int UDPSocket ::getMyPort ()
+{
     return myPort;
 }
-int UDPSocket ::getPeerPort (){
+int UDPSocket ::getPeerPort ()
+{
     return peerPort;
 }
-void UDPSocket::fragmentMsg(Message FullMessage, vector<Message *> & frags)
+void UDPSocket::fragmentMsg(Message * FullMessage, vector<Message *> &frags)
 {
-    string MessageWithoutHeader = string(FullMessage.getMessage());
-    unsigned int NumberOfFrags = ceil((float)FullMessage.getMessageSize()/FRAG_MSG_SIZE);
-
+    string MessageWithoutHeader = string(FullMessage->getMessage());
+    unsigned int NumberOfFrags = ceil((float)FullMessage->getMessageSize()/(FRAG_MSG_SIZE+1));
     vector<string> subMessagesWithoutHeader;
 
     for(int i=0;i<NumberOfFrags; i++)
         subMessagesWithoutHeader.push_back(MessageWithoutHeader.substr(i*FRAG_MSG_SIZE, FRAG_MSG_SIZE));
 
-    for(unsigned int i=0; i<NumberOfFrags; i++)
+    for(unsigned int i = 0; i<NumberOfFrags; i++)
     {
-        Message fragi;
-        fragi.setDestinationIP(FullMessage.getDestinationIP());
-        fragi.setFragState(i, NumberOfFrags);
-        fragi.setMessage((char *)(subMessagesWithoutHeader[i].c_str()));
-        fragi.setSourceIP(FullMessage.getSourceIP());
-        fragi.setRPCID(FullMessage.getRPCId());
-        fragi.setMessageType(FullMessage.getMessageType());
-        fragi.setPort(FullMessage.getPort());
-        frags.push_back(&fragi);
+        Message * fragi = new Message;
+        fragi->setDestinationIP(FullMessage->getDestinationIP());
+        fragi->setFragState(i, NumberOfFrags);
+        fragi->setMessage((char *)(subMessagesWithoutHeader[i].c_str()));
+        fragi->setSourceIP(FullMessage->getSourceIP());
+        fragi->setRPCID(FullMessage->getRPCId());
+        fragi->setMessageType(FullMessage->getMessageType());
+        fragi->setPort(FullMessage->getPort());
+        frags.push_back(fragi);
     }
 }
+
+bool UDPSocket::sendMessage(Message * FullMessage)
+{
+    vector <Message *> fragments;
+        cout << "fragment msg meh" << endl;
+
+    fragmentMsg(FullMessage, fragments);
+    cout << "I am in sendMessage" << endl;
+    for(auto x: fragments)
+    {
+        string serializedMsg = x->marshal();
+        char * serializedMsgPtr = new char [serializedMsg.size() + 1];
+        strcpy(serializedMsgPtr, serializedMsg.c_str());
+        writeToSocket(serializedMsgPtr, serializedMsg.size()+1);
+    }
+}
+
 UDPSocket :: ~UDPSocket ( ){
     close(sock);
 }

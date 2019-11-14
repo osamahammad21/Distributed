@@ -42,7 +42,8 @@ class UDPSocket
     bool initializeClient (char * _peerAddr, int _peerPort);
     int writeToSocket (char * buffer,  int maxBytes );
     int writeToSocketToAddr (char * buffer,  int maxBytes ,struct sockaddr_in targetAddr);
-    void fragmentMsg(Message FullMessage, vector<Message *> &frags);
+    void fragmentMsg(Message * FullMessage, vector<Message *> & frags);
+    bool sendMessage(Message * FullMessage);
     // int writeToSocketAndWait (char * buffer, int  maxBytes,int microSec ); 
     // int readFromSocketWithNoBlock (char * buffer, int  maxBytes );
     int readFromSocketWithTimeout (char * buffer, int maxBytes, struct timeval tv);

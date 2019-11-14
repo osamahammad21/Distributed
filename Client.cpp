@@ -8,11 +8,10 @@ int Client :: execute(char * _message, bool activateTimeout, int requestNum)
 {
     char request[1024] = {0};
     if(!(_message[0] == 'q' && strlen(_message) == 1))
-    snprintf(request, sizeof request, "%s. ID = %d.\0", _message, requestNum);
+        snprintf(request, sizeof request, "%s. ID = %d.\0", _message, requestNum);
     else
-    {
     snprintf(request, sizeof request, "%s", _message);
-    }
+
     int n = udpSocket.writeToSocket(request, (unsigned)strlen(request));
     if(n<0)
         return -1;//error send
@@ -39,7 +38,42 @@ int Client :: execute(char * _message, bool activateTimeout, int requestNum)
         }
         
     }
+    return 1;
+}
+
+int Client :: execute(Message * m)
+{
+    char request[1024] = {0};
+
+   /* if(!(_message[0] == 'q' && strlen(_message) == 1))
+        snprintf(request, sizeof request, "%s. ID = %d.\0", _message, requestNum);
+    else
+    snprintf(request, sizeof request, "%s", _message);
+*/
+    int n = udpSocket.sendMessage(m);
+
+    if(n<0)
+        return -1;//error send
+    //const int SIZE = 1024;
+    //char message[SIZE]; 
+    //n = udpSocket.readFromSocketWithBlock(message, SIZE);
     
+    if(n<0)
+        return -2;//error no reply
+    else
+    {
+
+        std::string reply = "meh",requestMsg=request;
+        int pos = reply.find(requestMsg);
+        if(pos<0)
+        {
+            return -3;//error irrelevant reply
+        }else
+        {
+            printf("Received reply from server %s.\n");
+        }
+        
+    }
     return 1;
 }
 void Client::setTimeout(int timeoutSec, int timeoutMicro)
