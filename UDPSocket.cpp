@@ -8,7 +8,7 @@ void UDPSocket :: makeReceiverSA(struct sockaddr_in *sa, int port)
 {
     sa->sin_family  =  AF_INET;
     sa->sin_port = htons(port);
-    sa-> sin_addr.s_addr = htonl(INADDR_ANY);
+    sa->sin_addr.s_addr = htonl(INADDR_ANY);
 }
 void UDPSocket :: setBroadcast(int s)
 {

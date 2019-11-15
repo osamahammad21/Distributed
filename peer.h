@@ -2,42 +2,33 @@
 #define PEER_H
 #define MSG_SIZE 1024
 #include "UDPServerSocket.h"
+
+enum Operation {login, signup, upload, changeSettings, view, requestAccess};
+
 class Server
 {
 
     private:
         UDPServerSocket udpServerSocket;
-        UDPClientSocket udpSocket;
-
+        UDPClientSocket udpClientSocket;
+        struct timeval clientReadTimeout;
         std::queue<Message *> inputMessageQueue;
         std::mutex inputMessageMtx;
+        
         Message * getRequest();
-        // Message * doOperation();
-        // void sendReply (Message * _message);
-        void sendReply (struct sockaddr_in targetAddr);
         void doOperation();
+        int sendMessage(Message * FullMessage, bool activateTimeout, int requestNum);
+        void sendReply (struct sockaddr_in targetAddr, Message * reply)
+
     public:
-        Peer(char * _listen_hostname, int _listen_port, char * _peerAddr, int _peerPort);
-        // void serveRequest();
+        Peer(char * _listen_hostname, int _listen_port, char * _peerAddr, int _peerPort); 
+        void setTimeout(int timeoutSec, int timeoutMicro);
         ~Server();
-
-
-
-private:
-    UDPClientSocket udpSocket;
-    struct timeval clientReadTimeout;
-
-public:
-Client(char * _hostname, int _port);
-// Message * execute(Message * _message);
-int execute(char * _message, bool activateTimeout, int requestNum);
-void setTimeout(int timeoutSec, int timeoutMicro);
-~Client();
-
-
-
-
-
-
 };
 #endif // PEER_H
+
+//TODO
+// 1) Handle the different operations 
+// 2) Form the message object based on the operation, sender and receiver
+// 3) Check that received reply is for the same message 
+// 4) Increment and use RPC_ID
