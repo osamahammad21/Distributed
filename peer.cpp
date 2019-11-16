@@ -26,13 +26,8 @@ Message * Peer :: getRequest(){
         inputMessageQueue.push(receivedMessage);
         inputMessageMtx.unlock();
         struct sockaddr_in targetAddr = udpServerSocket.peerAddr;
-
         std::thread* m_thread=new std::thread(&Peer::sendReply,this,targetAddr);
-
-        //TODO
-        //WHEN WILL WE STOP NOW???
-        stop = (message[0] == 'q' && strlen(message) == 1);
-    }while(! stop);
+    }while(true);
 } 
 
 //TODO
