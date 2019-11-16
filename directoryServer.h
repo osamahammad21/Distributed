@@ -21,7 +21,7 @@ class directoryServer
 		struct data
 		{
 			string password;
-			bool online = false;
+			int online = 0;	//bool causes issues
 			string ip = "";
 			unsigned int port;
 			string token;
@@ -36,7 +36,7 @@ class directoryServer
         void logout(string&, Message*, directoryServer*);
         void signup(string&, string&, Message* , directoryServer*);
         void uploadimage(string&, string&, Message* , directoryServer*);
-        //void requestImages(const string&, Message* , directoryServer*);//useless??
+        //void requestImages(const string&, Message* , directoryServer*);//todo??
 		bool authenticate(string& username, string& password);
 		bool usernameExists(string&);
 
@@ -44,8 +44,8 @@ class directoryServer
     public:
         directoryServer();
         ~directoryServer();
-        void listen();//todo
-        void doOperation(Message *request);//todo???
+        //void listen();//todo
+        //void doOperation(Message *request);//todo???
 };
 
 #endif

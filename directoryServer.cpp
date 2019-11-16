@@ -10,17 +10,20 @@ directoryServer::directoryServer()
 	for (int i = 0; i<totalUsers;i++)
 	{
 		string username = doc.GetRowName(i);
-		usersDict[username].password = doc.GetCell<string>(i, 0);
-		usersDict[username].online = doc.GetCell<bool>(i, 1);
-		usersDict[username].ip = doc.GetCell<string>(i, 2);
-		usersDict[username].port = doc.GetCell<unsigned int>(i, 3);
-		usersDict[username].token = doc.GetCell<string>(i, 4);
-		usersDict[username].imageCount = doc.GetCell<int>(i, 5);
+		usersDict[username].password = doc.GetCell<string>(0,i);
+		if (doc.GetCell<string>(1, i) != "")
+			usersDict[username].online = doc.GetCell<int>(1, i);
+		usersDict[username].ip = doc.GetCell<string>(2, i);
+		if (doc.GetCell<string>(3, i)!="")
+			usersDict[username].port = doc.GetCell<unsigned int>(3, i);
+		usersDict[username].token = doc.GetCell<string>(4, i);
+		if (doc.GetCell<string>(5, i) != "")
+			usersDict[username].imageCount = doc.GetCell<int>(5, i);
 
 		for (int j = 6; j < 6 + usersDict[username].imageCount * 2; j += 2)
 		{
-			usersDict[username].imageName.push_back(doc.GetCell<string>(i, j));
-			usersDict[username].imageID.push_back(doc.GetCell<string>(i, j+1));
+			usersDict[username].imageName.push_back(doc.GetCell<string>(j, i));
+			usersDict[username].imageID.push_back(doc.GetCell<string>(j + 1, i));
 		}
 	}
 }
@@ -40,10 +43,12 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 		usersDict[username].online = true;
 		usersDict[username].port = msg->getPort();
 		usersDict[username].ip = msg->getSourceIP();
+		//usersDict[username].port = 8080;
+		//usersDict[username].ip = "1.1.1.1";
 		usersDict[username].token = username + password;
         
 		//update file
-		doc.SetCell<bool>("online", username, usersDict[username].online);
+		doc.SetCell<int>("online", username, usersDict[username].online);
 		doc.SetCell<unsigned int>("port", username, usersDict[username].port);
 		doc.SetCell<string>("ip", username, usersDict[username].ip);
 		doc.SetCell<string>("token", username, usersDict[username].token);
@@ -67,11 +72,11 @@ void directoryServer::logout(string& username, Message* msg, directoryServer* ds
 	rapidcsv::Document doc(usersFile);
 
 	//update struct
-	ds->usersDict[username].online = false;
+	ds->usersDict[username].online = 0;
 
 	//update file
-	doc.SetCell<bool>("online", username, usersDict[username].online);
-
+	doc.SetCell<int>("online", username, usersDict[username].online);
+	doc.Save();
 	//send appropriate reply
 }
 void directoryServer::signup(string& username, string& password, Message* msg, directoryServer* ds)
@@ -107,14 +112,17 @@ void directoryServer::uploadimage(string& username, string& imagename, Message* 
 	
 	//add to users.csv
 	doc.SetCell<int>("imageCount", username, usersDict[username].imageCount);
+	doc.Save();
 	vector<string>temp = doc.GetRowNames();
-	int row;
+	int row = 0;
 	for (int i = 0; i < temp.size(); i++)
 		if (temp[i] == username)
-			int row = i;
-	doc.SetCell<string>(6+ usersDict[username].imageCount, row, usersDict[username].imageName.back());
-	doc.SetCell<string>(6 + usersDict[username].imageCount+1, row, usersDict[username].imageID.back());
-	doc.Save();
+			row = i;
+
+		doc.SetCell<string>(4 + usersDict[username].imageCount*2, row, usersDict[username].imageName.back());
+		doc.Save();
+		doc.SetCell<string>(4 + usersDict[username].imageCount*2 + 1, row, usersDict[username].imageID.back());
+		doc.Save();
 
 
 }
