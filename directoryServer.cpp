@@ -1,4 +1,6 @@
 #include "directoryServer.h"
+#include <thread>
+
 using namespace std;
 
 directoryServer::directoryServer()
@@ -127,4 +129,60 @@ void directoryServer::uploadimage(string& username, string& imagename, Message* 
 
 }
 
+string directoryServer::getPortnIP(string& username, Message* msg, directoryServer* ds)
+{
+	rapidcsv::Document doc(usersFile);
+	return (doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username));
+}
 
+string directoryServer::getAllImages(Message*, directoryServer*)
+{
+	rapidcsv::Document doc(usersFile);
+	string imagesNames = "";
+	int userCount = doc.GetRowCount();
+	for (int i = 0; i < userCount; i++)
+	{
+		if (doc.GetCell<string>("imageCount", i) == "")
+			continue;
+		int imageCount = doc.GetCell<int>("imageCount", i);
+		for (int j = 0; j < imageCount*2; j+=2)
+		{
+			if (doc.GetCell<string>(j+6, i) != "")
+				imagesNames += (doc.GetCell<string>(j+6, i) + ",");
+		}
+	}
+	return imagesNames.substr(0, imagesNames.size() - 1);
+}
+
+void directoryServer::doOperation(Message* request)
+{
+	int operationID = request->getOperation();
+	thread* receiverThread;
+	string input = string((char*)request->getMessage());
+	vector<string> args = request->getMessageArgs();
+	
+	if (operationID == Operation::login)
+	{
+		receiverThread = new thread(directoryServer::login, args[0], args[1], request, this); //done
+	}
+	else if (operationID == Operation::logout)
+	{
+		receiverThread = new thread(directoryServer::logout, args[0], request, this); //done
+	}
+	else if (operationID == Operation::signup)
+	{
+		receiverThread = new thread(directoryServer::signup, args[0], args[1], request, this); //done
+	}
+	else if (operationID == Operation::uploadImage)
+	{
+		receiverThread = new thread(directoryServer::uploadimage, args[0], args[1], request, this); //done
+	}
+	else if (operationID == Operation::getPortnIP)
+	{
+		receiverThread = new thread(directoryServer::getPortnIP, args[0], request, this); //done
+	}
+	else if (operationID == Operation::getAllImages)
+	{
+
+	}
+}

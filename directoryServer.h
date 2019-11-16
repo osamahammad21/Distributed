@@ -16,7 +16,8 @@ using namespace std;
 class directoryServer
 {
     private:
-        string usersFile = "./users.csv";
+		enum Operation { login, signup, logout, uploadImage, changeSettings, viewImage, requestImage, getPortnIP, getAllImages, statusUpdate };
+		string usersFile = "./users.csv";
         //everything here is stored in users.csv + username
 		struct data
 		{
@@ -36,7 +37,8 @@ class directoryServer
         void logout(string&, Message*, directoryServer*);
         void signup(string&, string&, Message* , directoryServer*);
         void uploadimage(string&, string&, Message* , directoryServer*);
-        //void requestImages(const string&, Message* , directoryServer*);//todo??
+		string getPortnIP(string&, Message*, directoryServer*);//string of "port,ip"
+		string getAllImages(Message*, directoryServer*);//string of imageName,...
 		bool authenticate(string& username, string& password);
 		bool usernameExists(string&);
 
@@ -45,7 +47,7 @@ class directoryServer
         directoryServer();
         ~directoryServer();
         //void listen();//todo
-        //void doOperation(Message *request);//todo???
+        void doOperation(Message *request);//todo???
 };
 
 #endif
