@@ -1,5 +1,6 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
+
 #include <string>
 #include "base64.h"
 #include <stdio.h>
@@ -75,10 +76,12 @@ unsigned int getMessageSize();
 char * getMessage();
 void setMessage(char * p);
 void setMessage (char * message, unsigned int message_size);
+void setMessageSize(unsigned int _size);
 
 
 ~Message();
 
 };
-//#include "Message.cpp"
-#endif MESSAGE_H
+#include "Message.cpp"
+#endif //MESSAGE_H
+

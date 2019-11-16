@@ -15,7 +15,8 @@
 #include "Message.h"
 #include <algorithm>
 #include <math.h>
-#define FRAG_MSG_SIZE 3
+
+#define FRAG_MSG_SIZE 10
 class UDPSocket
 {
     protected:
@@ -51,8 +52,12 @@ class UDPSocket
     // int readSocketWithNoBlock (char * buffer, int  maxBytes );
     // int readSocketWithTimeout (char * buffer, int maxBytes, int timeoutSec, int timeoutMilli);
     // int readSocketWithBlock (char * buffer,  int maxBytes );
-    int getMyPort (); 
+    int getMyPort(); 
     int getPeerPort ();
+
+    void HandleReceive(UDPSocket * socket);
+    void HandleSend(UDPSocket * socket);
+
     // void enable();
     // void disable();
     // bool isEnabled();

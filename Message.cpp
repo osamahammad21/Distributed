@@ -1,5 +1,4 @@
 #include "Message.h"
-#include <string>
 
 Message::Message(){}
 Message :: Message(MessageType _message_type,  unsigned int _fragmentCount, unsigned int  _fragmentTotal, string _sourceIP, string _destIP, unsigned int _port, unsigned int _rpc_id, unsigned int _operation, long long _message_size,  char * _message)
@@ -137,6 +136,10 @@ char * Message :: getMessage()
 void Message :: setMessage(char * p)
 {
     this->message = p;
+}
+void Message :: setMessageSize(unsigned int _size)
+{
+    this->message_size = _size;
 }
 
 void Message :: setMessage (char * message, unsigned int message_size)

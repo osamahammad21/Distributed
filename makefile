@@ -3,5 +3,5 @@ init_message:
 init_server:
 	@g++ -std=c++11 -pthread base64.h base64.cpp Message.h Message.cpp UDPSocket.h UDPServerSocket.h Server.h main_server.cpp -o server
 makemakinit_client:
-	@g++ -std=c++11 -pthread base64.h base64.cpp Message.h Message.cpp UDPSocket.h UDPClientSocket.h Client.h main_client.cpp -o client
+	@g++ -std=c++11 -pthread base64.h base64.cpp Message.h UDPSocket.h UDPClientSocket.h Client.h message_test.cpp -o client
 
