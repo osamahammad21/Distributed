@@ -139,6 +139,26 @@ char * Message :: getMessage()
 {
     return this->message;
 }
+vector<string> Message :: getMessageArgs()
+{
+    string str(this->message);
+    vector<string>result;
+	string token = ",";
+	while (str.size()) {
+		int index = str.find(token);
+		if (index != string::npos) {
+			result.push_back(str.substr(0, index));
+			str = str.substr(index + token.size());
+			if (str.size() == 0)result.push_back(str);
+		}
+		else {
+			result.push_back(str);
+			str = "";
+		}
+	}
+	return result;
+}
+
 void Message :: setMessage(char * p)
 {
     this->message = p;

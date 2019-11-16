@@ -17,6 +17,7 @@
 #include <netinet/ip.h> 
 #include <sys/types.h>
 #include <netdb.h>
+#include <vector>
 
 using namespace std;
 enum MessageType { Request, Reply, Ack};
@@ -77,6 +78,8 @@ unsigned int getMessageSize();
 char * getMessage();
 void setMessage(char * p);
 void setMessage (char * message, unsigned int message_size);
+vector<string> getMessageArgs();
+
 
 
 ~Message();
