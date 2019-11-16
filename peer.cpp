@@ -1,12 +1,12 @@
 #include "Peer.h"
 
 //Peer constructor
-Peer :: Peer(char * _listen_hostname, int _listen_port, char * _peerAddr, int _peerPort){
+Peer :: Peer(char * ip, int _listen_port, int _clientPort){
     //create client socket
-    udpClientSocket.initializeClient(_peerAddr, _peerPort);
+    udpClientSocket.initializeClient(ip, _clientPort);
 
     //create server socket and port
-    bool success = udpServerSocket.initializeServer(_listen_hostname, _listen_port);
+    bool success = udpServerSocket.initializeServer(ip, _listen_port);
     
     //server socket waiting for request
     if(success){
@@ -25,8 +25,8 @@ Message * Peer :: getRequest(){
         inputMessageMtx.lock();
         inputMessageQueue.push(receivedMessage);
         inputMessageMtx.unlock();
-        struct sockaddr_in targetAddr = udpServerSocket.peerAddr;
-        std::thread* m_thread=new std::thread(&Peer::sendReply,this,targetAddr);
+
+        std::thread* m_thread=new std::thread(&Peer::sendReply, this);
     }while(true);
 } 
 
@@ -37,14 +37,9 @@ void Peer :: doOperation()
 }
 
 //Peer send reply
-void Peer :: sendReply (struct sockaddr_in targetAddr, Message * reply)
+// HABDDDD
+void Peer :: sendReply ()
 {
-    UDPClientSocket udpSocket;
-    
-    //TODO
-    //How the struct is accessed is taken from UDPSocket.cpp. Check its correctness
-    udpSocket.initializeClient(targetAddr->sin_addr.s_addr, targetAddr->sin_port);
-
     usleep(9000);
     const int SIZE = 1024;
     inputMessageMtx.lock();
@@ -53,43 +48,45 @@ void Peer :: sendReply (struct sockaddr_in targetAddr, Message * reply)
     inputMessageQueue.pop();
     inputMessageMtx.unlock();
 
-    //TODO 
-    //doOperation 
-
-    udpSocket.sendMessage(FullMessage);
+    switch(message.getOperation()){
+        case Operation:: uploadImage: 
+            viewImage();
+        break; 
+        case Operation:: requestImageAccess: 
+        break;
+    }
+    //do operations
+    
 }
 
 //Peer sendMessage (instead of Client's execute)
-int Peer :: sendMessage(Message * FullMessage, bool activateTimeout, int requestNum)
+int Peer :: sendMessage(Message * FullMessage, Message * ReplyMessage, bool activateTimeout)
 {
-    
     bool success = udpClientSocket.sendMessage(FullMessage);
     if (! success)
         return -1; 
 
-    Message * fullReply;  
-
     //TODO
     //Get reply into message object (WAIT FOR ALAA'S PROTOTYPE)
     if(activateTimeout)
-        n = udpSocket.readFromSocketWithTimeout(message, SIZE, clientReadTimeout);
+        n = udpSocket.readFromSocketWithTimeout(ReplyMessage, MSG_SIZE, clientReadTimeout);
     else
-        n = udpSocket.readFromSocketWithBlock(message, SIZE);
+        n = udpSocket.readFromSocketWithBlock(ReplyMessage, MSG_SIZE);
     if(n<0)
         return -2;//error no reply
     else
     {
         //TODO
         //check rpcID ????????
-        std::string reply = message,requestMsg=request;
-        int pos = reply.find(requestMsg);
-        if(pos<0)
-        {
-            return -3;//error irrelevant reply
-        }else
-        {
-            printf("Received reply from server %s.\n",message);
-        }
+        // std::string reply = message,requestMsg=request;
+        // int pos = reply.find(requestMsg);
+        // if(pos<0)
+        // {
+        //     return -3;//error irrelevant reply
+        // }else
+        // {
+        //     printf("Received reply from server %s.\n",message);
+        // }
         
     }
     
@@ -107,3 +104,5 @@ void Peer::setTimeout(int timeoutSec, int timeoutMicro)
 Server :: ~Server(){
 
 }
+
+

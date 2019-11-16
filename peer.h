@@ -1,9 +1,11 @@
 #ifndef PEER_H
 #define PEER_H
 #define MSG_SIZE 1024
-#include "UDPServerSocket.h"
 
-enum Operation {login, signup, logout, uploadImage, changeSettings, viewImage, requestImage};
+#include "UDPServerSocket.h"
+using namespace std; 
+
+enum Operation {login, signup, logout, uploadImage, viewImage, requestImageAccess, getPortnIP, getAllImages, updateStatus};
 
 class Server
 {
@@ -12,21 +14,19 @@ class Server
         UDPServerSocket udpServerSocket;
         UDPClientSocket udpClientSocket;
         struct timeval clientReadTimeout;
-        std::queue<Message *> inputMessageQueue;
-        std::mutex inputMessageMtx;
-        
+        queue<Message *> inputMessageQueue;
+        mutex inputMessageMtx;
+
         Message * getRequest();
         void doOperation();
-
-        (MessageType _message_type,  unsigned int _fragmentCount, unsigned int  _fragmentTotal, string _sourceIP, string _destIP, unsigned int _port, unsigned int _rpc_id, unsigned int _operation, long long _message_size,  char * _message)
-
-        int sendMessage(Message * FullMessage, bool activateTimeout, int requestNum);
         void sendReply (struct sockaddr_in targetAddr, Message * reply)
 
     public:
-        Peer(char * _listen_hostname, int _listen_port, char * _peerAddr, int _peerPort); 
+        Peer(char * ip, int _listen_port, int _clientPort); 
+        void sendMessage(Message * FullMessage, Message * ReplyMessage, bool activateTimeout);
         void setTimeout(int timeoutSec, int timeoutMicro);
         ~Server();
+
 };
 #endif // PEER_H
 
