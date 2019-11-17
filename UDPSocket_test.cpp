@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include<fstream>
 using namespace std;
 
 int main(int argc, char ** argv)
@@ -18,27 +19,26 @@ int main(int argc, char ** argv)
     struct sockaddr_in peerAddr;
 
     bool meh = sockobj.initializeSocket(myIP, myPort);
-    cout << "finished Contrustion" << endl;
+    cout << "finished Contrustion wtf holly shit" << endl;
     time_t meeh = 90;
-
+    int i=0;
+    ifstream inputfile;
+    inputfile.open("data.txt");
+    string book="";
+    while(!inputfile.eof())  
+    {
+        getline(inputfile,input);
+        book+=input;
+    } 
     while(true)
     {
     cin >> input;
-    char * str = new char[input.size()];  
-    strcpy(str, input.c_str());
-    Message *m =new Message(Request, 1, 3, sockobj.getMyIP(), sockobj.getMyPort(), destIP, destPort, 9, 8, input.size(), str);
+    char * str = new char[book.size()];  
+    strcpy(str, book.c_str());
+    Message *m =new Message(Request, 1, 3, sockobj.getMyIP(), sockobj.getMyPort(), destIP, destPort, ++i, 8, book.size(), str);
     sockobj.sendMessage(m);
     Message * newM = sockobj.receiveMsg();
-   /* cout << newM->getMessageType()<< endl;
-    cout << newM->getFragmentCount()<< endl;
-    cout << newM->getFragmentTotal()<< endl;
-    cout << newM->getSourceIP()<< endl;
-    cout << newM->getDestinationIP()<< endl;
-    cout << newM->getSourcePort()<< endl;
-    cout << newM->getRPCId()<< endl;
-    cout << newM->getOperation()<< endl;
-    cout << newM->getMessageSize()<< endl;
-    cout << newM->getMessage() << endl;*/
+
     }
 
     // while(!stop && input != "q")

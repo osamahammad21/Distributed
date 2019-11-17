@@ -19,7 +19,7 @@
 #include <unordered_map>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#define FRAG_MSG_SIZE 10
+#define FRAG_MSG_SIZE 20
 #define MAX_BUFFER_SIZE 1000000
 class UDPSocket
 {
@@ -41,34 +41,14 @@ class UDPSocket
         int myPort;
         UDPSocket ();    
         bool initializeSocket(char * _myAddr, unsigned int _myPort);
-        int writeToSocket (char * buffer,  int maxBytes );
-        int writeToSocketToAddr (char * buffer,  int maxBytes ,struct sockaddr_in targetAddr);
         void fragmentMsg(Message * FullMessage, vector<Message *> & frags);
-        // int writeToSocketAndWait (char * buffer, int  maxBytes,int microSec ); 
-        // int readFromSocketWithNoBlock (char * buffer, int  maxBytes );
-        int readFromSocketWithTimeout (char * buffer, int maxBytes, struct timeval tv);
-        int readFromSocketWithBlock (char * buffer,  int maxBytes ); 
-        // int readSocketWithNoBlock (char * buffer, int  maxBytes );
-        // int readSocketWithTimeout (char * buffer, int maxBytes, int timeoutSec, int timeoutMilli);
-        // int readSocketWithBlock (char * buffer,  int maxBytes );
         int getMyPort(); 
         string getMyIP();
-        //int getPeerPort ();
-        // void enable();
-        // void disable();
-        // bool isEnabled();
-        // void lock();
-        // void unlock();
-        // int getSocketHandler();
         string getMsgID(Message* message);
         bool sendMessage(Message * FullMessage);
         Message * receiveMsg();
-        void sendingHandler(UDPSocket* myUDPSocket);
-        void receiveHandler(UDPSocket* myUDPSocket);
-        //Message * defragment(vector<Message *> frags);
-
-
-
+        void sendingHandler(UDPSocket * myUDPSocket);
+        void receiveHandler(UDPSocket * myUDPSocket);
         ~UDPSocket ( );
 };
 #include "UDPSocket.cpp"
