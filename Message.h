@@ -45,7 +45,8 @@ private:
     unsigned int fragmentTotal;
     string sourceIP; 
     string destIP; 
-    int port;
+    unsigned int sourcePort;
+    unsigned int destPort;
     unsigned int rpc_id;
     unsigned int operation; //Which function to call on server side
     unsigned int message_size;    
@@ -53,7 +54,7 @@ private:
 
 public:
 Message();
-Message(MessageType _message_type,  unsigned int _fragmentCount, unsigned int  _fragmentTotal, string _sourceIP, string _destIP, unsigned int _port, unsigned int _rpc_id, unsigned int _operation, long long _message_size,  char * _message);
+Message(MessageType _message_type,  unsigned int _fragmentCount, unsigned int  _fragmentTotal, string _sourceIP, unsigned int _sourcePort, string _destIP, unsigned int _destPort, unsigned int _rpc_id, unsigned int _operation, long long _message_size,  char * _message);
 Message(char * marshalled_base64);
 char * marshal ();
 
@@ -66,8 +67,10 @@ string getSourceIP();
 void setSourceIP(string ip);
 string getDestinationIP();
 void setDestinationIP(string ip);
-unsigned int getPort();
-void setPort(unsigned int port);
+unsigned int getSourcePort();
+void setSourcePort(unsigned int sourcePort);
+unsigned int getDestinationPort();
+void setDestinationPort(unsigned int destPort);
 unsigned int getRPCId();
 void setRPCID(unsigned int RPCID);
 unsigned int getOperation ();
@@ -78,10 +81,8 @@ void setMessage(char * p);
 void setMessage (char * message, unsigned int message_size);
 void setMessageSize(unsigned int _size);
 
-
 ~Message();
 
 };
-#include "Message.cpp"
 #endif //MESSAGE_H
 

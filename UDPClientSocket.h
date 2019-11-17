@@ -6,7 +6,7 @@ class UDPClientSocket : public UDPSocket
 
 public:
 UDPClientSocket ();
-bool initializeClient (char * _peerAddr, int _peerPort);
+bool initializeSocket (char * _peerAddr, int _peerPort);
 
 ~UDPClientSocket ( );
 };
