@@ -169,26 +169,26 @@ void directoryServer::doOperation(Message* request)
 	
 	if (operationID == Operation::login)
 	{
-		receiverThread = new thread(directoryServer::login, args[0], args[1], request, this); //done
+		receiverThread = new thread(directoryServer::login, args[0], args[1], request, this);
 	}
 	else if (operationID == Operation::logout)
 	{
-		receiverThread = new thread(directoryServer::logout, args[0], request, this); //done
+		receiverThread = new thread(directoryServer::logout, args[0], request, this);
 	}
 	else if (operationID == Operation::signup)
 	{
-		receiverThread = new thread(directoryServer::signup, args[0], args[1], request, this); //done
+		receiverThread = new thread(directoryServer::signup, args[0], args[1], request, this);
 	}
 	else if (operationID == Operation::uploadImage)
 	{
-		receiverThread = new thread(directoryServer::uploadimage, args[0], args[1], request, this); //done
+		receiverThread = new thread(directoryServer::uploadimage, args[0], args[1], request, this);
 	}
 	else if (operationID == Operation::getPortnIP)
 	{
-		receiverThread = new thread(directoryServer::getPortnIP, args[0], request, this); //done
+		receiverThread = new thread(directoryServer::getPortnIP, args[0], request, this);
 	}
 	else if (operationID == Operation::getAllImages)
 	{
-
+		receiverThread = new thread(directoryServer::getAllImages, request, this);
 	}
 }
