@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <mutex>
 #include "UDPSocket.h"
 #include "Message.h"
 #include "rapidcsv.h"
@@ -18,6 +19,7 @@ class directoryServer
     private:
 		enum Operation { login, signup, logout, uploadImage, changeSettings, viewImage, requestImage, getPortnIP, getAllImages, statusUpdate };
 		string usersFile = "./users.csv";
+		mutex mtx;
         //everything here is stored in users.csv + username
 		struct data
 		{

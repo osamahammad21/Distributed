@@ -54,7 +54,9 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 		doc.SetCell<unsigned int>("port", username, usersDict[username].port);
 		doc.SetCell<string>("ip", username, usersDict[username].ip);
 		doc.SetCell<string>("token", username, usersDict[username].token);
+		mtx.lock();
 		doc.Save();
+		mtx.unlock();
 
 		isAuthenticated = true;
 
@@ -78,7 +80,9 @@ void directoryServer::logout(string& username, Message* msg, directoryServer* ds
 
 	//update file
 	doc.SetCell<int>("online", username, usersDict[username].online);
+	mtx.lock();
 	doc.Save();
+	mtx.unlock();
 	//send appropriate reply
 }
 void directoryServer::signup(string& username, string& password, Message* msg, directoryServer* ds)
@@ -92,7 +96,9 @@ void directoryServer::signup(string& username, string& password, Message* msg, d
 		usersDict[username].password = password;
 		doc.SetCell<string>(0, doc.GetRowCount(), password);
 		doc.SetRowName(doc.GetRowCount() - 1, username);
+		mtx.lock();
 		doc.Save();
+		mtx.unlock();
 	}
 	//send appropriate reply
 }
@@ -114,17 +120,17 @@ void directoryServer::uploadimage(string& username, string& imagename, Message* 
 	
 	//add to users.csv
 	doc.SetCell<int>("imageCount", username, usersDict[username].imageCount);
-	doc.Save();
 	vector<string>temp = doc.GetRowNames();
 	int row = 0;
 	for (int i = 0; i < temp.size(); i++)
 		if (temp[i] == username)
 			row = i;
 
-		doc.SetCell<string>(4 + usersDict[username].imageCount*2, row, usersDict[username].imageName.back());
-		doc.Save();
-		doc.SetCell<string>(4 + usersDict[username].imageCount*2 + 1, row, usersDict[username].imageID.back());
-		doc.Save();
+	doc.SetCell<string>(4 + usersDict[username].imageCount*2, row, usersDict[username].imageName.back());
+	doc.SetCell<string>(4 + usersDict[username].imageCount*2 + 1, row, usersDict[username].imageID.back());
+	mtx.lock();
+	doc.Save();
+	mtx.unlock();
 
 
 }
