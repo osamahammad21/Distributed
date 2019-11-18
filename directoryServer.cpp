@@ -71,6 +71,10 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 
     }
 	//send appropriate reply
+	int n = usersDict[username].token.length(); 
+    char *char_array=new char[n+1]; 
+    strcpy(char_array, usersDict[username].token.c_str()); 
+
     Message *message = new Message();
 	message->setSourceIP(udpObj.getMyIP());
     message->setSourcePort(udpObj.getMyPort());
@@ -79,7 +83,7 @@ void directoryServer::login(string &username, string &password, Message* msg, di
     message->setDestinationPort(msg.getSourcePort());
     message->setOperation(Operation::login);
 	message->setMessageType(MessageType::Reply);
-	message->setMessage()
+	message->setMessage(char_array,n);
 	sockobj.sendMessage(message);
 	
 }
@@ -104,6 +108,22 @@ void directoryServer::logout(string& username, Message* msg, directoryServer* ds
 	doc.Save();
 	mtx.unlock();
 	//send appropriate reply
+	string ok ="ok";
+	int n = ok.length(); 
+    char *char_array=new char[n+1]; 
+    strcpy(char_array, ok.c_str()); 
+
+    Message *message = new Message();
+	message->setSourceIP(udpObj.getMyIP());
+    message->setSourcePort(udpObj.getMyPort());
+    message->setRPCID(msg.getRPCId());
+    message->setDestinationIP(msg.getsourceIP());
+    message->setDestinationPort(msg.getSourcePort());
+    message->setOperation(Operation::logout);
+	message->setMessageType(MessageType::Reply);
+	message->setMessage(char_array,n);
+	sockobj.sendMessage(message);
+	
 }
 void directoryServer::signup(string& username, string& password, Message* msg, directoryServer* ds)
 {
@@ -119,8 +139,9 @@ void directoryServer::signup(string& username, string& password, Message* msg, d
 		mtx.lock();
 		doc.Save();
 		mtx.unlock();
+		//login after signup
+		diretoryServer::login(username,password,msg,ds);
 	}
-	//send appropriate reply
 }
 
 bool directoryServer::usernameExists(string& username)
@@ -128,7 +149,7 @@ bool directoryServer::usernameExists(string& username)
 	return usersDict.find(username) != usersDict.end();
 }
 
-void directoryServer::uploadimage(string& username, string& imagename, Message* req, directoryServer* ds)
+void directoryServer::uploadimage(string& username, string& imagename, Message* msg, directoryServer* ds)
 {
 	rapidcsv::Document doc(usersFile);
 
@@ -152,12 +173,46 @@ void directoryServer::uploadimage(string& username, string& imagename, Message* 
 	doc.Save();
 	mtx.unlock();
 
+	string ok ="ok";
+	int n = ok.length(); 
+    char *char_array=new char[n+1]; 
+    strcpy(char_array, ok.c_str()); 
+
+	Message *message = new Message();
+	message->setSourceIP(udpObj.getMyIP());
+    message->setSourcePort(udpObj.getMyPort());
+    message->setRPCID(msg.getRPCId());
+    message->setDestinationIP(msg.getsourceIP());
+    message->setDestinationPort(msg.getSourcePort());
+    message->setOperation(Operation::uploadImage);
+	message->setMessageType(MessageType::Reply);
+	message->setMessage(char_array,n);
+	sockobj.sendMessage(message);
+	
+
 
 }
 
 string directoryServer::getPortnIP(string& username, Message* msg, directoryServer* ds)
 {
 	rapidcsv::Document doc(usersFile);
+
+	string pandip =doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username);
+	int n = pandip.length(); 
+    char *char_array=new char[n+1]; 
+    strcpy(char_array, pandip.c_str()); 
+
+	Message *message = new Message();
+	message->setSourceIP(udpObj.getMyIP());
+    message->setSourcePort(udpObj.getMyPort());
+    message->setRPCID(msg.getRPCId());
+    message->setDestinationIP(msg.getsourceIP());
+    message->setDestinationPort(msg.getSourcePort());
+    message->setOperation(Operation::getPortnIP);
+	message->setMessageType(MessageType::Reply);
+	message->setMessage(char_array,n);
+	sockobj.sendMessage(message);
+
 	return (doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username));
 }
 
@@ -174,9 +229,26 @@ string directoryServer::getAllImages(Message*, directoryServer*)
 		for (int j = 0; j < imageCount*2; j+=2)
 		{
 			if (doc.GetCell<string>(j+6, i) != "")
-				imagesNames += (doc.GetCell<string>(j+6, i) + ",");
+				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i));
 		}
 	}
+
+	string images =imagesNames.substr(0, imagesNames.size() - 1);
+	int n = images.length(); 
+    char *char_array=new char[n+1]; 
+    strcpy(char_array, images.c_str()); 
+
+	Message *message = new Message();
+	message->setSourceIP(udpObj.getMyIP());
+    message->setSourcePort(udpObj.getMyPort());
+    message->setRPCID(msg.getRPCId());
+    message->setDestinationIP(msg.getsourceIP());
+    message->setDestinationPort(msg.getSourcePort());
+    message->setOperation(Operation::getAllImages);
+	message->setMessageType(MessageType::Reply);
+	message->setMessage(char_array,n);
+	sockobj.sendMessage(message);
+
 	return imagesNames.substr(0, imagesNames.size() - 1);
 }
 
