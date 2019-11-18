@@ -1,4 +1,6 @@
 #include "directoryServer.h"
+#include <thread>
+
 using namespace std;
 
 directoryServer::directoryServer()
@@ -35,6 +37,7 @@ directoryServer::~directoryServer()
 void directoryServer::login(string &username, string &password, Message* msg, directoryServer* ds)
 {
     bool isAuthenticated = false;
+	//UDPSocket sockobj;
     if (ds->authenticate(username, password))
     {
 		rapidcsv::Document doc(usersFile);
@@ -52,12 +55,18 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 		doc.SetCell<unsigned int>("port", username, usersDict[username].port);
 		doc.SetCell<string>("ip", username, usersDict[username].ip);
 		doc.SetCell<string>("token", username, usersDict[username].token);
+		mtx.lock();
 		doc.Save();
+		mtx.unlock();
 
 		isAuthenticated = true;
 
+
     }
 	//send appropriate reply
+	//Message *m =new Message(1, 1, 3, sockobj.getMyIP(), sockobj.getMyPort(), msg.getSourceIP(), msg.getSourcePort(), msg.getRPCId(), msg.getOperation(), /*message size*/, (int)isAuthenticated);
+	//sockobj.sendMessage(m);
+	
 }
 
 bool directoryServer::authenticate(string &username, string &password)
@@ -76,7 +85,9 @@ void directoryServer::logout(string& username, Message* msg, directoryServer* ds
 
 	//update file
 	doc.SetCell<int>("online", username, usersDict[username].online);
+	mtx.lock();
 	doc.Save();
+	mtx.unlock();
 	//send appropriate reply
 }
 void directoryServer::signup(string& username, string& password, Message* msg, directoryServer* ds)
@@ -90,7 +101,9 @@ void directoryServer::signup(string& username, string& password, Message* msg, d
 		usersDict[username].password = password;
 		doc.SetCell<string>(0, doc.GetRowCount(), password);
 		doc.SetRowName(doc.GetRowCount() - 1, username);
+		mtx.lock();
 		doc.Save();
+		mtx.unlock();
 	}
 	//send appropriate reply
 }
@@ -112,19 +125,75 @@ void directoryServer::uploadimage(string& username, string& imagename, Message* 
 	
 	//add to users.csv
 	doc.SetCell<int>("imageCount", username, usersDict[username].imageCount);
-	doc.Save();
 	vector<string>temp = doc.GetRowNames();
 	int row = 0;
 	for (int i = 0; i < temp.size(); i++)
 		if (temp[i] == username)
 			row = i;
 
-		doc.SetCell<string>(4 + usersDict[username].imageCount*2, row, usersDict[username].imageName.back());
-		doc.Save();
-		doc.SetCell<string>(4 + usersDict[username].imageCount*2 + 1, row, usersDict[username].imageID.back());
-		doc.Save();
+	doc.SetCell<string>(4 + usersDict[username].imageCount*2, row, usersDict[username].imageName.back());
+	doc.SetCell<string>(4 + usersDict[username].imageCount*2 + 1, row, usersDict[username].imageID.back());
+	mtx.lock();
+	doc.Save();
+	mtx.unlock();
 
 
 }
 
+string directoryServer::getPortnIP(string& username, Message* msg, directoryServer* ds)
+{
+	rapidcsv::Document doc(usersFile);
+	return (doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username));
+}
 
+string directoryServer::getAllImages(Message*, directoryServer*)
+{
+	rapidcsv::Document doc(usersFile);
+	string imagesNames = "";
+	int userCount = doc.GetRowCount();
+	for (int i = 0; i < userCount; i++)
+	{
+		if (doc.GetCell<string>("imageCount", i) == "")
+			continue;
+		int imageCount = doc.GetCell<int>("imageCount", i);
+		for (int j = 0; j < imageCount*2; j+=2)
+		{
+			if (doc.GetCell<string>(j+6, i) != "")
+				imagesNames += (doc.GetCell<string>(j+6, i) + ",");
+		}
+	}
+	return imagesNames.substr(0, imagesNames.size() - 1);
+}
+
+void directoryServer::doOperation(Message* request)
+{
+	int operationID = request->getOperation();
+	thread* receiverThread;
+	string input = string((char*)request->getMessage());
+	vector<string> args = request->getMessageArgs();
+	
+	if (operationID == Operation::login)
+	{
+		receiverThread = new thread(directoryServer::login, args[0], args[1], request, this);
+	}
+	else if (operationID == Operation::logout)
+	{
+		receiverThread = new thread(directoryServer::logout, args[0], request, this);
+	}
+	else if (operationID == Operation::signup)
+	{
+		receiverThread = new thread(directoryServer::signup, args[0], args[1], request, this);
+	}
+	else if (operationID == Operation::uploadImage)
+	{
+		receiverThread = new thread(directoryServer::uploadimage, args[0], args[1], request, this);
+	}
+	else if (operationID == Operation::getPortnIP)
+	{
+		receiverThread = new thread(directoryServer::getPortnIP, args[0], request, this);
+	}
+	else if (operationID == Operation::getAllImages)
+	{
+		receiverThread = new thread(directoryServer::getAllImages, request, this);
+	}
+}
