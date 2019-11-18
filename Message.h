@@ -18,6 +18,7 @@
 #include <netinet/ip.h> 
 #include <sys/types.h>
 #include <netdb.h>
+#include <vector>
 
 using namespace std;
 enum MessageType { Request, Reply, Ack};

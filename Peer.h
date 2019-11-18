@@ -9,6 +9,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+#include <vector>
 #define DELIM ","
 using namespace std; 
 class Peer
