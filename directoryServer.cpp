@@ -37,6 +37,7 @@ directoryServer::~directoryServer()
 void directoryServer::login(string &username, string &password, Message* msg, directoryServer* ds)
 {
     bool isAuthenticated = false;
+	//UDPSocket sockobj;
     if (ds->authenticate(username, password))
     {
 		rapidcsv::Document doc(usersFile);
@@ -60,8 +61,12 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 
 		isAuthenticated = true;
 
+
     }
 	//send appropriate reply
+	//Message *m =new Message(1, 1, 3, sockobj.getMyIP(), sockobj.getMyPort(), msg.getSourceIP(), msg.getSourcePort(), msg.getRPCId(), msg.getOperation(), /*message size*/, (int)isAuthenticated);
+	//sockobj.sendMessage(m);
+	
 }
 
 bool directoryServer::authenticate(string &username, string &password)
