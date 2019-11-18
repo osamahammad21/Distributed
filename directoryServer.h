@@ -21,6 +21,7 @@ class directoryServer
 		string usersFile = "./users.csv";
 		mutex mtx;
 		UDPSocket udpObj;
+		thread* listen_thread;
         //everything here is stored in users.csv + username
 		struct data
 		{
@@ -28,6 +29,7 @@ class directoryServer
 			int online = 0;	//bool causes issues
 			string ip = "";
 			unsigned int port;
+			directoryServer::Operation signup;
 			string token;
 			vector <string> imageName;
 			vector <string> imageID;
@@ -47,10 +49,10 @@ class directoryServer
 
 
     public:
-        directoryServer();
+        directoryServer(string ip, int port);
         ~directoryServer();
-        //void listen();//todo
+        void listen();//todo
         void doOperation(Message *request);//todo???
 };
-
+#include "directoryServer.cpp"
 #endif
