@@ -3,10 +3,17 @@
 
 using namespace std;
 
-directoryServer::directoryServer()
+directoryServer::directoryServer(string ip, int port)
 {
 	rapidcsv::Document doc(usersFile);
 	int totalUsers = doc.GetRowCount();
+    char *char_array=new char[n+1];
+	strcpy(char_array, ip.c_str());
+	sock.initializeSocket(char_array, port);
+	listen_thread = new thread(&directoryServer::listen,this);
+
+
+
 
 	//constructing dictionary from csv
 	for (int i = 0; i<totalUsers;i++)
@@ -44,7 +51,7 @@ void directoryServer::login(string &username, string &password, Message* msg, di
         data onlineUser;
 		//update struct
 		usersDict[username].online = true;
-		usersDict[username].port = msg->getPort();
+		usersDict[username].port = msg->getSourcePort();
 		usersDict[username].ip = msg->getSourceIP();
 		//usersDict[username].port = 8080;
 		//usersDict[username].ip = "1.1.1.1";
@@ -64,8 +71,16 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 
     }
 	//send appropriate reply
-	//Message *m =new Message(1, 1, 3, sockobj.getMyIP(), sockobj.getMyPort(), msg.getSourceIP(), msg.getSourcePort(), msg.getRPCId(), msg.getOperation(), /*message size*/, (int)isAuthenticated);
-	//sockobj.sendMessage(m);
+    Message *message = new Message();
+	message->setSourceIP(udpObj.getMyIP());
+    message->setSourcePort(udpObj.getMyPort());
+    message->setRPCID(msg.getRPCId());
+    message->setDestinationIP(msg.getsourceIP());
+    message->setDestinationPort(msg.getSourcePort());
+    message->setOperation(Operation::login);
+	message->setMessageType(MessageType::Reply);
+	message->setMessage()
+	sockobj.sendMessage(message);
 	
 }
 
@@ -165,6 +180,14 @@ string directoryServer::getAllImages(Message*, directoryServer*)
 	return imagesNames.substr(0, imagesNames.size() - 1);
 }
 
+void directoryServer::listen()
+{
+    while(true){
+        Message *request=sock.receiveMsg();
+		thread th* = new thread(&directoryServer::doOperation,this,request);
+    }
+}
+
 void directoryServer::doOperation(Message* request)
 {
 	int operationID = request->getOperation();
@@ -174,26 +197,26 @@ void directoryServer::doOperation(Message* request)
 	
 	if (operationID == Operation::login)
 	{
-		receiverThread = new thread(directoryServer::login, args[0], args[1], request, this);
+		directoryServer::login(args[0],args[1],request,this);
 	}
 	else if (operationID == Operation::logout)
 	{
-		receiverThread = new thread(directoryServer::logout, args[0], request, this);
+		directoryServer::logout(logout[0],request,this);
 	}
 	else if (operationID == Operation::signup)
 	{
-		receiverThread = new thread(directoryServer::signup, args[0], args[1], request, this);
+		directoryServer::signup(args[0],args[1],request,this);
 	}
 	else if (operationID == Operation::uploadImage)
 	{
-		receiverThread = new thread(directoryServer::uploadimage, args[0], args[1], request, this);
+		directoryServer::uploadimage(args[0],args[0],request,this);
 	}
 	else if (operationID == Operation::getPortnIP)
 	{
-		receiverThread = new thread(directoryServer::getPortnIP, args[0], request, this);
+		directoryServer::getPortnIP(args[0],request,this);
 	}
 	else if (operationID == Operation::getAllImages)
 	{
-		receiverThread = new thread(directoryServer::getAllImages, request, this);
+		directoryServer::getAllImages(request,this);
 	}
 }

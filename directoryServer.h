@@ -20,6 +20,7 @@ class directoryServer
 		enum Operation { login, signup, logout, uploadImage, changeSettings, viewImage, requestImage, getPortnIP, getAllImages, statusUpdate };
 		string usersFile = "./users.csv";
 		mutex mtx;
+		UDPSocket udpObj;
         //everything here is stored in users.csv + username
 		struct data
 		{
