@@ -83,7 +83,7 @@ void directoryServer::login(string &username, string &password, Message* msg, di
     message->setRPCID(msg->getRPCId());
     message->setDestinationIP(msg->getSourceIP());
     message->setDestinationPort(msg->getSourcePort());
-    message->setOperation(Operation::login);
+    message->setOperation(0);
 	message->setMessageType(MessageType::Reply);
 	message->setMessage(char_array,n);
 	udpObj.sendMessage(message);
@@ -123,7 +123,7 @@ void directoryServer::logout(string& username, Message* msg, directoryServer* ds
     message->setRPCID(msg->getRPCId());
     message->setDestinationIP(msg->getSourceIP());
     message->setDestinationPort(msg->getSourcePort());
-    message->setOperation(Operation::logout);
+    message->setOperation(2);
 	message->setMessageType(MessageType::Reply);
 	message->setMessage(char_array,n);
 	udpObj.sendMessage(message);
@@ -205,7 +205,7 @@ void directoryServer::uploadimage(string& username, string& imagename, Message* 
     message->setRPCID(msg->getRPCId());
     message->setDestinationIP(msg->getSourceIP());
     message->setDestinationPort(msg->getSourcePort());
-    message->setOperation(Operation::uploadImage);
+    message->setOperation(3);
 	message->setMessageType(MessageType::Reply);
 	message->setMessage(char_array,n);
 	udpObj.sendMessage(message);
@@ -229,7 +229,7 @@ string directoryServer::getPortnIP(string& username, Message* msg, directoryServ
     message->setRPCID(msg->getRPCId());
     message->setDestinationIP(msg->getSourceIP());
     message->setDestinationPort(msg->getSourcePort());
-    message->setOperation(Operation::getPortnIP);
+    message->setOperation(7);
 	message->setMessageType(MessageType::Reply);
 	message->setMessage(char_array,n);
 	udpObj.sendMessage(message);
@@ -265,7 +265,7 @@ string directoryServer::getAllImages(Message*msg, directoryServer*ds)
     message->setRPCID(msg->getRPCId());
     message->setDestinationIP(msg->getSourceIP());
     message->setDestinationPort(msg->getSourcePort());
-    message->setOperation(Operation::getAllImages);
+    message->setOperation(8);
 	message->setMessageType(MessageType::Reply);
 	message->setMessage(char_array,n);
 	udpObj.sendMessage(message);
@@ -288,27 +288,27 @@ void directoryServer::doOperation(Message* request)
 	string input = string((char*)request->getMessage());
 	vector<string> args = request->getMessageArgs();
 	
-	if (operationID == Operation::login)
+	if (operationID == 0)
 	{
 		directoryServer::login(args[0],args[1],request,this);
 	}
-	else if (operationID == Operation::logout)
+	else if (operationID == 2)
 	{
 		directoryServer::logout(args[0],request,this);
 	}
-	else if (operationID == Operation::signup)
+	else if (operationID == 1)
 	{
 		directoryServer::signup(args[0],args[1],request,this);
 	}
-	else if (operationID == Operation::uploadImage)
+	else if (operationID == 3)
 	{
 		directoryServer::uploadimage(args[0],args[0],request,this);
 	}
-	else if (operationID == Operation::getPortnIP)
+	else if (operationID == 7)
 	{
 		directoryServer::getPortnIP(args[0],request,this);
 	}
-	else if (operationID == Operation::getAllImages)
+	else if (operationID == 8)
 	{
 		directoryServer::getAllImages(request,this);
 	}

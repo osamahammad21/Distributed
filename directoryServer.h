@@ -21,6 +21,7 @@ class directoryServer
 		mutex mtx;
 		UDPSocket udpObj;
 		thread* listen_thread;
+		thread* op_thread = nullptr;
         //everything here is stored in users.csv + username
 		struct data
 		{
