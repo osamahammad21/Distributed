@@ -45,6 +45,7 @@ directoryServer::~directoryServer()
 void directoryServer::login(string &username, string &password, Message* msg, directoryServer* ds)
 {
     bool isAuthenticated = false;
+	string reply;
 	//UDPSocket sockobj;
     if (ds->authenticate(username, password))
     {
@@ -54,8 +55,6 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 		usersDict[username].online = true;
 		usersDict[username].port = msg->getSourcePort();
 		usersDict[username].ip = msg->getSourceIP();
-		//usersDict[username].port = 8080;
-		//usersDict[username].ip = "1.1.1.1";
 		usersDict[username].token = username + password;
         
 		//update file
@@ -66,15 +65,17 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 		mtx.lock();
 		doc.Save();
 		mtx.unlock();
-
 		isAuthenticated = true;
-
-
-    }
+		reply=usersDict[username].token;
+    }else
+	{
+		reply="not a user";
+	}
+	
 	//send appropriate reply
-	int n = usersDict[username].token.length(); 
+	int n = reply.length(); 
     char *char_array=new char[n+1]; 
-    strcpy(char_array, usersDict[username].token.c_str()); 
+    strcpy(char_array, reply.c_str()); 
 
     Message *message = new Message();
 	message->setSourceIP(udpObj.getMyIP());
@@ -99,21 +100,23 @@ bool directoryServer::authenticate(string &username, string &password)
 void directoryServer::logout(string& username, Message* msg, directoryServer* ds)
 {
 	rapidcsv::Document doc(usersFile);
-
-	//update struct
-	ds->usersDict[username].online = 0;
-
-	//update file
-	doc.SetCell<int>("online", username, usersDict[username].online);
-	mtx.lock();
-	doc.Save();
-	mtx.unlock();
-	//send appropriate reply
-	string ok ="ok";
-	int n = ok.length(); 
+	string reply;
+	if (ds->usernameExists(username))
+    {
+		ds->usersDict[username].online = 0;
+		//update file
+		doc.SetCell<int>("online", username, usersDict[username].online);
+		mtx.lock();
+		doc.Save();
+		mtx.unlock();
+		reply ="ok";
+	}else
+	{
+		reply="not a user";
+	}
+	int n = reply.length(); 
     char *char_array=new char[n+1]; 
-    strcpy(char_array, ok.c_str()); 
-
+    strcpy(char_array, reply.c_str()); 
     Message *message = new Message();
 	message->setSourceIP(udpObj.getMyIP());
     message->setSourcePort(udpObj.getMyPort());
@@ -142,7 +145,24 @@ void directoryServer::signup(string& username, string& password, Message* msg, d
 		mtx.unlock();
 		//login after signup
 		login(username,password,msg,ds);
+	}else
+	{
+		string reply="username already exists";
+		int n = reply.length(); 
+		char *char_array=new char[n+1]; 
+		strcpy(char_array, reply.c_str()); 
+		Message *message = new Message();
+		message->setSourceIP(udpObj.getMyIP());
+		message->setSourcePort(udpObj.getMyPort());
+		message->setRPCID(msg->getRPCId());
+		message->setDestinationIP(msg->getSourceIP());
+		message->setDestinationPort(msg->getSourcePort());
+		message->setOperation(Operation::signup);
+		message->setMessageType(MessageType::Reply);
+		message->setMessage(char_array,n);
+		udpObj.sendMessage(message);
 	}
+	
 }
 
 bool directoryServer::usernameExists(string& username)
@@ -257,7 +277,7 @@ void directoryServer::listen()
 {
     while(true){
         Message *request=udpObj.receiveMsg();
-		thread th* = new thread(&directoryServer::doOperation,this,request);
+		thread *th = new thread(&directoryServer::doOperation,this,request);
     }
 }
 

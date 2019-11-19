@@ -17,7 +17,6 @@ using namespace std;
 class directoryServer
 {
     private:
-		enum Operation { login, signup, logout, uploadImage, changeSettings, viewImage, requestImage, getPortnIP, getAllImages, statusUpdate };
 		string usersFile = "./users.csv";
 		mutex mtx;
 		UDPSocket udpObj;
@@ -29,7 +28,6 @@ class directoryServer
 			int online = 0;	//bool causes issues
 			string ip = "";
 			unsigned int port;
-			directoryServer::Operation signup;
 			string token;
 			vector <string> imageName;
 			vector <string> imageID;
