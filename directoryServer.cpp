@@ -97,9 +97,17 @@ bool directoryServer::authenticate(string &username, string &password)
     return false;
 }
 
-void directoryServer::logout(string& username, Message* msg, directoryServer* ds)
+void directoryServer::logout(string& token, Message* msg, directoryServer* ds)
 {
 	rapidcsv::Document doc(usersFile);
+
+	vector<string>temp = doc.GetRowNames();
+	string username;//user with the token sent
+	int row = 0;
+	for (int i = 0; i < temp.size(); i++)
+		if (usersDict[temp[i]] == token)
+			username = temp[i];
+
 	string reply;
 	if (ds->usernameExists(username))
     {
@@ -219,9 +227,18 @@ void directoryServer::uploadimage(string& token, string& imagename, Message* msg
 
 }
 
-string directoryServer::getPortnIP(string& username, Message* msg, directoryServer* ds)
+string directoryServer::getPortnIP(string& token, Message* msg, directoryServer* ds)
 {
 	rapidcsv::Document doc(usersFile);
+
+	vector<string>temp = doc.GetRowNames();
+	string username;//user with the token sent
+	int row = 0;
+	for (int i = 0; i < temp.size(); i++)
+		if (usersDict[temp[i]] == token)
+			username = temp[i];
+	
+	//imageID unique per user assumed
 
 	string pandip =doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username);
 	int n = pandip.length(); 
