@@ -170,10 +170,15 @@ bool directoryServer::usernameExists(string& username)
 	return usersDict.find(username) != usersDict.end();
 }
 
-void directoryServer::uploadimage(string& username, string& imagename, Message* msg, directoryServer* ds)
+void directoryServer::uploadimage(string& token, string& imagename, Message* msg, directoryServer* ds)
 {
 	rapidcsv::Document doc(usersFile);
-
+	vector<string>temp = doc.GetRowNames();
+	string username;//user with the token sent
+	int row = 0;
+	for (int i = 0; i < temp.size(); i++)
+		if (usersDict[temp[i]] == token)
+			username = temp[i];
 	//imageID unique per user assumed
 	string imageID = to_string(usersDict[username].imageCount+1);
 	ds->usersDict[username].imageCount += 1;
