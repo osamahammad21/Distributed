@@ -11,15 +11,15 @@
 #include "Message.h"
 #include "rapidcsv.h"
 
-
+#define TIMEOUT 30;
 using namespace std;
 
 class directoryServer
 {
     private:
 		string usersFile = "./users.csv";
-		mutex mtx;
-		UDPSocket udpObj;
+		mutex mtx,mtxStatus;
+		UDPSocket udpObj,udpObjStatus;
 		thread* listen_thread;
 		thread* op_thread = nullptr;
         //everything here is stored in users.csv + username
@@ -36,6 +36,7 @@ class directoryServer
 
 		};
 		unordered_map<string, data> usersDict;
+		unordered_map<string, int> statusDict;
 
         void login(string&, string&, Message* , directoryServer*);
         void logout(string&, Message*, directoryServer*);
@@ -45,13 +46,16 @@ class directoryServer
 		string getAllImages(Message*, directoryServer*);//string of imageName,...
 		bool authenticate(string& username, string& password);
 		bool usernameExists(string&);
+		void updateStatus(string& , directoryServer*);
+
 
 
     public:
-        directoryServer(string ip, int port);
+        directoryServer(int,int);
         ~directoryServer();
-        void listen();//todo
-        void doOperation(Message *request);//todo???
+        void listen();
+		void listenStatus();//wip
+        void doOperation(Message *request);
 };
 #include "directoryServer.cpp"
 #endif

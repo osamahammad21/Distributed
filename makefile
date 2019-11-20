@@ -1,6 +1,6 @@
-init_server:
-	@g++ -std=c++11 -pthread UDPSocket.h UDPServerSocket.h Server.h main_server.cpp -o server
-makemakinit_client:
-	@g++ -std=c++11 -pthread UDPSocket.h UDPClientSocket.h Client.h main_client.cpp -o client
-init_message:
-	@g++ Message.h Message.cpp base64.h base64.cpp message_test.cpp -o message
+init_peer_requester:
+	@g++ -pthread base64.h Message.h UDPSocket.h Peer.h main_peer_requester.cpp -o requester
+init_peer_owner:
+	@g++ -pthread base64.h Message.h UDPSocket.h Peer.h main_peer_owner.cpp -o owner
+init_ds:
+	@g++ -pthread base64.h Message.h UDPSocket.h directoryServer.h main_ds.cpp -o ds

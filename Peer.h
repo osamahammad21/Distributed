@@ -26,7 +26,7 @@ class Peer
         string myusername;
         bool dest = false;
     public:
-        Peer(string ip, int port); 
+        Peer(int port); 
         void setDS(string dsaddr,int dsport);
         string login(string username,string password);
         string signup(string username,string password);

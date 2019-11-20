@@ -1,11 +1,8 @@
 #include "Peer.h"
 //Peer constructor
-Peer :: Peer(string ip, int port){
+Peer :: Peer(int port){
     //create client socket
-    int n = ip.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, ip.c_str()); 
-    sock.initializeSocket(char_array, port);
+    sock.initializeSocket(port);
     read_thread = new std::thread(&Peer::listen,this);
     serve_thread = new std::thread(&Peer::serve,this);
 }
@@ -251,6 +248,8 @@ void Peer::serve()
 void Peer::listen()
 {
     while(!dest){
+        if(sock.ReceiveBuffer.empty())
+            continue;
         Message *reply=sock.receiveMsg();
         if(dest)
             break;
@@ -268,9 +267,9 @@ void Peer::listen()
 }
 Peer :: ~Peer()
 {
-    // dest=true;
-    // serve_thread->join();
-    // read_thread->join();
+    dest=true;
+    serve_thread->join();
+    read_thread->join();
 }
 //peer getRequest
 // Message * Peer :: getRequest(){
