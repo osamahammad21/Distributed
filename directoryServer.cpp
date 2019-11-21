@@ -3,15 +3,15 @@
 
 using namespace std;
 
-directoryServer::directoryServer(unsigned int port, unsigned int statusPort)
+directoryServer::directoryServer(unsigned int port)
 {
 	mtx.lock();
 	rapidcsv::Document doc(usersFile);
 	int totalUsers = doc.GetRowCount();
 	udpObj.initializeSocket(port);
-	udpObjStatus.initializeSocket(statusPort);
 	listen_thread = new thread(&directoryServer::listen,this);
-	status_thread = new thread(&directoryServer::listenStatus,this);
+	status_thread = new thread(&directoryServer::decrementStatus,this);
+
 	for (int i = 0; i<totalUsers;i++)
 	{
 		string username = doc.GetRowName(i);
@@ -28,7 +28,7 @@ directoryServer::directoryServer(unsigned int port, unsigned int statusPort)
 		for (int j = 6; j < 6 + usersDict[username].imageCount * 2; j += 2)
 		{
 			usersDict[username].imageName.push_back(doc.GetCell<string>(j, i));
-			usersDict[username].imageID.push_back(doc.GetCell<string>(j + 1, i));
+			usersDict[username].image64.push_back(doc.GetCell<string>(j + 1, i));
 		}
 	}
 	mtx.unlock();
@@ -93,14 +93,20 @@ bool directoryServer::authenticate(string &username, string &password)
     return false;
 }
 
-void directoryServer::logout(string& username, Message* msg, directoryServer* ds)
+void directoryServer::logout(string& token, Message* msg, directoryServer* ds)
 {
+	rapidcsv::Document doc(usersFile);
+	vector<string>temp = doc.GetRowNames();
+	string username;//user with the token sent
+	int row = 0;
+	for (int i = 0; i < temp.size(); i++)
+		if (usersDict[temp[i]] == token)
+			username = temp[i];
 	
 	string reply;
 	if (ds->usernameExists(username))
     {
 		mtx.lock();
-		rapidcsv::Document doc(usersFile);
 		ds->usersDict[username].online = 0;
 		//update file
 		doc.SetCell<int>("online", username, usersDict[username].online);
@@ -168,15 +174,20 @@ bool directoryServer::usernameExists(string& username)
 	return usersDict.find(username) != usersDict.end();
 }
 
-void directoryServer::uploadimage(string& username, string& imagename, Message* msg, directoryServer* ds)
+void directoryServer::uploadimage(string& token, string& imagename,string& image64, Message* msg, directoryServer* ds)
 {
 	mtx.lock();
 	rapidcsv::Document doc(usersFile);
 
-	//imageID unique per user assumed
-	string imageID = to_string(usersDict[username].imageCount+1);
+	vector<string>temp = doc.GetRowNames();
+	string username;//user with the token sent
+	int row = 0;
+	for (int i = 0; i < temp.size(); i++)
+		if (usersDict[temp[i]] == token)
+			username = temp[i];
+
 	ds->usersDict[username].imageCount += 1;
-	ds->usersDict[username].imageID.push_back(imageID);
+	ds->usersDict[username].image64.push_back(image64);
 	ds->usersDict[username].imageName.push_back(imagename);
 	
 	//add to users.csv
@@ -188,7 +199,7 @@ void directoryServer::uploadimage(string& username, string& imagename, Message* 
 			row = i;
 
 	doc.SetCell<string>(4 + usersDict[username].imageCount*2, row, usersDict[username].imageName.back());
-	doc.SetCell<string>(4 + usersDict[username].imageCount*2 + 1, row, usersDict[username].imageID.back());
+	doc.SetCell<string>(4 + usersDict[username].imageCount*2 + 1, row, usersDict[username].image64.back());
 	doc.Save();
 	mtx.unlock();
 
@@ -210,7 +221,7 @@ void directoryServer::uploadimage(string& username, string& imagename, Message* 
 	
 }
 
-string directoryServer::getPortnIP(string& username, Message* msg, directoryServer* ds)
+string directoryServer::getPortnIP(string& token, string& username, Message* msg, directoryServer* ds)
 {
 	rapidcsv::Document doc(usersFile);
 
@@ -233,7 +244,7 @@ string directoryServer::getPortnIP(string& username, Message* msg, directoryServ
 	return (doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username));
 }
 
-string directoryServer::getAllImages(Message*msg, directoryServer*ds)
+string directoryServer::getAllImages(string& token, Message*msg, directoryServer*ds)
 {
 	rapidcsv::Document doc(usersFile);
 	string imagesNames = "";
@@ -246,7 +257,7 @@ string directoryServer::getAllImages(Message*msg, directoryServer*ds)
 		for (int j = 0; j < imageCount*2; j+=2)
 		{
 			if (doc.GetCell<string>(j+6, i) != "")
-				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i));
+				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i));
 		}
 	}
 
@@ -278,17 +289,8 @@ void directoryServer::listen()
     }
 }
 
-void directoryServer::listenStatus()
-{
-    while(true){
-        Message *request=udpObjStatus.receiveMsg();
-		thread *thread = new thread(&directoryServer::updateStatus,this,request->getMessageArgs()[0]);
-    }
-}
-
 void directoryServer::updateStatus(string& token, directoryServer* ds)
 {
-	mtxStatus.lock()
 	rapidcsv::Document doc(usersFile);
 	vector<string>temp = doc.GetRowNames();
 	string username;//user with the token sent
@@ -296,9 +298,10 @@ void directoryServer::updateStatus(string& token, directoryServer* ds)
 	for (int i = 0; i < temp.size(); i++)
 		if (usersDict[temp[i]] == token)
 			username = temp[i];
+	
+	mtxStatus.lock();
 	statusDict[username]=TIMEOUT; //TIMEOUT defined in directoryServer.h (30 seconds)
 	mtxStatus.unlock();
-
 }
 
 void directoryServer::decrementStatus()
@@ -348,7 +351,7 @@ void directoryServer::doOperation(Message* request)
 	}
 	else if (operationID == Operation::uploadImage)
 	{
-		directoryServer::uploadimage(args[0],args[1],request,this);
+		directoryServer::uploadimage(args[0],args[1],args[2],request,this);
 	}
 	else if (operationID == Operation::getPortnIP)
 	{
@@ -358,4 +361,8 @@ void directoryServer::doOperation(Message* request)
 	{
 		directoryServer::getAllImages(request,this);
 	}
+	else if (operationID == Operation::updateStatus)
+	{
+		directoryServer::updateStatus(request,this);
+	} 
 }
