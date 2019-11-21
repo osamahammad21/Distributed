@@ -68,6 +68,16 @@ bool Image::findImage(string ownerusername,string imageId)
         return false;
     return true;    
 }
+void Image::writeImage(string image,string ownerusername,string imageId)
+{
+    setownerUsername(ownerusername);
+    setImageId(imageId);
+    stegImagePath = IMAGE_DIR+ownerUsername+"_"+imageId+"_steg"+".jpg";
+    ofstream out;
+    out.open(stegImagePath,ios_base::out | ios_base::binary);
+    out<<image;
+    out.close();
+}
 int Image::updateProperties()
 {
     desteg();
