@@ -296,7 +296,6 @@ void directoryServer::updateStatus(string& token, directoryServer* ds)
 	for (int i = 0; i < temp.size(); i++)
 		if (usersDict[temp[i]] == token)
 			username = temp[i];
-	
 	statusDict[username]=TIMEOUT; //TIMEOUT defined in directoryServer.h (30 seconds)
 	mtxStatus.unlock();
 
@@ -324,7 +323,7 @@ void directoryServer::decrementStatus()
 			} 
 			mtxStatus.unlock();
 		}
-		usleep(1000000);//usleep takes microseconds 
+	usleep(1000000);//usleep takes microseconds 
 	}
 }
 

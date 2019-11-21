@@ -11,6 +11,8 @@
 #include <iterator>
 #include <vector>
 #define DELIM ","
+#define STATUS_UPDATE_TIME 4
+#define IMAGES_DB_PATH "myimagesdb.txt"
 using namespace std; 
 class Peer
 {
@@ -21,23 +23,31 @@ class Peer
         int rpccount=1;
         map<unsigned int,Message*> replyMessages;
         vector<Message*> serveMessages;
+        vector<string> myImages;
         std::thread* read_thread;
         std::thread* serve_thread;
-        string myusername;
+        std::thread* status_thread;
+        mutex rpcidmtx,vectorMtx;
         bool dest = false;
-    public:
-        Peer(int port); 
-        void setDS(string dsaddr,int dsport);
-        string login(string username,string password);
-        string signup(string username,string password);
-        string uploadImage(string token,string imagename);
-        string logout(string token);
-        string getPortnIP(string token,string targetusername);
-        string getAllImages(string token);
-        string getImage(string myusername,string ownerusername,string targetadd,unsigned int targetport,string imagename);
         void listen();//thread
         void serve();//thread
-        void setUserName(string username);
+        void status(string input);//thread
+    public:
+        Peer(int port); 
+        string getImageUpdates();
+        void addImageLocally(string imageId);
+        void removeImageLocally(string imageId);
+        void setDS(string dsaddr,int dsport);
+        void startStatusUpdates(string token);
+        string login(string username,string password);
+        string signup(string username,string password);
+        string uploadImage(string token,string imagename,string image64);
+        string removeImage(string token,string imagename);
+        string logout(string token);
+        string getPortnIP(string token,string targetusername);
+        string getAllImagesFromDS(string token);
+        string getAllImagesFromPeer(string myusername,string targetusername,string ip,int port);
+        string getImage(string myusername,string ownerusername,string targetadd,unsigned int targetport,string imagename);
         ~Peer();
 
 };

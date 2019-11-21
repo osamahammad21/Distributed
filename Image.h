@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include<vector>
+#include "base64.h"
 using namespace std;
 #define USERNAME_ERROR -1
 #define PATH_ERROR -2
@@ -25,9 +26,6 @@ class Image
         string destegImagePath;
         string propertiesPath;
         string originalImagePath;
-        
-        void copyjpgfile(string source,string target);
-
     public:
         vector<struct userProperty> properties;
         Image();
@@ -47,6 +45,7 @@ class Image
         void writeProperties();
         int steg(string secretfile,string coverfile,string stegofile);
         int desteg(string stegofile,string extractedfile);
+        string getSmallScaleImage();
         void removeMiddleFiles();
         ~Image();
 };

@@ -1,7 +1,7 @@
 #include "Image.h"
 #include <iostream>
 using namespace std;
-int test =1;
+int test =2;
 int main()
 {
     Image image;
@@ -42,7 +42,10 @@ int main()
             cout<<image.getAuthorizedImagePath()<<" "<<image.getUnAuthorizedImagePath();
             break;
         default:
-        
+            if(!image.findImage("osos","image123"))
+                return 0;
+            image.desteg();
+            cout<<image.getSmallScaleImage();
             break;
     }
     

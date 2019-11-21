@@ -59,16 +59,6 @@ void Image::writeProperties()
     }
     output.close();
 }
-void Image::copyjpgfile(string source,string target)
-{
-    ifstream fin(source,ios::binary);
-    string extract = string(istreambuf_iterator<char>(fin), istreambuf_iterator<char>());
-    fin.close(); 
-    ofstream out;
-    out.open(target,ios_base::out | ios_base::binary);
-    out<<extract;
-    out.close();
-}
 bool Image::findImage(string ownerusername,string imageId)
 {
     setownerUsername(ownerusername);
@@ -108,9 +98,9 @@ int Image::readProperties()
 
 int Image::chooseImage(string path)
 {
-    // originalImagePath=path;
     destegImagePath = IMAGE_DIR+ownerUsername+"_"+imageId+"_desteg"+".jpg";
-    copyjpgfile(path,destegImagePath);
+    string command = "convert "+path+" "+destegImagePath;
+    system(command.c_str());
     return 0;
 }
 int Image::setImageId(string id)
@@ -155,6 +145,19 @@ string Image::getAuthorizedImagePath()
 string Image::getUnAuthorizedImagePath()
 {
     return stegImagePath;
+}
+string Image::getSmallScaleImage()
+{
+    string command = "convert "+destegImagePath+" -resize 64x64 64x64temp.jpg";
+    system(command.c_str());
+    ifstream fin("64x64temp.jpg",ios::binary);
+    string extract = string(istreambuf_iterator<char>(fin), istreambuf_iterator<char>());
+    fin.close();
+    command = "rm 64x64temp.jpg -f";
+    system(command.c_str());
+    extract = base64_encode(reinterpret_cast<const unsigned char*>(reinterpret_cast<const unsigned char*> (extract.c_str())), extract.size() + 1);
+    extract = base64_encode(reinterpret_cast<const unsigned char*>(reinterpret_cast<const unsigned char*> (extract.c_str())), extract.size() + 1);
+    return extract;
 }
 Image::~Image()
 {}
