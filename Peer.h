@@ -51,5 +51,5 @@ class Peer
         ~Peer();
 
 };
-#include "Peer.cpp"
+//#include "Peer.cpp"
 #endif // PEER_H
