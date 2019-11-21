@@ -74,11 +74,11 @@ I am going to define code snippets for all test cases that may be required
     ```
 - viewer
     ```c
+    string imagestr;//string that holds the image
     Image image;
     //check if the image exists
-    //findImage takes the owner(not the user's) username and imageId that are used for searching in the ImageDir
-    if(!image.findImage("user1","image123"))
-        //no Image Found
+    //writeImage takes the string of the image and the owner(not the user's) username and imageId that are used for searching in the ImageDir
+    image.writeImage(imagestr,"user1","image123");
     ```
 -  Common Operations
 
