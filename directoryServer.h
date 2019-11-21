@@ -30,6 +30,7 @@ class directoryServer
 			string ip = "";
 			unsigned int port;
 			string token;
+			int imageCount;
 			vector <string> imageName;
 			vector <string> image64;
 		};
@@ -39,19 +40,19 @@ class directoryServer
         void login(string&, string&, Message* , directoryServer*);
         void logout(string&, Message*, directoryServer*);
         void signup(string&, string&, Message* , directoryServer*);
-        void uploadimage(string&, string&, Message* , directoryServer*);
-		string getPortnIP(string&, Message*, directoryServer*);//string of "port,ip"
-		string getAllImages(Message*, directoryServer*);//string of imageName,...
+        void uploadimage(string&, string&, string&, Message* , directoryServer*);
+		string getPortnIP(string&, string&, Message*, directoryServer*);//string of "port,ip"
+		string getAllImages(string&, Message*, directoryServer*);//string of imageName,...
 		bool authenticate(string&, string&);
 		bool usernameExists(string&);
 		void updateStatus(string& , directoryServer*);
-		void decrementStatus()
+		void decrementStatus();
 
 
 
 
     public:
-        directoryServer(int,int);
+        directoryServer(unsigned int);
         ~directoryServer();
         void listen();
         void doOperation(Message *request);

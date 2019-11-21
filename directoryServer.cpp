@@ -100,7 +100,7 @@ void directoryServer::logout(string& token, Message* msg, directoryServer* ds)
 	string username;//user with the token sent
 	int row = 0;
 	for (int i = 0; i < temp.size(); i++)
-		if (usersDict[temp[i]] == token)
+		if (usersDict[temp[i]].token == token)
 			username = temp[i];
 	
 	string reply;
@@ -183,7 +183,7 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 	string username;//user with the token sent
 	int row = 0;
 	for (int i = 0; i < temp.size(); i++)
-		if (usersDict[temp[i]] == token)
+		if (usersDict[temp[i]].token == token)
 			username = temp[i];
 
 	ds->usersDict[username].imageCount += 1;
@@ -192,8 +192,8 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 	
 	//add to users.csv
 	doc.SetCell<int>("imageCount", username, usersDict[username].imageCount);
-	vector<string>temp = doc.GetRowNames();
-	int row = 0;
+	temp = doc.GetRowNames();
+	row = 0;
 	for (int i = 0; i < temp.size(); i++)
 		if (temp[i] == username)
 			row = i;
@@ -296,7 +296,7 @@ void directoryServer::updateStatus(string& token, directoryServer* ds)
 	string username;//user with the token sent
 	int row = 0;
 	for (int i = 0; i < temp.size(); i++)
-		if (usersDict[temp[i]] == token)
+		if (usersDict[temp[i]].token == token)
 			username = temp[i];
 	
 	mtxStatus.lock();
@@ -315,12 +315,12 @@ void directoryServer::decrementStatus()
 			if (x.second == 0) //user no longer online
 			{
 				//remove entry from SatusDict
-				x.erase(); 
+				usersDict.erase(x.first);
 				//set as offline in users.csv
 				mtx.lock(); 
 				rapidcsv::Document doc(usersFile);
-				ds->usersDict[username].online = 0;
-				doc.SetCell<int>("online", username, usersDict[username].online);
+				usersDict[x.first].online = 0;
+				doc.SetCell<int>("online", x.first, usersDict[x.first].online);
 				doc.Save();
 				mtx.unlock();
 			} 
@@ -355,14 +355,14 @@ void directoryServer::doOperation(Message* request)
 	}
 	else if (operationID == Operation::getPortnIP)
 	{
-		directoryServer::getPortnIP(args[0],request,this);
+		directoryServer::getPortnIP(args[0],args[1], request,this);
 	}
 	else if (operationID == Operation::getAllImages)
 	{
-		directoryServer::getAllImages(request,this);
+		directoryServer::getAllImages(args[0],request,this);
 	}
 	else if (operationID == Operation::updateStatus)
 	{
-		directoryServer::updateStatus(request,this);
+		directoryServer::updateStatus(args[0],this);
 	} 
 }
