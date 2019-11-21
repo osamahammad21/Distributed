@@ -302,6 +302,7 @@ void directoryServer::updateStatus(string& token, directoryServer* ds)
 	mtxStatus.lock();
 	statusDict[username]=TIMEOUT; //TIMEOUT defined in directoryServer.h (30 seconds)
 	mtxStatus.unlock();
+	//cout<<"status for user:"<<username<<"updated"<<endl;
 }
 
 void directoryServer::decrementStatus()

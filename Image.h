@@ -42,7 +42,7 @@ class Image
         int getownerUsername(string& username);
         int desteg();
         int steg();
-        void writeImage(string image,string ownerusername,string imageId)
+        void writeImage(string image,string ownerusername,string imageId);
         void writeProperties();
         int steg(string secretfile,string coverfile,string stegofile);
         int desteg(string stegofile,string extractedfile);

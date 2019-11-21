@@ -512,6 +512,7 @@ void Peer::status(string input)
         message->setMessageType(MessageType::Request);
         while(!sock.sendMessage(message)){}
         sleep(STATUS_UPDATE_TIME);
+        cout<<"update SENT"<<endl;
     }
     
 }
