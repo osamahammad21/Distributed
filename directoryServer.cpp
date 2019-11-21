@@ -323,7 +323,7 @@ void directoryServer::decrementStatus()
 			} 
 			mtxStatus.unlock();
 		}
-	usleep(1000000);//usleep takes microseconds 
+		usleep(1000000);//usleep takes microseconds 
 	}
 }
 
