@@ -1,10 +1,14 @@
 #include "photosettingswindow.h"
 #include "ui_photosettingswindow.h"
-PhotoSettingsWindow::PhotoSettingsWindow(QString filename, User * user, QWidget *parent) :
+#include "homewindow.h"
+
+PhotoSettingsWindow::PhotoSettingsWindow(Image image, User * user, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::PhotoSettingsWindow)
 {
     ui->setupUi(this);
+    this->user = user;
+    this->image = image;
 }
 
 PhotoSettingsWindow::~PhotoSettingsWindow()
@@ -48,7 +52,26 @@ void PhotoSettingsWindow::viewItemsInListWidget()
 
 void PhotoSettingsWindow::on_pushButton_upload_clicked()
 {
-    hide();
-    //show grandparent (home)
-    destroy();
+    struct userProperty prop;//this struct represent the setting for each user for the image
+
+    std::map<std::string, int>::iterator it;
+    ui->listWidget->clear();
+    for ( it = users.begin(); it != users.end(); it++ )
+    {
+        prop.user_name = it->first;
+        prop.views = it->second;
+        image.properties.push_back(prop);
+    }
+    image.writeProperties();
+    image.steg();
+    image.removeMiddleFiles();
+
+    if (user->uploadPhoto(image)){
+        hide();
+        HomeWindow *homeWindow = new HomeWindow(user, this);
+        homeWindow->show();
+        destroy();
+    }
+
+
 }

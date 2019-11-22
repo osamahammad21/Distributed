@@ -11,6 +11,8 @@ public:
     User(Peer * peer);
     bool login(string username, string password);
     bool signup(string username, string password);
+    string getUsername();
+    bool uploadPhoto(Image image);
 
 private:
     string username;

@@ -25,6 +25,9 @@ void RegisterWindow::on_pushButton_signup_clicked()
         homeWindow->show();
         destroy();
     }
+    else {
+        ui->label_successMessage->setText("Username taken");
+    }
 
     //insert in database
 }

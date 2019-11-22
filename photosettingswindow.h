@@ -15,7 +15,7 @@ class PhotoSettingsWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit PhotoSettingsWindow(QString filename, User * user, QWidget *parent = nullptr);
+    explicit PhotoSettingsWindow(Image image, User * user, QWidget *parent = nullptr);
     ~PhotoSettingsWindow();
 
 private slots:
@@ -28,6 +28,8 @@ private slots:
 private:
     Ui::PhotoSettingsWindow *ui;
     std::map <std::string, int> users;
+    Image image;
+    User * user;
 };
 
 #endif // PHOTOSETTINGSWINDOW_H

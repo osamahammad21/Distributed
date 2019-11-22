@@ -178,6 +178,8 @@ string Peer::uploadImage(string token,string imagename,string image64)
     strcpy(char_array, request.c_str()); 
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
+
+    cout << "Message is: " << message->getMessage() << endl;
     while(!sock.sendMessage(message)){}
     while(true)
     {
@@ -186,6 +188,7 @@ string Peer::uploadImage(string token,string imagename,string image64)
             if(replyMessages[rpcId]->getMessageType()==MessageType::Reply)
             {
                 string s(replyMessages[rpcId]->getMessage());
+                cout << "Reply is: " << s << endl;
                 return s;
             }
         }

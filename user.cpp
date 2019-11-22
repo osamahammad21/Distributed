@@ -27,3 +27,17 @@ bool User :: signup(string username, string password){
      peer->startStatusUpdates(this->token);
      return true;
 }
+
+string User :: getUsername(){
+    return username;
+}
+
+bool User :: uploadPhoto(Image image){
+    string imageName;
+    image.getImageId(imageName);
+    string reply = peer->uploadImage(this->token, imageName, image.getSmallScaleImage());
+    if (reply == "ok")
+        return true;
+    else
+        return false;
+}

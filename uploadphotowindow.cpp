@@ -24,6 +24,7 @@ UploadPhotoWindow::~UploadPhotoWindow()
 
 void UploadPhotoWindow::on_pushButton_choose_clicked()
 {
+    ui->label_successMessage->setText("");
     QString filter = "PNG files (*.png) ;; JPG files (*.JPG) ;; JPEG files (*.JPEG)";
     filename = QFileDialog :: getOpenFileName(this, "Choose file", QDir::homePath(), filter);
     QPixmap img(filename);
@@ -33,9 +34,21 @@ void UploadPhotoWindow::on_pushButton_choose_clicked()
 
 void UploadPhotoWindow::on_pushButton_upload_clicked()
 {
-    if (filename != NULL){
+    QString imageName = ui->lineEdit_imageName->text();
+    if (filename == NULL){
+        ui->label_successMessage->setText("Must enter a valid image");
+    }
+    if (imageName == NULL){
+        ui->label_successMessage->setText("Must enter a valid image name");
+    }
+    if (filename != NULL && imageName != NULL){
+        Image image;
+        image.setownerUsername(this->user->getUsername());
+        image.setImageId(imageName.toStdString());
+        image.chooseImage(filename.toStdString());
+
         hide();
-        newWindow = new PhotoSettingsWindow(filename, user, this);
+        newWindow = new PhotoSettingsWindow(image, user, this);
         newWindow->show();
         destroy();
     }

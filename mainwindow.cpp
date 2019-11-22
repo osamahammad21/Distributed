@@ -25,8 +25,9 @@ void MainWindow::on_pushButton_login_clicked()
         homeWindow->show();
         destroy();
     }
-
-    //check database
+    else {
+        ui->label_successMessage->setText("Wrong username or password");
+    }
 
 }
 

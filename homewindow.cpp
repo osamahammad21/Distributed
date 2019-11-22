@@ -24,4 +24,5 @@ void HomeWindow::on_pushButton_uploaphoto_clicked()
     hide();
     uploadWindow = new UploadPhotoWindow(user, this);
     uploadWindow->show();
+    destroy();
 }
