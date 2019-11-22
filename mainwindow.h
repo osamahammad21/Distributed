@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "homewindow.h"
 #include "user.h"
 
 QT_BEGIN_NAMESPACE

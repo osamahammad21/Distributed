@@ -1,6 +1,6 @@
 #include "photosettingswindow.h"
 #include "ui_photosettingswindow.h"
-PhotoSettingsWindow::PhotoSettingsWindow(QWidget *parent) :
+PhotoSettingsWindow::PhotoSettingsWindow(QString filename, User * user, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::PhotoSettingsWindow)
 {

@@ -57,5 +57,4 @@ class UDPSocket
         void receiveHandler(UDPSocket * myUDPSocket);
         ~UDPSocket ( );
 };
-#include "UDPSocket.cpp"
 #endif // UDPSOCKET_H

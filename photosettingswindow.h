@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <QString>
+#include "user.h"
 namespace Ui {
 class PhotoSettingsWindow;
 }
@@ -14,7 +15,7 @@ class PhotoSettingsWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit PhotoSettingsWindow(QWidget *parent = nullptr);
+    explicit PhotoSettingsWindow(QString filename, User * user, QWidget *parent = nullptr);
     ~PhotoSettingsWindow();
 
 private slots:

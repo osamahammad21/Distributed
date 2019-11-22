@@ -8,10 +8,11 @@
 #include <QLabel>
 #include <QImageReader>
 #include <QPainter>
-UploadPhotoWindow::UploadPhotoWindow(QWidget *parent)
+UploadPhotoWindow::UploadPhotoWindow(User * user, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::UploadPhotoWindow)
 {
+    this->user = user;
     ui->setupUi(this);
 }
 
@@ -34,7 +35,7 @@ void UploadPhotoWindow::on_pushButton_upload_clicked()
 {
     if (filename != NULL){
         hide();
-        newWindow = new PhotoSettingsWindow(this);
+        newWindow = new PhotoSettingsWindow(filename, user, this);
         newWindow->show();
         destroy();
     }

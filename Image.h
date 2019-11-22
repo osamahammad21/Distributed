@@ -50,5 +50,4 @@ class Image
         void removeMiddleFiles();
         ~Image();
 };
-#include"Image.cpp"
 #endif 

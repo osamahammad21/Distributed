@@ -86,6 +86,5 @@ void setMessageSize(unsigned int _size);
 ~Message();
 
 };
-#include "Message.cpp"
 #endif //MESSAGE_H
 

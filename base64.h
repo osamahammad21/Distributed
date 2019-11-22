@@ -10,5 +10,4 @@
 
 std::string base64_encode(unsigned char const* , unsigned int len);
 std::string base64_decode(std::string const& s);
-#include "base64.cpp"
 #endif /* BASE64_H_C0CE2A47_D10E_42C9_A27C_C883944E704A */

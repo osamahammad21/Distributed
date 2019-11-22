@@ -19,7 +19,12 @@ void MainWindow::on_pushButton_login_clicked()
 {
     QString username = ui->lineEdit_username->text();
     QString password = ui->lineEdit_password->text();
-    user->login(username.toStdString(), password.toStdString());
+    if (user->login(username.toStdString(), password.toStdString())){
+        cout << "Login completed" << endl;
+        HomeWindow *homeWindow = new HomeWindow(user, this);
+        homeWindow->show();
+        destroy();
+    }
 
     //check database
 
@@ -27,7 +32,7 @@ void MainWindow::on_pushButton_login_clicked()
 
 void MainWindow::on_pushButton_signup_clicked()
 {
-    RegisterWindow *registerwindow = new RegisterWindow(this);
+    RegisterWindow *registerwindow = new RegisterWindow(user, this);
     registerwindow->show();
     destroy();
 }

@@ -57,5 +57,4 @@ class directoryServer
         void listen();
         void doOperation(Message *request);
 };
-#include "directoryServer.cpp"
 #endif
