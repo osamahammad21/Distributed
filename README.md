@@ -153,3 +153,20 @@ I am going to define code snippets for all test cases that may be required
         args[0];//the first encoded image received from the other peer
     }
     ```
+### directoryServer
+
+- Initialization in main
+    ```c
+    directoryServer ds(1);//directory server's port number
+    while(1);//keeps the ds running
+    ```
+- Functions carried out by the directoryServer
+    **-** login: remotley called by a peer. the DS validates the peer's credentials, returning a positive (token) or negative("not a user") reply based on the credentials sent. the permanent file containing the status of all users is updated.
+    **-** logout: remotley called by a peer. the DS logs the user with the token sent, updating the permanent file. Replys with either "ok" or "not a user".
+    **-** signup: remotley called by a peer. username is checked for duplication, reply is either "username already exists" or a new user is added and a token reply is sent back.
+    **-** uploadImage: remotley called by a peer. Uploads a sample image and it's name. user is identified by a token. If successful, "ok" is the reply sent back.
+    **-** getPortnIP: remotley called by a peer. the desired username is looked up, sending back the port and ip of the peer, allowing peers to communicate directly. if username does not exist "not a user" is the reply sent back.
+    **-** getAllImages: remotley called by a peer. returns all the images, imagenames, and their corresponding usernames to the peer.
+    **-** updateStatus: processes the status of the peer. if a peer does not send a status update for "TIMEOUT" seconds, they are considered offline, updating the permaenent file.
+
+    
