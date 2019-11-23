@@ -9,6 +9,7 @@ directoryServer::directoryServer(unsigned int port)
 	rapidcsv::Document doc(usersFile);
 	int totalUsers = doc.GetRowCount();
 	udpObj.initializeSocket(port);
+	cout<<udpObj.getMyIP()<<endl;
 	listen_thread = new thread(&directoryServer::listen,this);
 	status_thread = new thread(&directoryServer::decrementStatus,this);
 
@@ -88,8 +89,9 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 
 bool directoryServer::authenticate(string &username, string &password)
 {
+	string x = password;
     if (usersDict.find(username) != usersDict.end())
-        return usersDict[username].password == password;
+        return (usersDict[username].password == x);
     return false;
 }
 
@@ -135,11 +137,10 @@ void directoryServer::logout(string& token, Message* msg, directoryServer* ds)
 }
 void directoryServer::signup(string& username, string& password, Message* msg, directoryServer* ds)
 {
-	bool exists = false;
-	if (ds->usernameExists(username))
-		exists = true;
+	
 	//update struct and file with new user
-	if (!exists) {
+	if (!(usernameExists(username))) 
+	{
 		mtx.lock();
 		rapidcsv::Document doc(usersFile);
 		usersDict[username].password = password;
@@ -149,7 +150,8 @@ void directoryServer::signup(string& username, string& password, Message* msg, d
 		mtx.unlock();
 		//login after signup
 		login(username,password,msg,ds);
-	}else
+	}
+	else
 	{
 		string reply="username already exists";
 		int n = reply.length(); 
@@ -171,7 +173,18 @@ void directoryServer::signup(string& username, string& password, Message* msg, d
 
 bool directoryServer::usernameExists(string& username)
 {
-	return usersDict.find(username) != usersDict.end();
+	// rapidcsv::Document doc(usersFile);
+
+    // // for(int i = 0; i<doc.GetRowNames().size(); i++)
+    // // {
+    // //     if (doc.GetRowName(i)==username)
+	// // 		return true;
+    // // }
+
+    // if (usersDict.find(username) != usersDict.end())
+    //     return usersDict[username].password == password;
+    // return false;
+	return (usersDict.find(username) != usersDict.end());
 }
 
 void directoryServer::uploadimage(string& token, string& imagename,string& image64, Message* msg, directoryServer* ds)
@@ -268,7 +281,28 @@ string directoryServer::getPortnIP(string& token, string& username, Message* msg
 
 string directoryServer::getAllImages(string& token, Message*msg, directoryServer*ds)
 {
+
 	rapidcsv::Document doc(usersFile);
+	if (doc.GetColumnCount() <= 7)
+	{
+		string images ="no images";
+		int n = images.length(); 
+		char *char_array=new char[n+1]; 
+		strcpy(char_array, images.c_str()); 
+
+		Message *message = new Message();
+		message->setSourceIP(udpObj.getMyIP());
+		message->setSourcePort(udpObj.getMyPort());
+		message->setRPCID(msg->getRPCId());
+		message->setDestinationIP(msg->getSourceIP());
+		message->setDestinationPort(msg->getSourcePort());
+		message->setOperation(Operation::getAllImages);
+		message->setMessageType(MessageType::Reply);
+		message->setMessage(char_array,n);
+		udpObj.sendMessage(message);
+
+		return images;
+	}
 	string imagesNames = "";
 	int userCount = doc.GetRowCount();
 	for (int i = 0; i < userCount; i++)
@@ -305,7 +339,7 @@ void directoryServer::listen()
 {
     while(true){
         Message *request=udpObj.receiveMsg();
-		cout<< request->getMessageArgs()[0]<<endl;
+		//cout<< request->getMessageArgs()[0]<<endl;
 		thread *th = new thread(&directoryServer::doOperation,this,request);
     }
 }
@@ -350,6 +384,11 @@ void directoryServer::decrementStatus()
 		}
 		usleep(1000000);//usleep takes microseconds 
 	}
+}
+
+void directoryServer::clearUsers()
+{
+	
 }
 
 void directoryServer::doOperation(Message* request)

@@ -42,11 +42,12 @@ class directoryServer
         void signup(string&, string&, Message* , directoryServer*);
         void uploadimage(string&, string&, string&, Message* , directoryServer*);
 		string getPortnIP(string&, string&, Message*, directoryServer*);//string of "port,ip"
-		string getAllImages(string&, Message*, directoryServer*);//string of imageName,...
+		string getAllImages(string&, Message*, directoryServer*);//string of username,imagename,image(base64),...
 		bool authenticate(string&, string&);
 		bool usernameExists(string&);
 		void updateStatus(string& , directoryServer*);
 		void decrementStatus();
+		void clearUsers();
 
 
 

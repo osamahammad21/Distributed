@@ -4,7 +4,7 @@ using namespace std;
 void DOS(int port)
 {
     Peer peer(port);
-    peer.setDS("127.0.0.1",88);
+    peer.setDS("10.7.57.207",88);
     string username = "osaos"+to_string(port);
     cout<<peer.signup(username,"1234")<<endl;
 }
@@ -23,10 +23,14 @@ int main()
     //     }
     // }
     Peer peer(3);
+    peer.setDS("10.7.57.207",88);
+    cout<<peer.signup("user1","pass1")<<endl;
+    string token = peer.signup("user2","pass2");
+    cout<<token<<endl;
     // cout<<peer.getImage("koko","osos","127.0.0.1",1,"864820");
-    peer.setTimeOut(2);
-    cout<<peer.login("ss","123")<<endl;
-    peer.removeTimeOut();
+    // peer.setTimeOut(2);
+    cout<<peer.getPortnIP(token,"user1")<<endl;
+    // peer.removeTimeOut();
     // cout<<peer.login("ss","123")<<endl;
 
 //     int i =55;
@@ -52,3 +56,4 @@ int main()
     // out.open("trial.jpg",ios_base::out | ios_base::binary);
     // out<<s;
     // out.close();
+}

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <string>
 #include "user.h"
+#include "viewphotowindow.h"
 using namespace std;
 namespace Ui {
 class imageSampleWidget;
@@ -14,7 +15,7 @@ class imageSampleWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit imageSampleWidget(QWidget *parent = nullptr, string imageName ="", string preview="", string username="", User * user = nullptr);
+    explicit imageSampleWidget(string imageName ="", string preview="", string username="", User * user = nullptr, QWidget *parent = nullptr);
     ~imageSampleWidget();
 
 private slots:
@@ -28,6 +29,7 @@ private:
     string ownerUsername;
     string imageName;
     User * user;
+    QWidget * parent;
 };
 
 #endif // IMAGESAMPLEWIDGET_H
