@@ -72,6 +72,7 @@ bool User:: getAllImages(){
     vector <string> args;
     if(reply=="no images")
        return false;
+    cout<<reply<<endl;
     split(reply, args, ',');
     for (int i=0; i < args.size(); i+=3){
         imageSample temp;
