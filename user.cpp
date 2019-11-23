@@ -36,9 +36,11 @@ bool User :: uploadPhoto(Image image){
     string imageName;
     image.getImageId(imageName);
     peer->addImageLocally(imageName);
-    string reply = peer->uploadImage(this->token, imageName, image.getSmallScaleImage());
+    string photo = image.getSmallScaleImage();
+    cout<<photo<<endl;
+    string reply = peer->uploadImage(this->token, imageName, photo);
     if (reply == "ok"){
-        image.removeMiddleFiles();
+        //image.removeMiddleFiles();
         return true;
     }
     else
@@ -68,6 +70,8 @@ inline void split(string str, vector<string>& cont, char delim = ' ')
 bool User:: getAllImages(){
     string reply = peer->getAllImagesFromDS(token);
     vector <string> args;
+    if(reply=="no images")
+       return false;
     split(reply, args, ',');
     for (int i=0; i < args.size(); i+=3){
         imageSample temp;

@@ -15,23 +15,6 @@ Peer :: Peer(int port){
     sock.initializeSocket(port);
     read_thread = new std::thread(&Peer::listen,this);
     serve_thread = new std::thread(&Peer::serve,this);
-    if(existf(string(IMAGES_DB_PATH)))
-    {
-        ifstream imagesFile;
-        imagesFile.open(IMAGES_DB_PATH);
-        while(!imagesFile.eof())
-        {
-            string input;
-            imagesFile>>input;
-            myImages.push_back(input);
-        }
-        imagesFile.close();
-    }else
-    {
-        ofstream imagesFile;
-        imagesFile.open(IMAGES_DB_PATH);
-        imagesFile.close();
-    }
     
 }
 void Peer::startStatusUpdates(string token)
@@ -120,8 +103,6 @@ string Peer::login(string username,string password)
     strcpy(char_array, request.c_str()); 
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
-
-    cout << "Message is: " << message->getMessage() << endl;
     while(!sock.sendMessage(message)){}
     long long ticks=0;
     while(true)
@@ -132,11 +113,32 @@ string Peer::login(string username,string password)
             if(replyMessages[rpcId]->getMessageType()==MessageType::Reply)
             {
                 string s(replyMessages[rpcId]->getMessage());
+                if(s!="not a user")
+                {
+                    IMAGES_DB_PATH = username;
+                    if(existf(IMAGES_DB_PATH))
+                    {
+                        ifstream imagesFile;
+                        imagesFile.open(IMAGES_DB_PATH);
+                        while(!imagesFile.eof())
+                        {
+                            string input;
+                            imagesFile>>input;
+                            myImages.push_back(input);
+                        }
+                        imagesFile.close();
+                    }else
+                    {
+                        ofstream imagesFile;
+                        imagesFile.open(IMAGES_DB_PATH);
+                        imagesFile.close();
+                    }
+                }
                 return s;
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -168,12 +170,11 @@ string Peer::logout(string token)
             if(replyMessages[rpcId]->getMessageType()==MessageType::Reply)
             {
                 string s(replyMessages[rpcId]->getMessage());
-                cout << "Reply is: " << s << endl;
                 return s;
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -195,9 +196,8 @@ string Peer::signup(string username,string password)
     strcpy(char_array, request.c_str()); 
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
-    cout << "Message is: " << message->getMessage() << endl;
     while(!sock.sendMessage(message)){}
-    cout<<"Sent Message to"<<dsaddr<<" "<<dsport<<endl;
+    cout<<"Sent Message to "<<dsaddr<<" "<<dsport<<endl;
 
     long long ticks=0;
     while(true)
@@ -207,12 +207,32 @@ string Peer::signup(string username,string password)
             if(replyMessages[rpcId]->getMessageType()==MessageType::Reply)
             {
                 string s(replyMessages[rpcId]->getMessage());
-                cout << "Reply is: " << s << endl;
+                if(s!="username already exists")
+                {
+                    IMAGES_DB_PATH = username;
+                    if(existf(IMAGES_DB_PATH))
+                    {
+                        ifstream imagesFile;
+                        imagesFile.open(IMAGES_DB_PATH);
+                        while(!imagesFile.eof())
+                        {
+                            string input;
+                            imagesFile>>input;
+                            myImages.push_back(input);
+                        }
+                        imagesFile.close();
+                    }else
+                    {
+                        ofstream imagesFile;
+                        imagesFile.open(IMAGES_DB_PATH);
+                        imagesFile.close();
+                    }
+                }
                 return s;
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -235,8 +255,6 @@ string Peer::uploadImage(string token,string imagename,string image64)
     strcpy(char_array, request.c_str()); 
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
-
-    cout << "Message is: " << message->getMessage() << endl;
     while(!sock.sendMessage(message)){}
     long long ticks = 0;
     while(true)
@@ -246,12 +264,11 @@ string Peer::uploadImage(string token,string imagename,string image64)
             if(replyMessages[rpcId]->getMessageType()==MessageType::Reply)
             {
                 string s(replyMessages[rpcId]->getMessage());
-                cout << "Reply is: " << s << endl;
                 return s;
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -286,7 +303,7 @@ string Peer::removeImage(string token,string imagename)
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -356,7 +373,7 @@ string Peer::getAllImagesFromPeer(string myusername,string targetusername,string
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Millisecondss
     }
 }
@@ -378,7 +395,6 @@ string Peer::getPortnIP(string token,string targetusername)
     strcpy(char_array, request.c_str()); 
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
-    cout << "Message " << message->getMessage() << endl;
     while(!sock.sendMessage(message)){}
     long long ticks=0;
     while(true)
@@ -388,12 +404,11 @@ string Peer::getPortnIP(string token,string targetusername)
             if(replyMessages[rpcId]->getMessageType()==MessageType::Reply)
             {
                 string s(replyMessages[rpcId]->getMessage());
-                cout << "reply " << s << endl;
                 return s;
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -432,12 +447,11 @@ string Peer::getImage(string myusername,string ownerusername,string targetadd,un
             if(replyMessages[rpcId]->getMessageType()==MessageType::Reply)
             {
                 string s(replyMessages[rpcId]->getMessage());
-
                 return base64_decode(s);
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -507,13 +521,13 @@ void Peer::serve()
                                 images+=DELIM;
                             else
                                 first=false;
-                            images += img.getSmallScaleImage();
+                            images += myImages[i]+DELIM+img.getSmallScaleImage();
                         }
                         img.removeMiddleFiles();
                     }
                     message = new Message();
                     if(images=="")
-                        images="no photos";
+                        images="no images";
                     message->setSourceIP(sock.getMyIP());
                     message->setSourcePort(sock.getMyPort());
                     message->setRPCID(serveMessages[i]->getRPCId());
@@ -555,7 +569,7 @@ string Peer::getImageUpdates()
             }
         }
     }
-    return "connection timeout";
+    return CONN_TIMEOUT;
 }
 //listening to socket
 void Peer::listen()
@@ -601,6 +615,7 @@ void Peer::status(string input)
         message->setMessageType(MessageType::Request);
         while(!sock.sendMessage(message)){}
         sleep(STATUS_UPDATE_TIME);
+        //cout<<"update SENT"<<endl;
     }
     
 }
