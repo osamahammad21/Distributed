@@ -7,7 +7,7 @@ User::User(Peer * peer)
 
 
 bool User :: login(string username, string password){
-        cout << username << " " << password << endl;
+       cout << username << " " << password << endl;
        string reply = peer->login(username, password);
        cout << reply << endl;
        if(reply == "not a user")
@@ -40,7 +40,7 @@ bool User :: uploadPhoto(Image image){
     cout<<photo<<endl;
     string reply = peer->uploadImage(this->token, imageName, photo);
     if (reply == "ok"){
-        //image.removeMiddleFiles();
+        image.removeMiddleFiles();
         return true;
     }
     else
@@ -86,6 +86,8 @@ string User :: getImage(string ownerUsername, string imageName){
     string reply = peer->getPortnIP(token, ownerUsername);
     vector <string> args;
     split(reply, args, ',');
+
+    cout << username<< " " << ownerUsername << " " << args[1] << " " << args[0] << " " << imageName << endl;
     reply = peer->getImage(username, ownerUsername, args[1], stoi(args[0]), imageName);
     cout << reply << endl;
 }
@@ -99,6 +101,7 @@ string User :: getAllOwnerImages(string ownerUsername){
     string reply = peer->getPortnIP(token, ownerUsername);
     vector <string> args;
     split(reply, args, ',');
+    cout << username<< " " << ownerUsername << " " << args[1] << " " << args[0] << endl;
     reply = peer->getAllImagesFromPeer(username, ownerUsername, args[1], stoi(args[0]));
     cout << reply;
 }

@@ -346,6 +346,7 @@ void directoryServer::listen()
 
 void directoryServer::updateStatus(string& token, directoryServer* ds)
 {
+	cout << token << endl;
 	rapidcsv::Document doc(usersFile);
 	vector<string>temp = doc.GetRowNames();
 	string username;//user with the token sent

@@ -35,7 +35,7 @@ imageSampleWidget::~imageSampleWidget()
 void imageSampleWidget::on_pushButton_imageName_clicked()
 {
     //does not return result
-//    user->getImage(ownerUsername, imageName);
+    user->getImage(ownerUsername, imageName);
 
 
 //    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow();
@@ -47,6 +47,6 @@ void imageSampleWidget::on_pushButton_imageName_clicked()
 void imageSampleWidget::on_pushButton_username_clicked()
 {
     //infinite loop
-    parent->close();
-//    user->getAllOwnerImages(ownerUsername);
+//    parent->close();
+    user->getAllOwnerImages(ownerUsername);
 }
