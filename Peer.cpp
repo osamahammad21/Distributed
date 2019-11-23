@@ -134,7 +134,7 @@ string Peer::login(string username,string password)
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -170,7 +170,7 @@ string Peer::logout(string token)
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -193,7 +193,7 @@ string Peer::signup(string username,string password)
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
-    cout<<"Sent Message to"<<dsaddr<<" "<<dsport<<endl;
+    cout<<"Sent Message to "<<dsaddr<<" "<<dsport<<endl;
 
     long long ticks=0;
     while(true)
@@ -207,7 +207,7 @@ string Peer::signup(string username,string password)
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -243,7 +243,7 @@ string Peer::uploadImage(string token,string imagename,string image64)
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -278,7 +278,7 @@ string Peer::removeImage(string token,string imagename)
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -348,7 +348,7 @@ string Peer::getAllImagesFromPeer(string myusername,string targetusername,string
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Millisecondss
     }
 }
@@ -383,7 +383,7 @@ string Peer::getPortnIP(string token,string targetusername)
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -426,7 +426,7 @@ string Peer::getImage(string myusername,string ownerusername,string targetadd,un
             }
         }
         if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
-            return "connection timeout";
+            return CONN_TIMEOUT;
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
@@ -544,7 +544,7 @@ string Peer::getImageUpdates()
             }
         }
     }
-    return "connection timeout";
+    return CONN_TIMEOUT;
 }
 //listening to socket
 void Peer::listen()

@@ -1,35 +1,21 @@
 #include "Peer.h"
 #include <list>
 using namespace std;
-void DOS(int port)
-{
-    Peer peer(port);
-    peer.setDS("10.7.57.207",88);
-    string username = "osaos"+to_string(port);
-    cout<<peer.signup(username,"1234")<<endl;
-}
 int main()
 {
     
     string start;
     cin>>start;
-    // for(int i = 50;i<150;i++)
-    // {
-        
-    //     if(i!=88)
-    //     {
-    //         std::thread *second=new thread(DOS,i);
-    //         usleep(100);
-    //     }
-    // }
     Peer peer(3);
+    cout<<"I am here"<<endl;
     peer.setDS("10.7.57.207",88);
-    cout<<peer.signup("user1","pass1")<<endl;
-    string token = peer.signup("user2","pass2");
-    cout<<token<<endl;
-    // cout<<peer.getImage("koko","osos","127.0.0.1",1,"864820");
+    // cout<<peer.login("user1","pass1")<<endl;
+    string token1 = peer.signup("test3","123");
+    cout<<token1<<endl;
+    string token2 = peer.signup("test4","123");
+    cout<<token2<<endl;
     // peer.setTimeOut(2);
-    cout<<peer.getPortnIP(token,"user1")<<endl;
+    cout<<peer.getPortnIP(token2,"test3")<<endl;
     // peer.removeTimeOut();
     // cout<<peer.login("ss","123")<<endl;
 
