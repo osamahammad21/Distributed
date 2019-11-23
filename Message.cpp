@@ -14,10 +14,12 @@ Message ::Message(MessageType _message_type,  unsigned int _fragmentCount, unsig
     this->operation = _operation; //Which function to call on server side
     this->message_size = _message_size;
     this->message = _message;
+
 }
 
 Message :: Message(char * marshalled_base64)
 {
+    cout << "demarshalling" << endl;
     string serialized_msg(marshalled_base64);
     string decoded_serialized_msg = base64_decode(serialized_msg);
     unsigned int source_IP_size, dest_IP_size;
@@ -35,39 +37,11 @@ Message :: Message(char * marshalled_base64)
     hex_to_T(decoded_serialized_msg.substr(shift + 1, 8), this->destPort); 
     hex_to_T(decoded_serialized_msg.substr(shift + 9, 8), this->rpc_id); 
     hex_to_T(decoded_serialized_msg.substr(shift + 17,8), this->operation); 
-    hex_to_T(decoded_serialized_msg.substr(shift + 25, 16), this->message_size); 
-    
+    hex_to_T(decoded_serialized_msg.substr(shift + 25,16), this->timeStamp);
+    hex_to_T(decoded_serialized_msg.substr(shift + 41, 16), this->message_size); 
+
     this->message = new char[this->message_size+1];
-    std::strcpy((char *)this->message , decoded_serialized_msg.substr(shift+25+16).c_str());
-}
-
-char * Message :: marshal ()
-{
-//1 digit ->    4 bits -> 0.5 byte 
-//             msg_type     frag_count_s    frag_total_s    source_IP_size_s    sourceIP  sourcePort_s   dest_IP_size_s    destIP  destPort_s  rpc_id_s    op_s    msg_size_s
-//hex_digits=   1               8               8                  8                x            8             8               y      8            8        8        16(64bits)
-    char msg_type           = char ((int)this->message_type + 48);      //0 request, 1 reply, 2 Ack     
-    string frag_count_s     =  int_to_hex((int)this->fragmentCount);       
-    string frag_total_s     =  int_to_hex((int)this->fragmentTotal);        
-    string source_IP_size_s = int_to_hex((int)this->sourceIP.size());
-    string sourcePort_s       = int_to_hex((int)this->sourcePort);
-    string dest_IP_size_s =  int_to_hex((int)this->destIP.size());
-    string destPort_s       = int_to_hex((int)this->destPort);
-    string rpc_id_s     =  int_to_hex((int)this->rpc_id);  
-    string op_s         =  int_to_hex((int)this->operation);                  
-    string msg_size_s   = int_to_hex((long long) this->message_size); 
-    string message((char * ) this->message); 
-
-    string packet               = msg_type + frag_count_s + frag_total_s + source_IP_size_s + this->sourceIP + sourcePort_s + dest_IP_size_s  + this->destIP + destPort_s + rpc_id_s + op_s + msg_size_s + message;
-    string packet_encoded       = base64_encode(reinterpret_cast<const unsigned char*>(reinterpret_cast<const unsigned char*> (packet.c_str())), packet.size() + 1);
-    char * encoded_string_ptr   = new char[packet_encoded.size()+1];
-    strcpy(encoded_string_ptr, packet_encoded.c_str());
-
-    return encoded_string_ptr;
-}
-MessageType Message :: getMessageType()
-{
-    return this->message_type;
+    std::strcpy((char *)this->message , decoded_serialized_msg.substr(shift+41+16).c_str());
 }
 vector<string> Message :: getMessageArgs()
 {
@@ -88,7 +62,36 @@ vector<string> Message :: getMessageArgs()
 	}
 	return result;
 }
+char * Message :: marshal ()
+{
+//1 digit ->    4 bits -> 0.5 byte 
+//             msg_type     frag_count_s    frag_total_s    source_IP_size_s    sourceIP  sourcePort_s   dest_IP_size_s    destIP  destPort_s  rpc_id_s    op_s     timestamp        msg_size_s     
+//hex_digits=   1               8               8                  8                x            8             8               y      8            8        8           16            16(64bits)
+    char msg_type           = char ((int)this->message_type + 48);      //0 request, 1 reply, 2 Ack     
+    string frag_count_s     =  int_to_hex((int)this->fragmentCount);       
+    string frag_total_s     =  int_to_hex((int)this->fragmentTotal);        
+    string source_IP_size_s = int_to_hex((int)this->sourceIP.size());
+    string sourcePort_s       = int_to_hex((int)this->sourcePort);
+    string dest_IP_size_s =  int_to_hex((int)this->destIP.size());
+    string destPort_s       = int_to_hex((int)this->destPort);
+    string rpc_id_s     =  int_to_hex((int)this->rpc_id);  
+    string op_s         =  int_to_hex((int)this->operation);
+    string time_stamp_s =  int_to_hex((long long)this->timeStamp);                 
+    string msg_size_s   = int_to_hex((long long) this->message_size); 
+    string message((char * ) this->message); 
 
+    string packet               = msg_type + frag_count_s + frag_total_s + source_IP_size_s + this->sourceIP + sourcePort_s + dest_IP_size_s  + this->destIP + destPort_s + rpc_id_s + op_s + time_stamp_s +  msg_size_s + message;
+    string packet_encoded       = base64_encode(reinterpret_cast<const unsigned char*>(reinterpret_cast<const unsigned char*> (packet.c_str())), packet.size() + 1);
+    //cout << "Cout packet encoded " <<  packet_encoded << endl;
+    char * encoded_string_ptr   = new char[packet_encoded.size()+1];
+    strcpy(encoded_string_ptr, packet_encoded.c_str());
+
+    return encoded_string_ptr;
+}
+MessageType Message :: getMessageType()
+{
+    return this->message_type;
+}
 void Message :: setMessageType(MessageType type)
 {
     this->message_type = type;
@@ -111,6 +114,16 @@ string Message :: getSourceIP()
 {
     return this->sourceIP;
 }
+long long Message::getMessageTimestamp()
+{
+    return this->timeStamp;
+}
+
+void Message::setMessageTimestamp(long long _timeStamp)
+{
+    this->timeStamp = _timeStamp;
+}
+
 void Message :: setSourceIP(string ip)
 {
     this->sourceIP = ip;
