@@ -40,6 +40,7 @@ int i;
 
     Message *m =new Message(Request, 1, 3, sockobj.getMyIP(), sockobj.getMyPort(), destIP, destPort, ++i, 8, extract.size(), str);
     sockobj.sendMessage(m);
+    cout << "sent " << endl;
     }
 
     // while(!stop && input != "q")

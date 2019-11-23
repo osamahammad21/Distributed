@@ -30,7 +30,7 @@ int main(int argc, char ** argv)
     {
         Message * newM = sockobj.receiveMsg();
         cout << "Received Msg of size " << newM->getMessageSize() << endl;
-        cout << "time stamp = " << newM->getMessageTimestamp();
+        cout << "time stamp = " << newM->getMessageTimestamp() << endl;
         
         if(newM != NULL)
         {
