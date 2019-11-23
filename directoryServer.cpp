@@ -243,7 +243,7 @@ string directoryServer::getPortnIP(string& token, string& username, Message* msg
 		message->setMessage(char_array,n);
 		udpObj.sendMessage(message);
 
-		return (doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username));
+		return pandip;
 	}
 	else
 	{
@@ -263,7 +263,7 @@ string directoryServer::getPortnIP(string& token, string& username, Message* msg
 		message->setMessage(char_array,n);
 		udpObj.sendMessage(message);
 
-		return (doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username));
+		return pandip;
 	}
 }
 
@@ -307,7 +307,7 @@ void directoryServer::listen()
 {
     while(true){
         Message *request=udpObj.receiveMsg();
-		cout<< request->getMessageArgs()[0]<<endl;
+		//cout<< request->getMessageArgs()[0]<<endl;
 		thread *th = new thread(&directoryServer::doOperation,this,request);
     }
 }
