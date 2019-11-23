@@ -64,7 +64,8 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 		mtx.unlock();
 		isAuthenticated = true;
 		reply=usersDict[username].token;
-    }else
+    }
+	else
 	{
 		reply="not a user";
 	}
@@ -89,10 +90,21 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 
 bool directoryServer::authenticate(string &username, string &password)
 {
-	string x = password;
-    if (usersDict.find(username) != usersDict.end())
-        return (usersDict[username].password == x);
-    return false;
+    // if (usersDict.find(username) != usersDict.end())
+    //     return (usersDict[username].password == password);
+	// else
+    // 	return false;
+	rapidcsv::Document doc(usersFile);
+	vector<string>temp = doc.GetRowNames();
+	int row = 0;
+	for (int i = 0; i < temp.size(); i++)
+		if (temp[i] == username)
+		{
+			if (doc.GetCell<string>("password",temp[i]) == password)
+				return true;
+		}
+	return false;
+
 }
 
 void directoryServer::logout(string& token, Message* msg, directoryServer* ds)
@@ -316,6 +328,7 @@ string directoryServer::getAllImages(string& token, Message*msg, directoryServer
 				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i)) + ",";
 		}
 	}
+
 	string images =imagesNames.substr(0, imagesNames.size() - 1);
 	int n = images.length(); 
     char *char_array=new char[n+1]; 
