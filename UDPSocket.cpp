@@ -184,6 +184,7 @@ void UDPSocket::fragmentMsg(Message * FullMessage, vector<Message *> &frags)
         fragi->setSourceIP(FullMessage->getSourceIP());
         fragi->setSourcePort(FullMessage->getSourcePort());
         fragi->setDestinationIP(FullMessage->getDestinationIP());
+        fragi->setMessageTimestamp(FullMessage->getMessageTimestamp());
         fragi->setDestinationPort(FullMessage->getDestinationPort());
         fragi->setRPCID(FullMessage->getRPCId());
         fragi->setMessageType(FullMessage->getMessageType());

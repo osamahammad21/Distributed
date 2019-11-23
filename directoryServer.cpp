@@ -90,10 +90,21 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 
 bool directoryServer::authenticate(string &username, string &password)
 {
-    if (usersDict.find(username) != usersDict.end())
-        return (usersDict[username].password == password);
-	else
-    	return false;
+    // if (usersDict.find(username) != usersDict.end())
+    //     return (usersDict[username].password == password);
+	// else
+    // 	return false;
+	rapidcsv::Document doc(usersFile);
+	vector<string>temp = doc.GetRowNames();
+	int row = 0;
+	for (int i = 0; i < temp.size(); i++)
+		if (temp[i] == username)
+		{
+			if (doc.GetCell<string>("password",temp[i]) == password)
+				return true;
+		}
+	return false;
+
 }
 
 void directoryServer::logout(string& token, Message* msg, directoryServer* ds)
