@@ -224,24 +224,46 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 string directoryServer::getPortnIP(string& token, string& username, Message* msg, directoryServer* ds)
 {
 	rapidcsv::Document doc(usersFile);
+	if(usernameExists(username))
+	{
+		string pandip =doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username);
+		int n = pandip.length(); 
+		char *char_array=new char[n+1]; 
+		strcpy(char_array, pandip.c_str()); 
 
-	string pandip =doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username);
-	int n = pandip.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, pandip.c_str()); 
+		Message *message = new Message();
+		message->setSourceIP(udpObj.getMyIP());
+		message->setSourcePort(udpObj.getMyPort());
+		message->setRPCID(msg->getRPCId());
+		message->setDestinationIP(msg->getSourceIP());
+		message->setDestinationPort(msg->getSourcePort());
+		message->setOperation(Operation::getPortnIP);
+		message->setMessageType(MessageType::Reply);
+		message->setMessage(char_array,n);
+		udpObj.sendMessage(message);
 
-	Message *message = new Message();
-	message->setSourceIP(udpObj.getMyIP());
-    message->setSourcePort(udpObj.getMyPort());
-    message->setRPCID(msg->getRPCId());
-    message->setDestinationIP(msg->getSourceIP());
-    message->setDestinationPort(msg->getSourcePort());
-    message->setOperation(Operation::getPortnIP);
-	message->setMessageType(MessageType::Reply);
-	message->setMessage(char_array,n);
-	udpObj.sendMessage(message);
+		return (doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username));
+	}
+	else
+	{
+		string pandip = "not a user"
+		int n = pandip.length(); 
+		char *char_array=new char[n+1]; 
+		strcpy(char_array, pandip.c_str()); 
 
-	return (doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username));
+		Message *message = new Message();
+		message->setSourceIP(udpObj.getMyIP());
+		message->setSourcePort(udpObj.getMyPort());
+		message->setRPCID(msg->getRPCId());
+		message->setDestinationIP(msg->getSourceIP());
+		message->setDestinationPort(msg->getSourcePort());
+		message->setOperation(Operation::getPortnIP);
+		message->setMessageType(MessageType::Reply);
+		message->setMessage(char_array,n);
+		udpObj.sendMessage(message);
+
+		return (doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username));
+	}
 }
 
 string directoryServer::getAllImages(string& token, Message*msg, directoryServer*ds)
@@ -257,7 +279,7 @@ string directoryServer::getAllImages(string& token, Message*msg, directoryServer
 		for (int j = 0; j < imageCount*2; j+=2)
 		{
 			if (doc.GetCell<string>(j+6, i) != "")
-				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i));
+				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i)) + ",";
 		}
 	}
 
@@ -302,6 +324,7 @@ void directoryServer::updateStatus(string& token, directoryServer* ds)
 	mtxStatus.lock();
 	statusDict[username]=TIMEOUT; //TIMEOUT defined in directoryServer.h (30 seconds)
 	mtxStatus.unlock();
+	//cout<<"status for user:"<<username<<"updated"<<endl;
 }
 
 void directoryServer::decrementStatus()
