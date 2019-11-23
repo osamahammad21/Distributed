@@ -7,11 +7,12 @@ User::User(Peer * peer)
 
 
 bool User :: login(string username, string password){
+        cout << username << " " << password << endl;
        string reply = peer->login(username, password);
+       cout << reply << endl;
        if(reply == "not a user")
             return false;
         this->username = username;
-        this->password = password;
         this->token = reply;
         peer->startStatusUpdates(this->token);
         return true;
@@ -22,7 +23,6 @@ bool User :: signup(string username, string password){
     if(reply == "username already exists")
          return false;
      this->username = username;
-     this->password = password;
      this->token = reply;
      peer->startStatusUpdates(this->token);
      return true;
@@ -47,8 +47,12 @@ bool User :: uploadPhoto(Image image){
 
 bool User :: logout(){
     string reply = peer -> logout(token);
-    if (reply == "ok")
+    if (reply == "ok"){
+        this->username = "";
+        this->token = "";
+        this->usersImageSamples.clear();
         return true;
+    }
     return false;
 }
 
@@ -109,5 +113,10 @@ void User :: getImage(string ownerUsername, string imageName){
     split(reply, args, ',');
     reply = peer->getImage(username, ownerUsername, args[1], stoi(args[0]), imageName);
     cout << reply << endl;
+}
+
+void User:: getUsersSamples(map<string, vector<imageSample>> & samples){
+    if (getAllImages())
+        samples =  usersImageSamples;
 }
 

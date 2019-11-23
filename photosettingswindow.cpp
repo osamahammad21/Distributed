@@ -79,5 +79,10 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
 
 void PhotoSettingsWindow::on_pushButton_logout_clicked()
 {
-
+    if( user->logout()){
+        hide();
+        MainWindow * mainWindow = new MainWindow(user, this);
+        mainWindow->show();
+        destroy();
+    }
 }

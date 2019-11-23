@@ -607,10 +607,6 @@ Peer :: ~Peer()
     dest=true;
     serve_thread->join();
     read_thread->join();
-<<<<<<< HEAD
-}
-=======
     if(statusUpdatesRunning)
         status_thread->join();        
 }
->>>>>>> e410c367cac7aeb60726be08341cce36b3c5df7b

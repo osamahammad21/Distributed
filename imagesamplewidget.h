@@ -18,7 +18,6 @@ public:
     ~imageSampleWidget();
 
 private slots:
-    void on_pushButton_requestImage_clicked();
 
 private:
     Ui::imageSampleWidget *ui;

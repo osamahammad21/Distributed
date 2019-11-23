@@ -25,15 +25,13 @@ SOURCES += \
     registerwindow.cpp \
     uploadphotowindow.cpp \
     user.cpp \
-    userslist.cpp \
-    userswidget.cpp \
-    viewimagesamples.cpp \
     viewphotowindow.cpp \
     base64.cpp \
     Message.cpp \
     Image.cpp \
     UDPSocket.cpp \
-    Peer.cpp
+    Peer.cpp \
+    viewsamples.cpp
 
 HEADERS += \
     ImageModel.h \
@@ -46,15 +44,13 @@ HEADERS += \
     registerwindow.h \
     uploadphotowindow.h \
     user.h \
-    userslist.h \
-    userswidget.h \
-    viewimagesamples.h \
     viewphotowindow.h \
     base64.h \
     Message.h \
     Image.h \
     UDPSocket.h \
-    Peer.h
+    Peer.h \
+    viewsamples.h
 
 FORMS += \
     homewindow.ui \
@@ -65,10 +61,7 @@ FORMS += \
     photoswidget.ui \
     registerwindow.ui \
     uploadphotowindow.ui \
-    userslist.ui \
-    userswidget.ui \
-    viewimagesamples.ui \
-    viewphotowindow.ui
+    viewsamples.ui
 
 
 # Default rules for deployment.

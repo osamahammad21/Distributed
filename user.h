@@ -21,10 +21,10 @@ public:
     void getAllUsernames(vector <string> & usernames);
     void getSamples(string username, vector <imageSample> & samples);
     void getImage(string ownerUsername, string imageName);
+    void getUsersSamples(map<string, vector<imageSample>> & samples);
 
 private:
     string username;
-    string password;
     string token;
     Peer * peer;
     map <string, vector <imageSample>> usersImageSamples;
