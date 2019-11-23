@@ -12,7 +12,8 @@
 #include <vector>
 #define DELIM ","
 #define STATUS_UPDATE_TIME 4
-#define IMAGES_DB_PATH "myimagesdb.txt"
+// #define IMAGES_DB_PATH "myimagesdb.txt"
+#define CONN_TIMEOUT "connection timeout"
 using namespace std; 
 class Peer
 {
@@ -30,6 +31,7 @@ class Peer
         bool statusUpdatesRunning=false;
         mutex rpcidmtx,vectorMtx;
         bool dest = false;
+        string IMAGES_DB_PATH;
         void listen();//thread
         void serve();//thread
         void status(string input);//thread

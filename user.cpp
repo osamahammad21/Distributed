@@ -68,6 +68,8 @@ inline void split(string str, vector<string>& cont, char delim = ' ')
 bool User:: getAllImages(){
     string reply = peer->getAllImagesFromDS(token);
     vector <string> args;
+    if(reply=="no images")
+       return false;
     split(reply, args, ',');
     for (int i=0; i < args.size(); i+=3){
         imageSample temp;
