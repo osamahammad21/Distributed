@@ -223,13 +223,16 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 
 string directoryServer::getPortnIP(string& token, string& username, Message* msg, directoryServer* ds)
 {
-	rapidcsv::Document doc(usersFile);
 
+	cout << "I am in ds 0 " << endl;
+	rapidcsv::Document doc(usersFile);
+	cout << "I am in ds " << endl;
 	string pandip =doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username);
 	int n = pandip.length(); 
     char *char_array=new char[n+1]; 
     strcpy(char_array, pandip.c_str()); 
 
+	cout << "I am in ds 1 " << endl;
 	Message *message = new Message();
 	message->setSourceIP(udpObj.getMyIP());
     message->setSourcePort(udpObj.getMyPort());
@@ -240,6 +243,10 @@ string directoryServer::getPortnIP(string& token, string& username, Message* msg
 	message->setMessageType(MessageType::Reply);
 	message->setMessage(char_array,n);
 	udpObj.sendMessage(message);
+
+
+	cout << "I am in ds 3 " << endl;
+
 
 	return (doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username));
 }
@@ -257,10 +264,9 @@ string directoryServer::getAllImages(string& token, Message*msg, directoryServer
 		for (int j = 0; j < imageCount*2; j+=2)
 		{
 			if (doc.GetCell<string>(j+6, i) != "")
-				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i));
+				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i))+",";
 		}
 	}
-
 	string images =imagesNames.substr(0, imagesNames.size() - 1);
 	int n = images.length(); 
     char *char_array=new char[n+1]; 

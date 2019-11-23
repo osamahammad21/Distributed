@@ -32,14 +32,15 @@ void PhotosWidget::removeImageIfFound(string image_id)
         if(images[i].image_id==image_id)
             images.erase(images.begin()+i);
 }
-void addItemToList(PhotosWidget *window,string name,string username,int views,string imageId)
+void addItemToList(PhotosWidget *window,string name,string username, int views, string image_id)
 {
     ImageModel *image = new ImageModel();
     image->image_name=name;
     image->owner_username=username;
-    image->views=views;
-    image->image_id=imageId;
+    image->image_id = image_id;
+    image->views = views;
     window->addImageToList(*image);
+
 }
 PhotosWidget::~PhotosWidget()
 {

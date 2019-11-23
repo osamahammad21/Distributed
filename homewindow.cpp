@@ -4,6 +4,7 @@
 #include "photoswidget.h"
 #include "QLabel"
 #include "QMovie"
+#include "userslist.h"
 HomeWindow::HomeWindow(User * user, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::HomeWindow)
@@ -12,6 +13,10 @@ HomeWindow::HomeWindow(User * user, QWidget *parent) :
     ui->setupUi(this);
     ui->tabWidget->addTab(new PhotosWidget(),"All Photos");
     ui->tabWidget->addTab(new PhotosWidget(),"My Photos");
+
+    vector <string> usernames;
+    user->getAllUsernames(usernames);
+    ui->tabWidget->addTab(new usersList(user, usernames, nullptr),"All usernames");
 }
 
 HomeWindow::~HomeWindow()
@@ -22,7 +27,12 @@ HomeWindow::~HomeWindow()
 void HomeWindow::on_pushButton_uploaphoto_clicked()
 {
     hide();
-    uploadWindow = new UploadPhotoWindow(user, this);
+    UploadPhotoWindow * uploadWindow = new UploadPhotoWindow(user, this);
     uploadWindow->show();
     destroy();
+}
+
+void HomeWindow::on_pushButton_logout_clicked()
+{
+
 }

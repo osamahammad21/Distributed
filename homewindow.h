@@ -20,9 +20,10 @@ public:
 private slots:
     void on_pushButton_uploaphoto_clicked();
 
+    void on_pushButton_logout_clicked();
+
 private:
     Ui::HomeWindow *ui;
-    UploadPhotoWindow * uploadWindow;
     User * user;
 };
 

@@ -53,3 +53,13 @@ void UploadPhotoWindow::on_pushButton_upload_clicked()
         destroy();
     }
 }
+
+void UploadPhotoWindow::on_pushButton_logout_clicked()
+{
+    if( user->logout()){
+        hide();
+        MainWindow * mainWindow = new MainWindow(user, this);
+        mainWindow->show();
+        destroy();
+    }
+}

@@ -11,6 +11,7 @@ public:
     string imagePath;
     string owner_username;
     string image_name;
+    string preview;
     string image_id;
 };
 #endif // IMAGEMODEL_H

@@ -101,6 +101,19 @@
       <string/>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_logout">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>490</y>
+       <width>89</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Logout</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

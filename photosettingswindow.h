@@ -25,6 +25,8 @@ private slots:
 
     void on_pushButton_upload_clicked();
 
+    void on_pushButton_logout_clicked();
+
 private:
     Ui::PhotoSettingsWindow *ui;
     std::map <std::string, int> users;

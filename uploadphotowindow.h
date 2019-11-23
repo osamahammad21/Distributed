@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "photosettingswindow.h"
 #include "user.h"
+#include "mainwindow.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class UploadPhotoWindow; }
 QT_END_NAMESPACE
@@ -20,6 +21,8 @@ private slots:
     void on_pushButton_choose_clicked();
 
     void on_pushButton_upload_clicked();
+
+    void on_pushButton_logout_clicked();
 
 private:
     Ui::UploadPhotoWindow *ui;

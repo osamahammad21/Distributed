@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 SOURCES += \
     homewindow.cpp \
+    imagesamplewidget.cpp \
     main.cpp \
     mainwindow.cpp \
     photolistwidget.cpp \
@@ -24,6 +25,9 @@ SOURCES += \
     registerwindow.cpp \
     uploadphotowindow.cpp \
     user.cpp \
+    userslist.cpp \
+    userswidget.cpp \
+    viewimagesamples.cpp \
     viewphotowindow.cpp \
     base64.cpp \
     Message.cpp \
@@ -34,6 +38,7 @@ SOURCES += \
 HEADERS += \
     ImageModel.h \
     homewindow.h \
+    imagesamplewidget.h \
     mainwindow.h \
     photolistwidget.h \
     photosettingswindow.h \
@@ -41,6 +46,9 @@ HEADERS += \
     registerwindow.h \
     uploadphotowindow.h \
     user.h \
+    userslist.h \
+    userswidget.h \
+    viewimagesamples.h \
     viewphotowindow.h \
     base64.h \
     Message.h \
@@ -50,12 +58,16 @@ HEADERS += \
 
 FORMS += \
     homewindow.ui \
+    imagesamplewidget.ui \
     mainwindow.ui \
     photolistwidget.ui \
     photosettingswindow.ui \
     photoswidget.ui \
     registerwindow.ui \
     uploadphotowindow.ui \
+    userslist.ui \
+    userswidget.ui \
+    viewimagesamples.ui \
     viewphotowindow.ui
 
 

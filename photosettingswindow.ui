@@ -176,6 +176,19 @@
       <string>Upload</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_logout">
+     <property name="geometry">
+      <rect>
+       <x>680</x>
+       <y>520</y>
+       <width>89</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>logout</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
