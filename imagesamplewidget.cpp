@@ -47,6 +47,6 @@ void imageSampleWidget::on_pushButton_imageName_clicked()
 void imageSampleWidget::on_pushButton_username_clicked()
 {
     //infinite loop
-    parent->close();
-//    user->getAllOwnerImages(ownerUsername);
+//    parent->close();
+    user->getAllOwnerImages(ownerUsername);
 }

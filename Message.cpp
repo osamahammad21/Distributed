@@ -19,7 +19,7 @@ Message ::Message(MessageType _message_type,  unsigned int _fragmentCount, unsig
 
 Message :: Message(char * marshalled_base64)
 {
-    cout << "demarshalling" << endl;
+    //cout << "demarshalling" << endl;
     string serialized_msg(marshalled_base64);
     string decoded_serialized_msg = base64_decode(serialized_msg);
     unsigned int source_IP_size, dest_IP_size;
