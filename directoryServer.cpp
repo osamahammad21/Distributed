@@ -64,7 +64,8 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 		mtx.unlock();
 		isAuthenticated = true;
 		reply=usersDict[username].token;
-    }else
+    }
+	else
 	{
 		reply="not a user";
 	}
@@ -89,10 +90,10 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 
 bool directoryServer::authenticate(string &username, string &password)
 {
-	string x = password;
     if (usersDict.find(username) != usersDict.end())
-        return (usersDict[username].password == x);
-    return false;
+        return (usersDict[username].password == password);
+	else
+    	return false;
 }
 
 void directoryServer::logout(string& token, Message* msg, directoryServer* ds)
