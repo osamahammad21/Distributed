@@ -27,11 +27,14 @@ class Peer
         std::thread* read_thread;
         std::thread* serve_thread;
         std::thread* status_thread;
+        bool statusUpdatesRunning=false;
         mutex rpcidmtx,vectorMtx;
         bool dest = false;
         void listen();//thread
         void serve();//thread
         void status(string input);//thread
+        bool timeOutIsSet=false;
+        int timeOutSeconds=0;
     public:
         Peer(int port); 
         string getImageUpdates();
@@ -39,6 +42,8 @@ class Peer
         void removeImageLocally(string imageId);
         void setDS(string dsaddr,int dsport);
         void startStatusUpdates(string token);
+        void setTimeOut(int seconds);
+        void removeTimeOut();
         string login(string username,string password);
         string signup(string username,string password);
         string uploadImage(string token,string imagename,string image64);
@@ -51,5 +56,4 @@ class Peer
         ~Peer();
 
 };
-#include "Peer.cpp"
 #endif // PEER_H
