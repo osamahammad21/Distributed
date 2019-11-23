@@ -57,4 +57,8 @@ class UDPSocket
         void receiveHandler(UDPSocket * myUDPSocket);
         ~UDPSocket ( );
 };
+<<<<<<< HEAD
 #endif // UDPSOCKET_H
+=======
+#endif // UDPSOCKET_H
+>>>>>>> e410c367cac7aeb60726be08341cce36b3c5df7b

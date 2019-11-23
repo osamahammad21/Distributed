@@ -223,6 +223,7 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 
 string directoryServer::getPortnIP(string& token, string& username, Message* msg, directoryServer* ds)
 {
+<<<<<<< HEAD
 
 	cout << "I am in ds 0 " << endl;
 	rapidcsv::Document doc(usersFile);
@@ -249,6 +250,49 @@ string directoryServer::getPortnIP(string& token, string& username, Message* msg
 
 
 	return (doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username));
+=======
+	rapidcsv::Document doc(usersFile);
+	if(usernameExists(username))
+	{
+		string pandip =doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username);
+		int n = pandip.length(); 
+		char *char_array=new char[n+1]; 
+		strcpy(char_array, pandip.c_str()); 
+
+		Message *message = new Message();
+		message->setSourceIP(udpObj.getMyIP());
+		message->setSourcePort(udpObj.getMyPort());
+		message->setRPCID(msg->getRPCId());
+		message->setDestinationIP(msg->getSourceIP());
+		message->setDestinationPort(msg->getSourcePort());
+		message->setOperation(Operation::getPortnIP);
+		message->setMessageType(MessageType::Reply);
+		message->setMessage(char_array,n);
+		udpObj.sendMessage(message);
+
+		return pandip;
+	}
+	else
+	{
+		string pandip = "not a user";
+		int n = pandip.length(); 
+		char *char_array=new char[n+1]; 
+		strcpy(char_array, pandip.c_str()); 
+
+		Message *message = new Message();
+		message->setSourceIP(udpObj.getMyIP());
+		message->setSourcePort(udpObj.getMyPort());
+		message->setRPCID(msg->getRPCId());
+		message->setDestinationIP(msg->getSourceIP());
+		message->setDestinationPort(msg->getSourcePort());
+		message->setOperation(Operation::getPortnIP);
+		message->setMessageType(MessageType::Reply);
+		message->setMessage(char_array,n);
+		udpObj.sendMessage(message);
+
+		return pandip;
+	}
+>>>>>>> e410c367cac7aeb60726be08341cce36b3c5df7b
 }
 
 string directoryServer::getAllImages(string& token, Message*msg, directoryServer*ds)
@@ -264,7 +308,11 @@ string directoryServer::getAllImages(string& token, Message*msg, directoryServer
 		for (int j = 0; j < imageCount*2; j+=2)
 		{
 			if (doc.GetCell<string>(j+6, i) != "")
+<<<<<<< HEAD
 				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i))+",";
+=======
+				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i)) + ",";
+>>>>>>> e410c367cac7aeb60726be08341cce36b3c5df7b
 		}
 	}
 	string images =imagesNames.substr(0, imagesNames.size() - 1);
