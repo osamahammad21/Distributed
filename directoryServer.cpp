@@ -279,7 +279,7 @@ string directoryServer::getAllImages(string& token, Message*msg, directoryServer
 		for (int j = 0; j < imageCount*2; j+=2)
 		{
 			if (doc.GetCell<string>(j+6, i) != "")
-				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i));
+				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i)) + ",";
 		}
 	}
 
