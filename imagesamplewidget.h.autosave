@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <string>
 #include "user.h"
+#include "viewphotowindow.h"
 using namespace std;
 namespace Ui {
 class imageSampleWidget;

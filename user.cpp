@@ -78,36 +78,7 @@ bool User:: getAllImages(){
     return true;
 }
 
-void User:: getAllUsernames(vector <string> & usernames){
-    if(getAllImages()){
-
-        map<string, vector<imageSample>>::iterator it;
-        for ( it = usersImageSamples.begin(); it != usersImageSamples.end(); it++ )
-        {
-            usernames.push_back(it->first);
-        }
-    }
-}
-
-void User :: getSamples(string username, vector <imageSample> & samples){
-    map<string, vector<imageSample>>::iterator it;
-    for ( it = usersImageSamples.begin(); it != usersImageSamples.end(); it++ )
-    {
-        if(it->first == username){
-            for (int i = 0; i < it->second.size(); i++){
-                imageSample temp;
-                temp.imageName = it->second[i].imageName;
-                temp.preview = it->second[i].preview;
-                temp.preview = base64_decode(temp.preview);
-                temp.preview = base64_decode(temp.preview);
-                samples.push_back(temp);
-            }
-            return;
-        }
-    }
-}
-
-void User :: getImage(string ownerUsername, string imageName){
+string User :: getImage(string ownerUsername, string imageName){
     string reply = peer->getPortnIP(token, ownerUsername);
     vector <string> args;
     split(reply, args, ',');
@@ -118,5 +89,13 @@ void User :: getImage(string ownerUsername, string imageName){
 void User:: getUsersSamples(map<string, vector<imageSample>> & samples){
     if (getAllImages())
         samples =  usersImageSamples;
+}
+
+string User :: getAllOwnerImages(string ownerUsername){
+    string reply = peer->getPortnIP(token, ownerUsername);
+    vector <string> args;
+    split(reply, args, ',');
+    reply = peer->getAllImagesFromPeer(username, ownerUsername, args[1], stoi(args[0]));
+    cout << reply;
 }
 
