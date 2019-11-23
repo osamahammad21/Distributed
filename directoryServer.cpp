@@ -246,7 +246,7 @@ string directoryServer::getPortnIP(string& token, string& username, Message* msg
 	}
 	else
 	{
-		string pandip = "not a user"
+		string pandip = "not a user";
 		int n = pandip.length(); 
 		char *char_array=new char[n+1]; 
 		strcpy(char_array, pandip.c_str()); 
