@@ -3,6 +3,18 @@
 UDPSocket :: UDPSocket ()
 {   
 }
+void UDPSocket :: setBroadcast(int s)
+{
+    int arg;
+    #ifdef  SO_BROADCAST
+    arg = 1;
+    if(setsockopt(s, SOL_SOCKET, SO_BROADCAST, &arg, sizeof(arg)) <0)
+    {
+        printf("setsockopt  SO_BROADCAST---");
+        exit(-1);
+    }
+    #endif
+}
 char * UDPSocket::getMachineIP()
 {
     const char* google_dns_server = "8.8.8.8";
@@ -41,6 +53,7 @@ bool UDPSocket ::initializeSocket(char * _myAddr, unsigned int _myPort)
         perror("Initializing socket of server failed");
         return false;
     }
+    setBroadcast(this->sock);
 
     int enableReuse = 1;
     int n = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enableReuse, sizeof(enableReuse));
@@ -78,6 +91,7 @@ bool UDPSocket ::initializeSocket(unsigned int _myPort)
         perror("Initializing socket of server failed");
         return false;
     }
+    setBroadcast(this->sock);
 
     int enableReuse = 1;
     int n = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enableReuse, sizeof(enableReuse));
@@ -284,9 +298,18 @@ void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
             string destIP = (topMsg->getDestinationIP());
             char *meh = new char [destIP.size()+1];
             strcpy(meh, destIP.c_str());
-            inet_aton(meh, &destAddr.sin_addr);
-            destAddr.sin_family = AF_INET;
-            destAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+            //inet_aton(meh, &destAddr.sin_addr);
+            //destAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+            //destAddr.sin_port = htons(topMsg->getDestinationPort());
+
+            struct hostent *host;
+            destAddr.sin_family  =  AF_INET;
+            if((host = gethostbyname(meh))== (void*)(0))
+            {
+                printf("Unknown host name\n");
+                exit(-1);
+            }
+            destAddr.sin_addr = *(struct in_addr *) (host->h_addr_list[0]);
             destAddr.sin_port = htons(topMsg->getDestinationPort());
         
             for(int i=0; i<fragments.size(); i++)

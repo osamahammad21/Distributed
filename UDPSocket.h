@@ -38,7 +38,7 @@ class UDPSocket
         unsigned int SOCK_MAX_BUFFER_SIZE = 100000;
         ofstream outFile;
         bool dest=false;
-
+	void setBroadcast(int s);
     public:   
         queue<Message *> ReceiveBuffer;
         queue<Message *> SendBuffer; 

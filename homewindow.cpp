@@ -21,7 +21,7 @@ HomeWindow::HomeWindow(User * user, QWidget *parent) :
 
     map<string, vector<imageSample>> samples;
     user->getUsersSamples(samples);
-    ui->tabWidget->addTab( new viewSamples(user, samples, nullptr),"User's samples");
+    ui->tabWidget->addTab( new viewSamples(user, samples, this),"User's samples");
 
 }
 

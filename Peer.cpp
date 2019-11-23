@@ -197,6 +197,8 @@ string Peer::signup(string username,string password)
     message->setMessageType(MessageType::Request);
     cout << "Message is: " << message->getMessage() << endl;
     while(!sock.sendMessage(message)){}
+    cout<<"Sent Message to"<<dsaddr<<" "<<dsport<<endl;
+
     long long ticks=0;
     while(true)
     {
