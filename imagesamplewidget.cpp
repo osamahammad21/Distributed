@@ -9,6 +9,8 @@ imageSampleWidget::imageSampleWidget(QWidget *parent, string imageName, string p
     ui->pushButton_imageName->setText(QString::fromStdString(imageName));
     ui->pushButton_username->setText(QString::fromStdString(username));
     this->user = user;
+    this->ownerUsername = username;
+    this->imageName = imageName;
 
     preview = base64_decode(preview);
     preview = base64_decode(preview);
@@ -27,4 +29,19 @@ imageSampleWidget::imageSampleWidget(QWidget *parent, string imageName, string p
 imageSampleWidget::~imageSampleWidget()
 {
     delete ui;
+}
+
+void imageSampleWidget::on_pushButton_imageName_clicked()
+{
+    //does not return result
+    user->getImage(ownerUsername, imageName);
+
+//    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow();
+
+}
+
+void imageSampleWidget::on_pushButton_username_clicked()
+{
+    //infinite loop
+    user->getAllOwnerImages(ownerUsername);
 }

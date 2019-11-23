@@ -18,10 +18,9 @@ public:
     bool uploadPhoto(Image image);
     bool logout();
     bool getAllImages();
-    void getAllUsernames(vector <string> & usernames);
-    void getSamples(string username, vector <imageSample> & samples);
-    void getImage(string ownerUsername, string imageName);
+    string getImage(string ownerUsername, string imageName);
     void getUsersSamples(map<string, vector<imageSample>> & samples);
+    string getAllOwnerImages(string ownerUsername);
 
 private:
     string username;

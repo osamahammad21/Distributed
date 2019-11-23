@@ -61,7 +61,8 @@ FORMS += \
     photoswidget.ui \
     registerwindow.ui \
     uploadphotowindow.ui \
-    viewsamples.ui
+    viewsamples.ui\
+    viewphotowindow.ui
 
 
 # Default rules for deployment.
