@@ -226,7 +226,7 @@ string directoryServer::getPortnIP(string& token, string& username, Message* msg
 	rapidcsv::Document doc(usersFile);
 	if(usernameExists(username))
 	{
-		string pandip =doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username)+ ",";
+		string pandip =doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username);
 		int n = pandip.length(); 
 		char *char_array=new char[n+1]; 
 		strcpy(char_array, pandip.c_str()); 
