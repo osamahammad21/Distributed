@@ -13,6 +13,7 @@
 #define DELIM ","
 #define STATUS_UPDATE_TIME 4
 #define IMAGES_DB_PATH "myimagesdb.txt"
+#define CONN_TIMEOUT "connection timeout"
 using namespace std; 
 class Peer
 {

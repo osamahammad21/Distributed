@@ -189,6 +189,7 @@ void UDPSocket::fragmentMsg(Message * FullMessage, vector<Message *> &frags)
         fragi->setRPCID(FullMessage->getRPCId());
         fragi->setMessageType(FullMessage->getMessageType());
         fragi->setOperation(FullMessage->getOperation());
+        fragi->setMessageTimestamp(FullMessage->getMessageTimestamp());
         frags.push_back(fragi);
     }
 
