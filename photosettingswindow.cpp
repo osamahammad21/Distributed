@@ -63,8 +63,9 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
         image.properties.push_back(prop);
     }
     image.writeProperties();
+
     image.steg();
-    image.removeMiddleFiles();
+//    image.removeMiddleFiles();
 
     if (user->uploadPhoto(image)){
         hide();

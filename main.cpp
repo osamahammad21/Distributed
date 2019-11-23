@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[])
 {
-    Peer *peer= new Peer(73);
+    Peer *peer= new Peer(74);
     User *user = new User(peer);
     peer->setDS("10.0.2.15", 88);
     QApplication a(argc, argv);

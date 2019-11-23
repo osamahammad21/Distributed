@@ -357,6 +357,7 @@ string Peer::getImage(string myusername,string ownerusername,string targetadd,un
             if(replyMessages[rpcId]->getMessageType()==MessageType::Reply)
             {
                 string s(replyMessages[rpcId]->getMessage());
+
                 return base64_decode(s);
             }
         }
