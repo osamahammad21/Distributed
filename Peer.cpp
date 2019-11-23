@@ -193,6 +193,8 @@ string Peer::signup(string username,string password)
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
+    cout<<"Sent Message to"<<dsaddr<<" "<<dsport<<endl;
+
     long long ticks=0;
     while(true)
     {

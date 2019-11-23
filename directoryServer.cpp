@@ -9,6 +9,7 @@ directoryServer::directoryServer(unsigned int port)
 	rapidcsv::Document doc(usersFile);
 	int totalUsers = doc.GetRowCount();
 	udpObj.initializeSocket(port);
+	cout<<udpObj.getMyIP()<<endl;
 	listen_thread = new thread(&directoryServer::listen,this);
 	status_thread = new thread(&directoryServer::decrementStatus,this);
 
