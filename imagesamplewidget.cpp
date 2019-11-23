@@ -34,12 +34,8 @@ imageSampleWidget::~imageSampleWidget()
 
 void imageSampleWidget::on_pushButton_imageName_clicked()
 {
-    //does not return result
-    user->getImage(ownerUsername, imageName);
-
-
-//    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow();
-//    viewPhotoWindow->show();
+    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, ownerUsername, imageName);
+    viewPhotoWindow->show();
     parent->close();
 
 }

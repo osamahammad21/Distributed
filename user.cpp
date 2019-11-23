@@ -88,9 +88,8 @@ string User :: getImage(string ownerUsername, string imageName){
     vector <string> args;
     split(reply, args, ',');
 
-    cout << username<< " " << ownerUsername << " " << args[1] << " " << args[0] << " " << imageName << endl;
     reply = peer->getImage(username, ownerUsername, args[1], stoi(args[0]), imageName);
-    cout << reply << endl;
+    return reply;
 }
 
 void User:: getUsersSamples(map<string, vector<imageSample>> & samples){
