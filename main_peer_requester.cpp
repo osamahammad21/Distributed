@@ -23,7 +23,11 @@ int main()
     //     }
     // }
     Peer peer(3);
-    cout<<peer.getImage("koko","osos","127.0.0.1",1,"864820");
+    // cout<<peer.getImage("koko","osos","127.0.0.1",1,"864820");
+    peer.setTimeOut(2);
+    cout<<peer.login("ss","123")<<endl;
+    peer.removeTimeOut();
+    // cout<<peer.login("ss","123")<<endl;
     // cout<<<<endl;
     // cout<<peer.signup("osama","123")<<endl;
     // cout<<peer.uploadImage("osama","img1");
