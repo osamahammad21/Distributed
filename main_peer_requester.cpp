@@ -23,7 +23,7 @@ int main()
     {
     cout << "image upload number i " << i++;
     string imgname = "meh" + to_string(i);
-    string imtnnname = imgname + to_string(i) + "hh";
+    string imtnnname = "mehh" + to_string(i);
     cout<<peer.uploadImage(token1,imgname,imtnnname);
     usleep(1000000);
     }
