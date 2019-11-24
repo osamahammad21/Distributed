@@ -35,7 +35,7 @@ class Peer
         void listen();//thread
         void serve();//thread
         void status(string input);//thread
-        bool timeOutIsSet=false;
+        bool timeOutIsSet=false,statusupdates=false;;
         int timeOutSeconds=0;
     public:
         Peer(int port); 
@@ -55,6 +55,7 @@ class Peer
         string getAllImagesFromDS(string token);
         string getAllImagesFromPeer(string myusername,string targetusername,string ip,int port);
         string getImage(string myusername,string ownerusername,string targetadd,unsigned int targetport,string imagename);
+        void stopStatusUpdates();
         ~Peer();
 
 };

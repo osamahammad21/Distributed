@@ -19,6 +19,7 @@ Peer :: Peer(int port){
 }
 void Peer::startStatusUpdates(string token)
 {
+    statusupdates = true;
     status_thread = new std::thread(&Peer::status,this,token);
     statusUpdatesRunning = true;
 }
@@ -571,6 +572,12 @@ string Peer::getImageUpdates()
     }
     return CONN_TIMEOUT;
 }
+void Peer::stopStatusUpdates()
+{
+    statusupdates=false;
+    status_thread->join();
+    statusUpdatesRunning=false;
+}
 //listening to socket
 void Peer::listen()
 {
@@ -597,7 +604,7 @@ void Peer::listen()
 void Peer::status(string input)
 {
     string token = input;
-    while (!dest)
+    while (!dest&&statusupdates)
     {
         rpcidmtx.lock();
         int rpcId = rpccount++;

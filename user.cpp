@@ -53,6 +53,7 @@ bool User :: logout(){
         this->username = "";
         this->token = "";
         this->usersImageSamples.clear();
+        peer->stopStatusUpdates();
         return true;
     }
     return false;
