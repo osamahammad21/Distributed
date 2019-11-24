@@ -269,7 +269,27 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 	for (int i = 0; i < temp.size(); i++)
 		if (usersDict[temp[i]].token == token)
 			username = temp[i];
-	
+	if (usersDict[username].imageCount == NULL)
+	{
+		string ok ="image not found";
+		int n = ok.length(); 
+		char *char_array=new char[n+1]; 
+		strcpy(char_array, ok.c_str()); 
+
+		Message *message = new Message();
+		message->setSourceIP(udpObj.getMyIP());
+		message->setSourcePort(udpObj.getMyPort());
+		message->setRPCID(msg->getRPCId());
+		message->setDestinationIP(msg->getSourceIP());
+		message->setDestinationPort(msg->getSourcePort());
+		message->setOperation(Operation::removeImage);
+		message->setMessageType(MessageType::Reply);
+		message->setMessage(char_array,n);
+		udpObj.sendMessage(message);
+		return;
+
+		
+	}
 	for (int j = 6; j < 6 + usersDict[username].imageCount * 2; j += 2)
 	{
 		if (doc.GetCell<string>(j, username) == imagename)
