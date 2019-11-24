@@ -309,11 +309,14 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 
 			doc.SetCell<string>(j,index,"");
 			doc.SetCell<string>(j,index+1,"");
-
+			doc.SetCell<int>("imageCount",username,usersDict[username].imageCount -1);
 			usersDict[username].imageName.erase(usersDict[username].imageName.begin() + j);
 			usersDict[username].image64.erase(usersDict[username].imageName.begin() + j);
+			usersDict[username].imageCount--;
 			found = true;
 		}
+		if (found)
+			break;
 	}
 	if (!found)
 	{
