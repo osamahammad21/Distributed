@@ -75,3 +75,20 @@ ViewPhotoWindow::~ViewPhotoWindow()
 {
     delete ui;
 }
+
+void ViewPhotoWindow::on_pushButton_home_clicked()
+{
+    HomeWindow *homeWindow = new HomeWindow(user, this);
+    homeWindow->show();
+    destroy();
+}
+
+void ViewPhotoWindow::on_pushButton_logout_clicked()
+{
+    if( user->logout()){
+        hide();
+        MainWindow * mainWindow = new MainWindow(user, this);
+        mainWindow->show();
+        destroy();
+    }
+}

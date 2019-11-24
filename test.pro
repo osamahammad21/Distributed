@@ -26,6 +26,7 @@ SOURCES += \
     registerwindow.cpp \
     uploadphotowindow.cpp \
     user.cpp \
+    viewalluserphotoswin.cpp \
     viewphotowindow.cpp \
     base64.cpp \
     Message.cpp \
@@ -46,6 +47,7 @@ HEADERS += \
     registerwindow.h \
     uploadphotowindow.h \
     user.h \
+    viewalluserphotoswin.h \
     viewphotowindow.h \
     base64.h \
     Message.h \
@@ -64,6 +66,7 @@ FORMS += \
     photoswidget.ui \
     registerwindow.ui \
     uploadphotowindow.ui \
+    viewalluserphotoswin.ui \
     viewsamples.ui\
     viewphotowindow.ui
 

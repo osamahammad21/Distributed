@@ -13,7 +13,7 @@ class AllImagesForUser : public QWidget
     Q_OBJECT
 
 public:
-    explicit AllImagesForUser(User * user, string ownerusername, QWidget *parent = nullptr);
+    explicit AllImagesForUser(User * user, string ownerusername, string imageName, string preview, QWidget *parent = nullptr);
     ~AllImagesForUser();
 
 private slots:
@@ -24,6 +24,7 @@ private:
     User * user;
     QWidget * parent;
     string ownerusername;
+    string imageName;
 };
 
 #endif // ALLIMAGESFORUSER_H

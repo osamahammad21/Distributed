@@ -20,7 +20,7 @@ public:
     bool getAllImages();
     string getImage(string ownerUsername, string imageName);
     void getUsersSamples(map<string, vector<imageSample>> & samples);
-    string getAllOwnerImages(string ownerUsername);
+    void getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages);
 
 private:
     string username;

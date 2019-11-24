@@ -5,6 +5,7 @@
 #include <string>
 #include "user.h"
 #include "viewphotowindow.h"
+#include "viewalluserphotoswin.h"
 using namespace std;
 namespace Ui {
 class imageSampleWidget;

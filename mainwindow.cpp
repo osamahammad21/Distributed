@@ -20,7 +20,6 @@ void MainWindow::on_pushButton_login_clicked()
     QString username = ui->lineEdit_username->text();
     QString password = ui->lineEdit_password->text();
     if (user->login(username.toStdString(), password.toStdString())){
-        cout << "Login completed" << endl;
         HomeWindow *homeWindow = new HomeWindow(user, this);
         homeWindow->show();
         destroy();

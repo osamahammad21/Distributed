@@ -42,8 +42,7 @@ void imageSampleWidget::on_pushButton_imageName_clicked()
 
 void imageSampleWidget::on_pushButton_username_clicked()
 {
+    ViewAllUserPhotosWin * allUserPhotos = new ViewAllUserPhotosWin(user, ownerUsername, nullptr);
+    allUserPhotos->show();
     grandparent->close();
-    //infinite loop
-//    parent->close();
-//    user->getAllOwnerImages(ownerUsername);
 }

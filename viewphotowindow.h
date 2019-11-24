@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include "ImageModel.h"
 #include "user.h"
+#include "homewindow.h"
+#include "mainwindow.h"
 namespace Ui {
 class ViewPhotoWindow;
 }
@@ -16,6 +18,11 @@ public:
     explicit ViewPhotoWindow(User * user = nullptr, string ownerUsername="", string imageName="", QWidget *parent = nullptr);
     void setImage(ImageModel image);
     ~ViewPhotoWindow();
+
+private slots:
+    void on_pushButton_home_clicked();
+
+    void on_pushButton_logout_clicked();
 
 private:
     ImageModel image;

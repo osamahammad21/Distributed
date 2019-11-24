@@ -12,8 +12,10 @@ viewSamples::viewSamples(User * user, map <string, vector<imageSample>> samples,
     map<string, vector<imageSample>>::iterator it;
     for ( it = samples.begin(); it != samples.end(); it++ )
     {
-         for (int i = 0; i < it->second.size(); i++)
-            addSample(it->first, it->second[i].imageName, it->second[i].preview);
+        if(it->first != user->getUsername())
+            for (int i = 0; i < it->second.size(); i++)
+                addSample(it->first, it->second[i].imageName, it->second[i].preview);
+
     }
 }
 
