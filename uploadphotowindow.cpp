@@ -48,7 +48,7 @@ void UploadPhotoWindow::on_pushButton_upload_clicked()
         image.chooseImage(filename.toStdString());
 
         hide();
-        newWindow = new PhotoSettingsWindow(image, user, this);
+        newWindow = new PhotoSettingsWindow(true, image, user, this);
         newWindow->show();
         destroy();
     }

@@ -5,8 +5,9 @@ using namespace std;
 #include <string>
 #include "Peer.h"
 #include "ImageModel.h"
+#include <fstream>
 
-struct imageSample { string imageName; string preview;};
+struct imageSample { string imageName; string preview; Image im;};
 
 class User
 {
@@ -21,6 +22,7 @@ public:
     string getImage(string ownerUsername, string imageName);
     void getUsersSamples(map<string, vector<imageSample>> & samples);
     void getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages);
+    void getMyImages(vector <imageSample> & myPhotos);
 
 private:
     string username;

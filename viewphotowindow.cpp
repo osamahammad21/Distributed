@@ -2,29 +2,26 @@
 #include "ui_viewphotowindow.h"
 #include "string"
 using namespace std;
-//void ViewPhotoWindow::setImage(ImageModel image)
-//{
-//    this->image=image;
-//    const QString filename =QString::fromStdString(image.imagePath);
-//    const QString views = QString::fromStdString("Views: "+to_string(image.views));
-//    QPixmap img(filename);
-//    ui->label_image->setPixmap(img);
-//    ui->label_image->setScaledContents(true);
-//    ui->label_no_views->setText(views);
-//    this->setWindowTitle(QString::fromStdString(image.image_name));
-//}
 ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string imageName, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ViewPhotoWindow)
-{
+{   
     ui->setupUi(this);
     this->user = user;
 
-    string photo = user->getImage(ownerUsername, imageName);
-
-    Image * im = new Image();
-    im->writeImage(photo, ownerUsername, imageName);
-    im->desteg();
+    Image tempImage;
+    string photo;
+    Image * im;
+    if (tempImage.findImage(ownerUsername, imageName)){
+        photo = tempImage.extractImage();
+        im = &tempImage;
+    }
+    else {
+        string photo = user->getImage(ownerUsername, imageName);
+        im = new Image();
+        im->writeImage(photo, ownerUsername, imageName);
+        im->desteg();
+    }
 
     string path;
     int i;
@@ -52,7 +49,6 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
     if (!existsInProperties){
         ui->label_no_views->setText(QString::fromStdString("0"));
         path = im->getUnAuthorizedImagePath();
-        cout << "user not in properties" << endl;
     }
     this->setWindowTitle(QString::fromStdString(image.image_name));
 

@@ -20,6 +20,7 @@ SOURCES += \
     imagesamplewidget.cpp \
     main.cpp \
     mainwindow.cpp \
+    myphoto.cpp \
     photolistwidget.cpp \
     photosettingswindow.cpp \
     photoswidget.cpp \
@@ -27,6 +28,7 @@ SOURCES += \
     uploadphotowindow.cpp \
     user.cpp \
     viewalluserphotoswin.cpp \
+    viewmyphotos.cpp \
     viewphotowindow.cpp \
     base64.cpp \
     Message.cpp \
@@ -41,6 +43,7 @@ HEADERS += \
     homewindow.h \
     imagesamplewidget.h \
     mainwindow.h \
+    myphoto.h \
     photolistwidget.h \
     photosettingswindow.h \
     photoswidget.h \
@@ -48,6 +51,7 @@ HEADERS += \
     uploadphotowindow.h \
     user.h \
     viewalluserphotoswin.h \
+    viewmyphotos.h \
     viewphotowindow.h \
     base64.h \
     Message.h \
@@ -61,12 +65,14 @@ FORMS += \
     homewindow.ui \
     imagesamplewidget.ui \
     mainwindow.ui \
+    myphoto.ui \
     photolistwidget.ui \
     photosettingswindow.ui \
     photoswidget.ui \
     registerwindow.ui \
     uploadphotowindow.ui \
     viewalluserphotoswin.ui \
+    viewmyphotos.ui \
     viewsamples.ui\
     viewphotowindow.ui
 
