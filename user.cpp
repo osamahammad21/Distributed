@@ -5,11 +5,10 @@ User::User(Peer * peer)
     this->peer = peer;
 }
 
-
 bool User :: login(string username, string password){
-        cout << username << " " << password << endl;
+       cout << "Message sent from user to DS\n";
        string reply = peer->login(username, password);
-       cout << reply << endl;
+       cout << "Reply received by user from DS\n";
        if(reply == "not a user")
             return false;
         this->username = username;
@@ -19,11 +18,14 @@ bool User :: login(string username, string password){
 }
 
 bool User :: signup(string username, string password){
+    cout << "Message sent from user to DS\n";
     string reply = peer->signup(username, password);
+    cout << "Reply received by user from DS\n";
     if(reply == "username already exists")
          return false;
      this->username = username;
      this->token = reply;
+     cout << "Peer started sending status updates\n";
      peer->startStatusUpdates(this->token);
      return true;
 }
@@ -37,10 +39,11 @@ bool User :: uploadPhoto(Image image){
     image.getImageId(imageName);
     peer->addImageLocally(imageName);
     string photo = image.getSmallScaleImage();
-    cout<<photo<<endl;
+    cout << "Message sent from user to DS\n";
     string reply = peer->uploadImage(this->token, imageName, photo);
+    cout << "Reply received by user from DS\n";
     if (reply == "ok"){
-        //image.removeMiddleFiles();
+        image.removeMiddleFiles();
         return true;
     }
     else
@@ -48,7 +51,9 @@ bool User :: uploadPhoto(Image image){
 }
 
 bool User :: logout(){
+    cout << "Message sent from user to DS\n";
     string reply = peer -> logout(token);
+    cout << "Reply received by user from DS\n";
     if (reply == "ok"){
         this->username = "";
         this->token = "";
@@ -69,12 +74,14 @@ inline void split(string str, vector<string>& cont, char delim = ' ')
 }
 
 bool User:: getAllImages(){
+    cout << "Message sent from user to DS\n";
     string reply = peer->getAllImagesFromDS(token);
+    cout << "Reply received by user from DS\n";
     vector <string> args;
     if(reply=="no images")
        return false;
-    cout<<reply<<endl;
     split(reply, args, ',');
+    usersImageSamples.clear();
     for (int i=0; i < args.size(); i+=3){
         imageSample temp;
         temp.preview = args[i+2];
@@ -85,11 +92,16 @@ bool User:: getAllImages(){
 }
 
 string User :: getImage(string ownerUsername, string imageName){
+    cout << "Message sent from user to DS\n";
     string reply = peer->getPortnIP(token, ownerUsername);
+    cout << "Reply received by user from DS\n";
     vector <string> args;
     split(reply, args, ',');
+
+    cout << "Message sent to peer\n";
     reply = peer->getImage(username, ownerUsername, args[1], stoi(args[0]), imageName);
-    cout << reply << endl;
+    cout << "Reply received from peer\n";
+    return reply;
 }
 
 void User:: getUsersSamples(map<string, vector<imageSample>> & samples){
@@ -97,11 +109,22 @@ void User:: getUsersSamples(map<string, vector<imageSample>> & samples){
         samples =  usersImageSamples;
 }
 
-string User :: getAllOwnerImages(string ownerUsername){
+void User :: getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages){
+    cout << "Message sent from user to DS\n";
     string reply = peer->getPortnIP(token, ownerUsername);
+    cout << "Reply received by user from DS\n";
     vector <string> args;
     split(reply, args, ',');
+    cout << "Message sent to peer\n";
     reply = peer->getAllImagesFromPeer(username, ownerUsername, args[1], stoi(args[0]));
-    cout << reply;
+    cout << "Reply received from peer\n";
+
+    split(reply, args, ',');
+    for (int i=0; i < args.size(); i+=2){
+        imageSample temp;
+        temp.preview = args[i+1];
+        temp.imageName = args[i];
+        allOwnerImages.push_back(temp);
+    }
 }
 

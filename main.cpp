@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
     Peer *peer= new Peer(stoi(argv[1]));
     User *user = new User(peer);
-    peer->setDS("10.7.57.207", 88);
+    peer->setDS("10.0.2.15", 89);
     QApplication a(argc, argv);
     MainWindow w(user);
     w.show();

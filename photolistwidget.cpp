@@ -18,12 +18,12 @@ PhotoListWidget::~PhotoListWidget()
 
 void PhotoListWidget::on_pushButton_view_clicked()
 {
-   ViewPhotoWindow *window = new ViewPhotoWindow(this);
-   if(rand()%2)
-       image.imagePath="/home/admin/Downloads/instagram-logo-png-paint-brush-colour-1.png";
-   else
-       image.imagePath="/home/admin/Downloads/Download-Vector-PNG-File.png";
-   window->setImage(image);
-   window->show();
-   window->raise();
+//   ViewPhotoWindow *window = new ViewPhotoWindow(this);
+//   if(rand()%2)
+//       image.imagePath="/home/admin/Downloads/instagram-logo-png-paint-brush-colour-1.png";
+//   else
+//       image.imagePath="/home/admin/Downloads/Download-Vector-PNG-File.png";
+//   window->setImage(image);
+//   window->show();
+//   window->raise();
 }

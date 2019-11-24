@@ -12,13 +12,6 @@ HomeWindow::HomeWindow(User * user, QWidget *parent) :
     this->user = user;
     ui->setupUi(this);
 
-//    ui->tabWidget->addTab(new PhotosWidget(),"All Photos");
-//    ui->tabWidget->addTab(new PhotosWidget(),"My Photos");
-
-//    vector <string> usernames;
-//    user->getAllUsernames(usernames);
-//    ui->tabWidget->addTab(new usersList(user, usernames, nullptr),"All usernames");
-
     map<string, vector<imageSample>> samples;
     user->getUsersSamples(samples);
     ui->tabWidget->addTab( new viewSamples(user, samples, this),"User's samples");
