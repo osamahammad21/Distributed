@@ -5,12 +5,15 @@
 #include <iostream>
 #include<vector>
 #include "base64.h"
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
 using namespace std;
 #define USERNAME_ERROR -1
 #define PATH_ERROR -2
 #define IMAGE_ID_ERROR -3
 #define PROPERTIES_ERROR -4
-#define IMAGE_DIR "imagedir/"
+// #define IMAGE_DIR "imagedir/"
 #define COVER_IMAGE "imagedir/default.jpg"
 struct userProperty
 {
@@ -26,9 +29,11 @@ class Image
         string destegImagePath;
         string propertiesPath;
         string originalImagePath;
+        string IMAGE_DIR = "imagedir/";
     public:
         vector<struct userProperty> properties;
         Image();
+        int setImageDir(string username);
         int readProperties();
         string extractImage();
         int updateProperties();

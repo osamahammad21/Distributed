@@ -25,17 +25,18 @@ class Peer
         map<unsigned int,Message*> replyMessages;
         vector<Message*> serveMessages;
         vector<string> myImages;
+        queue<Message*> accessMessages;
         std::thread* read_thread;
         std::thread* serve_thread;
         std::thread* status_thread;
         bool statusUpdatesRunning=false;
-        mutex rpcidmtx,vectorMtx;
+        mutex rpcidmtx,vectorMtx,accessMtx;
         bool dest = false;
         string IMAGES_DB_PATH;
         void listen();//thread
         void serve();//thread
         void status(string input);//thread
-        bool timeOutIsSet=false;
+        bool timeOutIsSet=false,statusupdates=false;;
         int timeOutSeconds=0;
     public:
         Peer(int port); 
@@ -55,6 +56,9 @@ class Peer
         string getAllImagesFromDS(string token);
         string getAllImagesFromPeer(string myusername,string targetusername,string ip,int port);
         string getImage(string myusername,string ownerusername,string targetadd,unsigned int targetport,string imagename);
+        string requestImageAccess(string myusername,string ownerusername,string targetadd,unsigned int targetport,string imagename);
+        string sendImageAccess(string myusername,string targetusername,string targetadd,unsigned int targetport,string imagename,int addedViews);
+        void stopStatusUpdates();
         ~Peer();
 
 };
