@@ -90,10 +90,7 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 
 bool directoryServer::authenticate(string &username, string &password)
 {
-    // if (usersDict.find(username) != usersDict.end())
-    //     return (usersDict[username].password == password);
-	// else
-    // 	return false;
+
 	rapidcsv::Document doc(usersFile);
 	vector<string>temp = doc.GetRowNames();
 	int row = 0;
@@ -185,22 +182,12 @@ void directoryServer::signup(string& username, string& password, Message* msg, d
 
 bool directoryServer::usernameExists(string& username)
 {
-	// rapidcsv::Document doc(usersFile);
-
-    // // for(int i = 0; i<doc.GetRowNames().size(); i++)
-    // // {
-    // //     if (doc.GetRowName(i)==username)
-	// // 		return true;
-    // // }
-
-    // if (usersDict.find(username) != usersDict.end())
-    //     return usersDict[username].password == password;
-    // return false;
 	return (usersDict.find(username) != usersDict.end());
 }
 
 void directoryServer::uploadimage(string& token, string& imagename,string& image64, Message* msg, directoryServer* ds)
 {
+	
 	mtx.lock();
 	rapidcsv::Document doc(usersFile);
 
@@ -210,7 +197,31 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 	for (int i = 0; i < temp.size(); i++)
 		if (usersDict[temp[i]].token == token)
 			username = temp[i];
+	mtx.unlock();
 
+	int count = doc.GetCell<int>("imageCount",username);
+	if (count >= 10)
+	{
+		string ok ="maximum samples reached";
+		int n = ok.length(); 
+		char *char_array=new char[n+1]; 
+		strcpy(char_array, ok.c_str()); 
+
+		Message *message = new Message();
+		message->setSourceIP(udpObj.getMyIP());
+		message->setSourcePort(udpObj.getMyPort());
+		message->setRPCID(msg->getRPCId());
+		message->setDestinationIP(msg->getSourceIP());
+		message->setDestinationPort(msg->getSourcePort());
+		message->setOperation(Operation::uploadImage);
+		message->setMessageType(MessageType::Reply);
+		message->setMessage(char_array,n);
+		udpObj.sendMessage(message);
+
+		return;
+	}
+
+	mtx.lock();
 	ds->usersDict[username].imageCount += 1;
 	ds->usersDict[username].image64.push_back(image64);
 	ds->usersDict[username].imageName.push_back(imagename);
@@ -243,9 +254,84 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 	message->setMessageType(MessageType::Reply);
 	message->setMessage(char_array,n);
 	udpObj.sendMessage(message);
+	return;
 	
 }
 
+void directoryServer::removeImage(string& token, string&imagename, Message* msg, directoryServer* ds)
+{
+	mtx.lock();
+	bool found = false;
+	rapidcsv::Document doc(usersFile);
+
+	vector<string>temp = doc.GetRowNames();
+	string username;//user with the token sent
+	for (int i = 0; i < temp.size(); i++)
+		if (usersDict[temp[i]].token == token)
+			username = temp[i];
+	
+	for (int j = 6; j < 6 + usersDict[username].imageCount * 2; j += 2)
+	{
+		if (doc.GetCell<string>(j, username) == imagename)
+		{
+			int index = 0;
+			for (int i = 0; i < temp.size(); i++)
+			{
+				if (doc.GetRowName(i) == username)
+					index = i;
+			}
+
+			doc.SetCell<string>(j,index,"");
+			doc.SetCell<string>(j,index+1,"");
+
+			usersDict[username].imageName.erase(usersDict[username].imageName.begin() + j);
+			usersDict[username].image64.erase(usersDict[username].imageName.begin() + j);
+			found = true;
+		}
+	}
+	if (!found)
+	{
+		string ok ="image not found";
+		int n = ok.length(); 
+		char *char_array=new char[n+1]; 
+		strcpy(char_array, ok.c_str()); 
+
+		Message *message = new Message();
+		message->setSourceIP(udpObj.getMyIP());
+		message->setSourcePort(udpObj.getMyPort());
+		message->setRPCID(msg->getRPCId());
+		message->setDestinationIP(msg->getSourceIP());
+		message->setDestinationPort(msg->getSourcePort());
+		message->setOperation(Operation::removeImage);
+		message->setMessageType(MessageType::Reply);
+		message->setMessage(char_array,n);
+		udpObj.sendMessage(message);
+		return;
+	}
+
+	
+	mtx.unlock();
+	string ok ="image removed";
+	int n = ok.length(); 
+    char *char_array=new char[n+1]; 
+    strcpy(char_array, ok.c_str()); 
+
+	Message *message = new Message();
+	message->setSourceIP(udpObj.getMyIP());
+    message->setSourcePort(udpObj.getMyPort());
+    message->setRPCID(msg->getRPCId());
+    message->setDestinationIP(msg->getSourceIP());
+    message->setDestinationPort(msg->getSourcePort());
+    message->setOperation(Operation::removeImage);
+	message->setMessageType(MessageType::Reply);
+	message->setMessage(char_array,n);
+	udpObj.sendMessage(message);
+	return;
+
+
+	
+
+}
 string directoryServer::getPortnIP(string& token, string& username, Message* msg, directoryServer* ds)
 {
 	rapidcsv::Document doc(usersFile);
@@ -438,5 +524,9 @@ void directoryServer::doOperation(Message* request)
 	else if (operationID == Operation::updateStatus)
 	{
 		directoryServer::updateStatus(args[0],this);
-	} 
+	}
+	else if (operationID == Operation::removeImage)
+	{
+		directoryServer::removeImage(args[0],args[1],request,this);
+	}
 }

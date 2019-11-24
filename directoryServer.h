@@ -12,6 +12,7 @@
 #include "rapidcsv.h"
 
 #define TIMEOUT 30;
+//#define MAX_SAMPLES 10;
 using namespace std;
 
 class directoryServer
@@ -46,6 +47,7 @@ class directoryServer
 		bool authenticate(string&, string&);
 		bool usernameExists(string&);
 		void updateStatus(string& , directoryServer*);
+		void removeImage(string&, string&, Message*, directoryServer*);
 		void decrementStatus();
 		void clearUsers();
 
