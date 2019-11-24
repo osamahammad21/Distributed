@@ -9,7 +9,7 @@ directoryServer::directoryServer(unsigned int port)
 	rapidcsv::Document doc(usersFile);
 	int totalUsers = doc.GetRowCount();
 	udpObj.initializeSocket(port);
-	cout<<udpObj.getMyIP()<<endl;
+	//cout<<udpObj.getMyIP()<<endl;
 	listen_thread = new thread(&directoryServer::listen,this);
 	status_thread = new thread(&directoryServer::decrementStatus,this);
 
@@ -199,26 +199,32 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 			username = temp[i];
 	mtx.unlock();
 
-	int count = doc.GetCell<int>("imageCount",username);
-	if (count >= 10)
+
+	string count = doc.GetCell<string>("imageCount",username);
+	if(count != "")
 	{
-		string ok ="maximum samples reached";
-		int n = ok.length(); 
-		char *char_array=new char[n+1]; 
-		strcpy(char_array, ok.c_str()); 
+		int count_int = doc.GetCell<int>("imageCount",username);
+		if (count_int >= 10)
+		{
+			string ok ="maximum samples reached";
+			cout << "maxmimum samples reached" << endl;
+			int n = ok.length(); 
+			char *char_array=new char[n+1]; 
+			strcpy(char_array, ok.c_str()); 
 
-		Message *message = new Message();
-		message->setSourceIP(udpObj.getMyIP());
-		message->setSourcePort(udpObj.getMyPort());
-		message->setRPCID(msg->getRPCId());
-		message->setDestinationIP(msg->getSourceIP());
-		message->setDestinationPort(msg->getSourcePort());
-		message->setOperation(Operation::uploadImage);
-		message->setMessageType(MessageType::Reply);
-		message->setMessage(char_array,n);
-		udpObj.sendMessage(message);
+			Message *message = new Message();
+			message->setSourceIP(udpObj.getMyIP());
+			message->setSourcePort(udpObj.getMyPort());
+			message->setRPCID(msg->getRPCId());
+			message->setDestinationIP(msg->getSourceIP());
+			message->setDestinationPort(msg->getSourcePort());
+			message->setOperation(Operation::uploadImage);
+			message->setMessageType(MessageType::Reply);
+			message->setMessage(char_array,n);
+			udpObj.sendMessage(message);
 
-		return;
+			return;
+		}
 	}
 
 	mtx.lock();

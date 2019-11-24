@@ -8,7 +8,7 @@ int main()
     cin>>start;
     Peer peer(3);
     cout<<"I am here"<<endl;
-    peer.setDS("10.7.57.207",88);
+    peer.setDS("10.40.34.123",88);
     // cout<<peer.login("user1","pass1")<<endl;
     string token1 = peer.signup("test3","123");
     cout<<token1<<endl;
@@ -16,6 +16,17 @@ int main()
     cout<<token2<<endl;
     // peer.setTimeOut(2);
     cout<<peer.getPortnIP(token2,"test3")<<endl;
+    cout<<peer.uploadImage(token1,"img1", "imgggggg");
+
+    int i = 0;
+    while(1)
+    {
+    cout << "image upload number i " << i++;
+    string imgname = "meh" + to_string(i);
+    string imtnnname = imgname + to_string(i) + "hh";
+    cout<<peer.uploadImage(token1,imgname,imtnnname);
+    usleep(1000000);
+    }
     // peer.removeTimeOut();
     // cout<<peer.login("ss","123")<<endl;
 
