@@ -136,7 +136,7 @@ void User :: getAllOwnerImages(string ownerUsername, vector <imageSample> &allOw
     }
 }
 void User :: getMyImages(vector <imageSample> & myPhotos){
-    ifstream in (username);
+    ifstream in (username+".txt");
     if (!in.is_open()){
         cout << "Error opening input file" << endl;
     }
@@ -155,14 +155,19 @@ void User :: getMyImages(vector <imageSample> & myPhotos){
         }
     }while (!in.eof());
 }
-
 void User :: serveRequestViews(){
-    string reply = peer->getImageUpdates();
-    vector <string> args;
-    split(reply, args, ',');
-    string requesterUsername, imageName;
-    viewsRequests * popUp = new viewsRequests(peer, args[1], args[0], args[2], nullptr);
-    popUp->show();
+    while (1) {
+        string reply = peer->getImageUpdates();
+        vector <string> args;
+        split(reply, args, ',');
+        string requesterUsername, imageName;
+        viewsRequests * popUp = new viewsRequests(peer, token, args[1], args[0], args[2], nullptr);
+        popUp->show();
+        QEventLoop loop;
+        QObject :: connect(popUp, SIGNAL(destroyed()), & loop, SLOT(quit()));
+        loop.exec();
+        cout<<"destroyed\n";
+    }
 }
 
 void User :: requestImageAccess(string ownerUsername, string imageName){
@@ -173,14 +178,4 @@ void User :: requestImageAccess(string ownerUsername, string imageName){
     split(reply, args, ',');
     cout << "Message sent to peer\n";
     peer->requestImageAccess(username, ownerUsername, args[1],stoi(args[0]),imageName);
-}
-
-void User :: giveImageAccess(string targetUsername, string imageName, int views){
-    cout << "Message sent from user to DS\n";
-    string reply = peer->getPortnIP(token, targetUsername);
-    cout << "Reply received by user from DS\n";
-    vector <string> args;
-    split(reply, args, ',');
-    cout << "Message sent to peer\n";
-    peer->sendImageAccess(username, targetUsername, args[1], stoi(args[0]), imageName, views);
 }

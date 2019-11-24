@@ -11,9 +11,8 @@ ViewAllUserPhotosWin::ViewAllUserPhotosWin(User * user, string ownerUsername, QW
 
     vector <imageSample> allOwnerImages;
     user->getAllOwnerImages(ownerUsername, allOwnerImages);
-
-    for (int i=0; i< allOwnerImages.size(); i++)
-        addSample(ownerUsername, allOwnerImages[i].imageName, allOwnerImages[i].preview);
+        for (int i=0; i< allOwnerImages.size(); i++)
+            addSample(ownerUsername, allOwnerImages[i].imageName, allOwnerImages[i].preview);
 }
 
 void ViewAllUserPhotosWin :: addSample(string username, string imageName, string preview)

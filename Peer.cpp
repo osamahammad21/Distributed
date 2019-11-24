@@ -116,7 +116,7 @@ string Peer::login(string username,string password)
                 string s(replyMessages[rpcId]->getMessage());
                 if(s!="not a user")
                 {
-                    IMAGES_DB_PATH = username;
+                    IMAGES_DB_PATH = username+".txt";
                     if(existf(IMAGES_DB_PATH))
                     {
                         ifstream imagesFile;
@@ -210,7 +210,7 @@ string Peer::signup(string username,string password)
                 string s(replyMessages[rpcId]->getMessage());
                 if(s!="username already exists")
                 {
-                    IMAGES_DB_PATH = username;
+                    IMAGES_DB_PATH = username+".txt";
                     if(existf(IMAGES_DB_PATH))
                     {
                         ifstream imagesFile;

@@ -86,12 +86,19 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
 
     image.steg();
 
-    if (upload)
-        user->uploadPhoto(image);
-    hide();
-    HomeWindow *homeWindow = new HomeWindow(user, this);
-    homeWindow->show();
-    destroy();
+    if (upload){
+        if (user->uploadPhoto(image)){
+            hide();
+            HomeWindow *homeWindow = new HomeWindow(user, this);
+            homeWindow->show();
+            destroy();
+        }
+    } else {
+        hide();
+        HomeWindow *homeWindow = new HomeWindow(user, this);
+        homeWindow->show();
+        destroy();
+    }
 }
 
 void PhotoSettingsWindow::on_pushButton_logout_clicked()

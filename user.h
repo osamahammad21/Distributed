@@ -7,6 +7,7 @@ using namespace std;
 #include "ImageModel.h"
 #include <fstream>
 #include "viewsrequests.h"
+#include <QEventLoop>
 
 struct imageSample { string imageName; string preview; Image im;};
 

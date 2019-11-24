@@ -10,21 +10,16 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
     this->user = user;
     this->ownerUsername = ownerUsername;
     this->imageName = imageName;
-
-    Image tempImage;
-    tempImage.setImageDir(user->getUsername());
     string photo;
-    Image * im;
+    Image * im = new Image();
     im->setImageDir(user->getUsername());
-    if (tempImage.findImage(ownerUsername, imageName)){
-        photo = tempImage.extractImage();
-        im = &tempImage;
+    if (im->findImage(ownerUsername,imageName)){
+        photo = im->extractImage();
     }
     else {
         string photo = user->getImage(ownerUsername, imageName);
         im = new Image();
-        //uncomment this
-//        im->setDirectory(user->getUsername());
+        im->setImageDir(user->getUsername());
         im->writeImage(photo, ownerUsername, imageName);
         im->desteg();
     }
@@ -35,7 +30,6 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
         im->readProperties();
         bool existsInProperties = false;
         for (i=0; i< im->properties.size(); i++){
-
             if (im->properties[i].user_name == user->getUsername()){
                 ui->label_no_views->setText(QString::fromStdString("Remaining Views = " + to_string(im->properties[i].views > 0 ? im->properties[i].views-1 : 0)));
                 existsInProperties = true;
@@ -52,7 +46,8 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
             }
         }
 
-        im->writeProperties();
+        im->updateProperties();
+        im->desteg();
 
         if (!existsInProperties){
             ui->label_no_views->setText(QString::fromStdString("Remaining views = 0"));
@@ -66,14 +61,12 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
     this->setWindowTitle(QString::fromStdString(image.image_name));
 
     int n = path.length();
+    cout << path << endl;
     char *char_array=new char[n+1];
     strcpy(char_array, path.c_str());
     QPixmap pixmap(char_array);
     ui->label_image->setPixmap(pixmap);
     ui->label_image->show();
-
-    im->steg();
-    im->removeMiddleFiles();
 }
 
 ViewPhotoWindow::~ViewPhotoWindow()

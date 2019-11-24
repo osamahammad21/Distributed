@@ -1,7 +1,7 @@
 #include "viewsrequests.h"
 #include "ui_viewsrequests.h"
 
-viewsRequests::viewsRequests(Peer * peer, string ownerUsername, string requesterUsername, string imageName, QWidget *parent) :
+viewsRequests::viewsRequests(Peer * peer, string token, string ownerUsername, string requesterUsername, string imageName, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::viewsRequests)
 {
@@ -10,16 +10,15 @@ viewsRequests::viewsRequests(Peer * peer, string ownerUsername, string requester
     this->requesterUsername = requesterUsername;
     this->imageName = imageName;
     this->peer = peer;
-
+    this->token = token;
     ui->label_info->setText(QString:: fromStdString("User " + requesterUsername + " requests access\nto image " + imageName));
     image.setImageDir(ownerUsername);
     image.findImage(ownerUsername, imageName);
+//    image.setImageDir(ownerUsername);
     image.desteg();
     string preview = image.getSmallScaleImage();
-
     preview = base64_decode(preview);
     preview = base64_decode(preview);
-
     ofstream out;
     string path = "out4_img.jpg";
     out.open(path, ios_base::out | ios_base::binary);
@@ -51,7 +50,6 @@ inline void split(string str, vector<string>& cont, char delim = ' ')
     }
 }
 
-
 void viewsRequests::on_pushButton_giveAccess_clicked()
 {
     if (ui->lineEdit_views->text() != NULL){
@@ -67,7 +65,7 @@ void viewsRequests::on_pushButton_giveAccess_clicked()
 
 
         cout << "Message sent from user to DS\n";
-        string reply = peer->getImageUpdates();
+        string reply = peer->getPortnIP(token, requesterUsername);
         cout << "Reply received by user from DS\n";
         vector <string> args;
         split(reply, args, ',');

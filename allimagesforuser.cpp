@@ -36,7 +36,7 @@ AllImagesForUser::~AllImagesForUser()
 
 void AllImagesForUser::on_pushButton_imageName_clicked()
 {
-    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, ownerusername, imageName);
+    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, ownerusername, imageName, this);
     viewPhotoWindow->show();
     parent->close();
 }

@@ -17,8 +17,9 @@ class viewsRequests : public QMainWindow
     Q_OBJECT
 
 public:
-     explicit viewsRequests(Peer * peer, string ownerUsername, string requesterUsername = "", string imageName = "", QWidget *parent = nullptr);
+     explicit viewsRequests(Peer * peer, string token, string ownerUsername, string requesterUsername = "", string imageName = "", QWidget *parent = nullptr);
     ~viewsRequests();
+    int getStatus();
 
 private slots:
     void on_pushButton_giveAccess_clicked();
@@ -32,6 +33,7 @@ private:
     string requesterUsername;
     string imageName;
     Image image;
+    string token;
 };
 
 #endif // VIEWSREQUESTS_H

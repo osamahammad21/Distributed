@@ -57,6 +57,8 @@ void Image::writeProperties()
         if(i<properties.size()-1)
             output<<endl;
     }
+    if(properties.size()==0)
+        output<<"DoNotUse 0"<<endl;
     output.close();
 }
 bool Image::findImage(string ownerusername,string imageId)
@@ -110,15 +112,16 @@ int Image::readProperties()
     desteg();
     ifstream input;
     input.open(propertiesPath);
-    while (!input.eof())
-    {
-        userProperty prop;
-        input>>prop.user_name;
-        input>>prop.views;
-        if(prop.user_name=="DoNotUse")
-            break;
-        properties.push_back(prop);
-    }
+    if(input.peek() != std::ifstream::traits_type::eof())
+        while (!input.eof())
+        {
+            userProperty prop;
+            input>>prop.user_name;
+            input>>prop.views;
+            if(prop.user_name=="DoNotUse")
+                break;
+            properties.push_back(prop);
+        }
     input.close();
     string command = "rm "+destegImagePath+" "+propertiesPath+" -f";
     system(command.c_str());
