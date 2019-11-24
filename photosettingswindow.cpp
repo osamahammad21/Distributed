@@ -2,13 +2,25 @@
 #include "ui_photosettingswindow.h"
 #include "homewindow.h"
 
-PhotoSettingsWindow::PhotoSettingsWindow(Image image, User * user, QWidget *parent) :
+PhotoSettingsWindow::PhotoSettingsWindow(bool upload, Image image, User * user, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::PhotoSettingsWindow)
 {
     ui->setupUi(this);
     this->user = user;
     this->image = image;
+    this->upload = upload;
+    if (!upload){
+        ui->pushButton_upload->setText("Change Settings");
+        image.readProperties();
+        struct userProperty prop;
+        for (int i=0; i < image.properties.size(); i++)
+            if (image.properties[i].views!=0){
+                users.insert(std::pair<std::string, int>(image.properties[i].user_name, image.properties[i].views));
+                users[image.properties[i].user_name] = image.properties[i].views;
+            }   
+        viewItemsInListWidget();    
+    }
 }
 
 PhotoSettingsWindow::~PhotoSettingsWindow()
@@ -70,16 +82,13 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
     image.writeProperties();
 
     image.steg();
-//    image.removeMiddleFiles();
 
-    if (user->uploadPhoto(image)){
-        hide();
-        HomeWindow *homeWindow = new HomeWindow(user, this);
-        homeWindow->show();
-        destroy();
-    }
-
-
+    if (upload)
+        user->uploadPhoto(image);
+    hide();
+    HomeWindow *homeWindow = new HomeWindow(user, this);
+    homeWindow->show();
+    destroy();
 }
 
 void PhotoSettingsWindow::on_pushButton_logout_clicked()

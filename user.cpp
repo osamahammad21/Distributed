@@ -127,4 +127,23 @@ void User :: getAllOwnerImages(string ownerUsername, vector <imageSample> &allOw
         allOwnerImages.push_back(temp);
     }
 }
+void User :: getMyImages(vector <imageSample> & myPhotos){
+    ifstream in (username);
+    if (!in.is_open()){
+        cout << "Error opening input file" << endl;
+    }
+    string imageName;
+    do{
+        in >> imageName;
+        Image i;
+        if (i.findImage(username, imageName)){
+            imageSample temp;
+            temp.imageName = imageName;
+            i.desteg();
+            temp.preview = i.getSmallScaleImage();
+            temp.im = i;
+            myPhotos.push_back(temp);
+        }
+    }while (!in.eof());
+}
 

@@ -2,57 +2,59 @@
 #include "ui_viewphotowindow.h"
 #include "string"
 using namespace std;
-//void ViewPhotoWindow::setImage(ImageModel image)
-//{
-//    this->image=image;
-//    const QString filename =QString::fromStdString(image.imagePath);
-//    const QString views = QString::fromStdString("Views: "+to_string(image.views));
-//    QPixmap img(filename);
-//    ui->label_image->setPixmap(img);
-//    ui->label_image->setScaledContents(true);
-//    ui->label_no_views->setText(views);
-//    this->setWindowTitle(QString::fromStdString(image.image_name));
-//}
 ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string imageName, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ViewPhotoWindow)
-{
+{   
     ui->setupUi(this);
     this->user = user;
 
-    string photo = user->getImage(ownerUsername, imageName);
-
-    Image * im = new Image();
-    im->writeImage(photo, ownerUsername, imageName);
-    im->desteg();
+    Image tempImage;
+    string photo;
+    Image * im;
+    if (tempImage.findImage(ownerUsername, imageName)){
+        photo = tempImage.extractImage();
+        im = &tempImage;
+    }
+    else {
+        string photo = user->getImage(ownerUsername, imageName);
+        im = new Image();
+        im->writeImage(photo, ownerUsername, imageName);
+        im->desteg();
+    }
 
     string path;
     int i;
-    im->readProperties();
-    bool existsInProperties = false;
-    for (i=0; i< im->properties.size(); i++){
+    if (user->getUsername() != ownerUsername){
+        im->readProperties();
+        bool existsInProperties = false;
+        for (i=0; i< im->properties.size(); i++){
 
-        if (im->properties[i].user_name == user->getUsername()){
-            ui->label_no_views->setText(QString::fromStdString(to_string( im->properties[i].views )));
-            existsInProperties = true;
+            if (im->properties[i].user_name == user->getUsername()){
+                ui->label_no_views->setText(QString::fromStdString(to_string( im->properties[i].views )));
+                existsInProperties = true;
 
-            if(im->properties[i].views <= 0){
-                path = im->getUnAuthorizedImagePath();
+                if(im->properties[i].views <= 0){
+                    path = im->getUnAuthorizedImagePath();
+                }
+                else{
+                    path = im->getAuthorizedImagePath();
+                    im->properties[i].views--;
+                }
+                break;
             }
-            else{
-                path = im->getAuthorizedImagePath();
-                im->properties[i].views--;
-            }
-            break;
         }
-    }
 
-    im->writeProperties();
+        im->writeProperties();
 
-    if (!existsInProperties){
-        ui->label_no_views->setText(QString::fromStdString("0"));
-        path = im->getUnAuthorizedImagePath();
-        cout << "user not in properties" << endl;
+        if (!existsInProperties){
+            ui->label_no_views->setText(QString::fromStdString("0"));
+            path = im->getUnAuthorizedImagePath();
+        }
+    } else {
+        path = im->getAuthorizedImagePath();
+        ui->label_no_views->setText("Owner");
+        ui->pushButton_more_views->setVisible(false);
     }
     this->setWindowTitle(QString::fromStdString(image.image_name));
 
