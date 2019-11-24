@@ -66,6 +66,12 @@ bool User :: logout(){
 
 inline void split(string str, vector<string>& cont, char delim = ' ')
 {
+    try {
+      cont.clear();
+    } catch (exception e) {
+
+    }
+
     stringstream ss(str);
     string token;
     while (getline(ss, token, delim)) {
@@ -97,7 +103,6 @@ string User :: getImage(string ownerUsername, string imageName){
     cout << "Reply received by user from DS\n";
     vector <string> args;
     split(reply, args, ',');
-
     cout << "Message sent to peer\n";
     reply = peer->getImage(username, ownerUsername, args[1], stoi(args[0]), imageName);
     cout << "Reply received from peer\n";

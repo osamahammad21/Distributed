@@ -86,6 +86,25 @@ int Image::updateProperties()
     string command = "rm "+destegImagePath+" "+propertiesPath+" -f";
     system(command.c_str());
 }
+int Image::setImageDir(string username)
+{
+    DIR* dirp;
+    dirp = opendir(username.c_str());
+    if(dirp!=NULL)
+    {
+        IMAGE_DIR=username+ "/";
+        return 0;
+    }
+    string command = "mkdir "+username;
+    int dir_err2 = system(command.c_str());
+    if(dir_err2==0)
+    {
+        IMAGE_DIR=username+ "/";
+        return 0;
+    }
+    return -1;
+    
+}
 int Image::readProperties()
 {
     desteg();

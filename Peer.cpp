@@ -456,6 +456,48 @@ string Peer::getImage(string myusername,string ownerusername,string targetadd,un
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
+string Peer::requestImageAccess(string myusername,string ownerusername,string targetadd,unsigned int targetport,string imagename)
+{
+    rpcidmtx.lock();
+    int rpcId = rpccount++;
+    rpcidmtx.unlock();
+    Message *message = new Message();
+    message->setSourceIP(sock.getMyIP());
+    message->setSourcePort(sock.getMyPort());
+    message->setRPCID(rpcId);
+    message->setDestinationIP(targetadd);
+    message->setDestinationPort(targetport);
+    message->setOperation(Operation::requestImageAccess);
+    string request = myusername+DELIM+ownerusername+DELIM+imagename;
+    int n = request.length(); 
+    char *char_array=new char[n+1]; 
+    strcpy(char_array, request.c_str()); 
+    message->setMessage(char_array,n);
+    message->setMessageType(MessageType::Request);
+    while(!sock.sendMessage(message)){}
+    return "sent successfully";
+}
+string Peer::sendImageAccess(string myusername,string targetusername,string targetadd,unsigned int targetport,string imagename,int addedViews)
+{
+    rpcidmtx.lock();
+    int rpcId = rpccount++;
+    rpcidmtx.unlock();
+    Message *message = new Message();
+    message->setSourceIP(sock.getMyIP());
+    message->setSourcePort(sock.getMyPort());
+    message->setRPCID(rpcId);
+    message->setDestinationIP(targetadd);
+    message->setDestinationPort(targetport);
+    message->setOperation(Operation::addImageAccess);
+    string request = myusername+DELIM+targetusername+DELIM+imagename+DELIM+to_string(addedViews);
+    int n = request.length(); 
+    char *char_array=new char[n+1]; 
+    strcpy(char_array, request.c_str()); 
+    message->setMessage(char_array,n);
+    message->setMessageType(MessageType::Request);
+    while(!sock.sendMessage(message)){}
+    return "sent successfully";
+}
 //working as a server
 void Peer::serve()
 {
@@ -464,7 +506,6 @@ void Peer::serve()
     {
         if(!serveMessages.empty())
         {
-            cout<<serveMessages.size()<<endl;
             for(int i =0;i<serveMessages.size();i++)
             { 
                 if(serveMessages[i]->getOperation()==Operation::getImage){
@@ -474,6 +515,8 @@ void Peer::serve()
                     if(fields.size()<2)
                         continue;
                     Image img;
+                    if(img.setImageDir(fields[1])<0)
+                        continue;
                     bool found = false;
                     for(int i =0;i<myImages.size();i++)
                     {
@@ -510,12 +553,14 @@ void Peer::serve()
                     split(serveMessages[i]->getMessage(),fields,',');
                     if(fields.size()<2)
                         continue;
-                    Image img;
+                    
                     string images="";
                     bool first=true;
                     for(int i =0;i<myImages.size();i++)
                     {
                         Image img;
+                        if(img.setImageDir(fields[1])<0)
+                            continue;
                         if(img.findImage(fields[1],myImages[i])){
                             img.desteg();
                             if(!first)
@@ -542,6 +587,35 @@ void Peer::serve()
                     message->setMessage(char_array,n);
                     while(!sock.sendMessage(message)){}
                     
+                }else if(serveMessages[i]->getOperation()==Operation::addImageAccess)
+                {
+                    vector<string> fields;
+                    split(serveMessages[i]->getMessage(),fields,',');
+                    if(fields.size()<4)
+                        continue;
+                    Image img;
+                    if(img.setImageDir(fields[1])<0)
+                        continue;
+                    if(!img.findImage(fields[0],fields[2]))
+                        continue;
+                    // img.desteg();
+                    img.readProperties();
+                    bool found = false;
+                    for(int i = 0;i<img.properties.size();i++)
+                        if(img.properties[i].user_name==fields[1])
+                        {
+                            found=true;
+                            img.properties[i].views+=stoi(fields[3]);
+                        }
+                    if(!found)
+                    {
+                        struct userProperty prop;
+                        prop.user_name=fields[1];
+                        prop.views=stoi(fields[3]);
+                        img.properties.push_back(prop);
+                    }
+                    img.updateProperties();
+                    img.removeMiddleFiles();
                 }
             }
             vectorMtx.lock();
@@ -556,18 +630,15 @@ string Peer::getImageUpdates()
     string reply;
     while(!dest)
     {
-        vector<Message*>::iterator it;
-        for(it = serveMessages.begin();it!=serveMessages.end();it++)
+        if(!accessMessages.empty())
         {
-            if((*it)->getMessageType()==MessageType::Request &&
-               (*it)->getOperation()==Operation::requestImageAccess)
-            {
-                vectorMtx.lock();
-                reply = string((*it)->getMessage());
-                serveMessages.erase(it);
-                vectorMtx.unlock();
-                return reply;
-            }
+            reply = string(accessMessages.front()->getMessage());
+            reply = reply +DELIM+ accessMessages.front()->getSourceIP() +DELIM+to_string(accessMessages.front()->getSourcePort());
+            // cout<<reply<<endl;
+            accessMtx.lock();
+            accessMessages.pop();
+            accessMtx.unlock();
+            return reply;
         }
     }
     return CONN_TIMEOUT;
@@ -592,6 +663,11 @@ void Peer::listen()
             {
                 replyMessages.insert({reply->getRPCId(),reply});
             }
+        }else if(reply->getMessageType()==MessageType::Request&&reply->getOperation()==Operation::requestImageAccess)
+        {
+            accessMtx.lock();
+            accessMessages.push(reply);
+            accessMtx.unlock();
         }else if(reply->getMessageType()==MessageType::Request)
         {
             vectorMtx.lock();
