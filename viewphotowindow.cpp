@@ -28,40 +28,33 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
 
     string path;
     int i;
-    cout << user->getUsername() << endl;
-    cout << im -> properties.size()  << endl;
+    im->readProperties();
     bool existsInProperties = false;
     for (i=0; i< im->properties.size(); i++){
-
-        cout << im->properties[i].user_name<< im->properties[i].views << endl;
 
         if (im->properties[i].user_name == user->getUsername()){
             ui->label_no_views->setText(QString::fromStdString(to_string( im->properties[i].views )));
             existsInProperties = true;
-            cout << user -> getUsername();
+
             if(im->properties[i].views <= 0){
                 path = im->getUnAuthorizedImagePath();
-                cout << "have no access"<<endl;
             }
             else{
                 path = im->getAuthorizedImagePath();
                 im->properties[i].views--;
-                cout << "have access" << endl;
             }
             break;
         }
     }
 
+    im->writeProperties();
+
     if (!existsInProperties){
+        ui->label_no_views->setText(QString::fromStdString("0"));
         path = im->getUnAuthorizedImagePath();
         cout << "user not in properties" << endl;
     }
     this->setWindowTitle(QString::fromStdString(image.image_name));
-//    ofstream out;
-//    string path = "out2_img.jpg";
-//    out.open(path, ios_base::out | ios_base::binary);
-//    out << photo;
-//    out.close();
 
     int n = path.length();
     char *char_array=new char[n+1];
@@ -69,6 +62,9 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
     QPixmap pixmap(char_array);
     ui->label_image->setPixmap(pixmap);
     ui->label_image->show();
+
+    im->steg();
+    im->removeMiddleFiles();
 }
 
 ViewPhotoWindow::~ViewPhotoWindow()
