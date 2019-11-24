@@ -153,7 +153,7 @@ I am going to define code snippets for all test cases that may be required
         args[0];//the first encoded image received from the other peer
     }
     ```
-### directoyServer
+### directoryServer
 
 Initialization in main
 
