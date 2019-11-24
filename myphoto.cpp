@@ -23,6 +23,8 @@ myPhoto::myPhoto(User * user, string imageName, string preview, Image image, QWi
     QPixmap pixmap("out3_img.jpg");
     ui->label_preview->setPixmap(pixmap);
     ui->label_preview->show();
+
+    ui->label_imageName->setText(QString:: fromStdString(imageName));
 }
 
 myPhoto::~myPhoto()

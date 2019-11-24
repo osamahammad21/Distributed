@@ -77,14 +77,27 @@
    <widget class="QLabel" name="label_successMessage">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>300</x>
       <y>330</y>
-      <width>241</width>
+      <width>261</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_back">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>360</y>
+      <width>261</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Back</string>
     </property>
    </widget>
   </widget>

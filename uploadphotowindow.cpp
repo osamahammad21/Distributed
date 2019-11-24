@@ -64,3 +64,10 @@ void UploadPhotoWindow::on_pushButton_logout_clicked()
         destroy();
     }
 }
+
+void UploadPhotoWindow::on_pushButton_home_clicked()
+{
+    HomeWindow *homeWindow = new HomeWindow(user, this);
+    homeWindow->show();
+    destroy();
+}

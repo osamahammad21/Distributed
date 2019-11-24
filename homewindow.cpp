@@ -1,7 +1,6 @@
 #include "homewindow.h"
 #include "ui_homewindow.h"
 #include "allphotoswindow.h"
-#include "photoswidget.h"
 #include "QLabel"
 #include "QMovie"
 #include "viewsamples.h"

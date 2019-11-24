@@ -24,6 +24,8 @@ private slots:
 
     void on_pushButton_logout_clicked();
 
+    void on_pushButton_home_clicked();
+
 private:
     Ui::UploadPhotoWindow *ui;
     PhotoSettingsWindow *newWindow;

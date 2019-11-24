@@ -20,6 +20,8 @@ private slots:
 
     void on_pushButton_signup_clicked();
 
+    void on_pushButton_back_clicked();
+
 private:
     Ui::RegisterWindow *ui;
     User * user;

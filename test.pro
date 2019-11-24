@@ -21,9 +21,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     myphoto.cpp \
-    photolistwidget.cpp \
     photosettingswindow.cpp \
-    photoswidget.cpp \
     registerwindow.cpp \
     uploadphotowindow.cpp \
     user.cpp \
@@ -45,9 +43,7 @@ HEADERS += \
     imagesamplewidget.h \
     mainwindow.h \
     myphoto.h \
-    photolistwidget.h \
     photosettingswindow.h \
-    photoswidget.h \
     registerwindow.h \
     uploadphotowindow.h \
     user.h \
@@ -68,9 +64,7 @@ FORMS += \
     imagesamplewidget.ui \
     mainwindow.ui \
     myphoto.ui \
-    photolistwidget.ui \
     photosettingswindow.ui \
-    photoswidget.ui \
     registerwindow.ui \
     uploadphotowindow.ui \
     viewalluserphotoswin.ui \

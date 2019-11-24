@@ -28,6 +28,11 @@ void RegisterWindow::on_pushButton_signup_clicked()
     else {
         ui->label_successMessage->setText("Username taken");
     }
+}
 
-    //insert in database
+void RegisterWindow::on_pushButton_back_clicked()
+{
+    MainWindow * mainWindow = new MainWindow(user, this);
+    mainWindow->show();
+    destroy();
 }

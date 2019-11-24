@@ -31,6 +31,13 @@
      </widget>
     </item>
     <item>
+     <widget class="QLabel" name="label_imageName">
+      <property name="text">
+       <string>image name</string>
+      </property>
+     </widget>
+    </item>
+    <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">

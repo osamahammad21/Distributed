@@ -52,19 +52,6 @@
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_upload">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>450</y>
-       <width>761</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Upload</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
@@ -101,18 +88,42 @@
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_logout">
+    <widget class="QWidget" name="">
      <property name="geometry">
       <rect>
-       <x>660</x>
-       <y>490</y>
-       <width>89</width>
-       <height>25</height>
+       <x>10</x>
+       <y>460</y>
+       <width>751</width>
+       <height>61</height>
       </rect>
      </property>
-     <property name="text">
-      <string>Logout</string>
-     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QPushButton" name="pushButton_upload">
+        <property name="text">
+         <string>Upload</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="pushButton_home">
+          <property name="text">
+           <string>Home</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_logout">
+          <property name="text">
+           <string>Logout</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
     </widget>
    </widget>
   </widget>
