@@ -48,6 +48,10 @@ bool User :: uploadPhoto(Image image){
         image.removeMiddleFiles();
         return true;
     }
+    if (reply == "maximum samples reached"){
+        cout << "Add image locally" << endl;
+        peer->addImageLocally(imageName);
+    }
     else
         return false;
 

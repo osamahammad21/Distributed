@@ -204,7 +204,7 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 	if(count != "")
 	{
 		int count_int = doc.GetCell<int>("imageCount",username);
-		if (count_int >= 10)
+		if (count_int >= 3)
 		{
 			string ok ="maximum samples reached";
 			cout << "maxmimum samples reached" << endl;
