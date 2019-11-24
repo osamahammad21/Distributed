@@ -1,7 +1,7 @@
 #include "imagesamplewidget.h"
 #include "ui_imagesamplewidget.h"
 
-imageSampleWidget::imageSampleWidget(string imageName, string preview, string username, User * user, QWidget *parent) :
+imageSampleWidget::imageSampleWidget(string imageName, string preview, string username, User * user, QWidget *parent, QWidget * grandparent) :
     QWidget(parent),
     ui(new Ui::imageSampleWidget)
 {
@@ -11,7 +11,7 @@ imageSampleWidget::imageSampleWidget(string imageName, string preview, string us
     this->user = user;
     this->ownerUsername = username;
     this->imageName = imageName;
-    this->parent = parent;
+    this->grandparent = grandparent;
 
     preview = base64_decode(preview);
     preview = base64_decode(preview);
@@ -36,13 +36,14 @@ void imageSampleWidget::on_pushButton_imageName_clicked()
 {
     ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, ownerUsername, imageName);
     viewPhotoWindow->show();
-    parent->close();
+    grandparent->close();
 
 }
 
 void imageSampleWidget::on_pushButton_username_clicked()
 {
+    grandparent->close();
     //infinite loop
 //    parent->close();
-    user->getAllOwnerImages(ownerUsername);
+//    user->getAllOwnerImages(ownerUsername);
 }

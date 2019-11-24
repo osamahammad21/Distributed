@@ -58,10 +58,15 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
     ui->listWidget->clear();
     for ( it = users.begin(); it != users.end(); it++ )
     {
+        cout << "in map" << endl;
         prop.user_name = it->first;
         prop.views = it->second;
         image.properties.push_back(prop);
     }
+
+    for (int i=0; i<image.properties.size(); i++)
+        cout << image.properties[i].user_name << " " << image.properties[i].views << endl;
+
     image.writeProperties();
 
     image.steg();

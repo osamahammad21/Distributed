@@ -21,6 +21,7 @@ public:
 private:
     Ui::viewSamples *ui;
     User * user;
+    QWidget * parent;
 };
 
 #endif // VIEWSAMPLES_H

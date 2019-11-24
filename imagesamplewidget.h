@@ -15,7 +15,7 @@ class imageSampleWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit imageSampleWidget(string imageName ="", string preview="", string username="", User * user = nullptr, QWidget *parent = nullptr);
+    explicit imageSampleWidget(string imageName ="", string preview="", string username="", User * user = nullptr, QWidget *parent = nullptr, QWidget * grandparent = nullptr);
     ~imageSampleWidget();
 
 private slots:
@@ -29,7 +29,7 @@ private:
     string ownerUsername;
     string imageName;
     User * user;
-    QWidget * parent;
+    QWidget * grandparent;
 };
 
 #endif // IMAGESAMPLEWIDGET_H

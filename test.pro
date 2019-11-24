@@ -15,6 +15,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 SOURCES += \
+    allimagesforuser.cpp \
     homewindow.cpp \
     imagesamplewidget.cpp \
     main.cpp \
@@ -35,6 +36,7 @@ SOURCES += \
 
 HEADERS += \
     ImageModel.h \
+    allimagesforuser.h \
     homewindow.h \
     imagesamplewidget.h \
     mainwindow.h \
@@ -53,6 +55,7 @@ HEADERS += \
     viewsamples.h
 
 FORMS += \
+    allimagesforuser.ui \
     homewindow.ui \
     imagesamplewidget.ui \
     mainwindow.ui \

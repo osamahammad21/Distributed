@@ -37,7 +37,6 @@ bool User :: uploadPhoto(Image image){
     image.getImageId(imageName);
     peer->addImageLocally(imageName);
     string photo = image.getSmallScaleImage();
-    cout<<photo<<endl;
     string reply = peer->uploadImage(this->token, imageName, photo);
     if (reply == "ok"){
         image.removeMiddleFiles();
@@ -85,11 +84,13 @@ bool User:: getAllImages(){
 
 string User :: getImage(string ownerUsername, string imageName){
     string reply = peer->getPortnIP(token, ownerUsername);
+    cout << reply << endl;
     vector <string> args;
     split(reply, args, ',');
 
     reply = peer->getImage(username, ownerUsername, args[1], stoi(args[0]), imageName);
     return reply;
+    cout << reply << endl;
 }
 
 void User:: getUsersSamples(map<string, vector<imageSample>> & samples){
