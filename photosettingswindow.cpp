@@ -79,7 +79,10 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
     for (int i=0; i<image.properties.size(); i++)
         cout << image.properties[i].user_name << " " << image.properties[i].views << endl;
 
-    image.writeProperties();
+    if (upload)
+        image.writeProperties();
+    else
+        image.updateProperties();
 
     image.steg();
 

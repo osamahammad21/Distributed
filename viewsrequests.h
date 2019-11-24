@@ -2,9 +2,10 @@
 #define VIEWSREQUESTS_H
 
 #include <QMainWindow>
-#include "user.h"
 #include <string>
 #include <QWidget>
+#include "Image.h"
+#include "user.h"
 using namespace std;
 
 namespace Ui {
@@ -16,7 +17,7 @@ class viewsRequests : public QMainWindow
     Q_OBJECT
 
 public:
-     explicit viewsRequests(User * user = nullptr, string requesterUsername = "", string imageName = "", QWidget *parent = nullptr);
+     explicit viewsRequests(Peer * peer, string ownerUsername, string requesterUsername = "", string imageName = "", QWidget *parent = nullptr);
     ~viewsRequests();
 
 private slots:
@@ -26,7 +27,8 @@ private slots:
 
 private:
     Ui::viewsRequests *ui;
-    User * user;
+    Peer *peer;
+    string ownerUsername;
     string requesterUsername;
     string imageName;
     Image image;

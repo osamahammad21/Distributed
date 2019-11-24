@@ -8,10 +8,14 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
 {   
     ui->setupUi(this);
     this->user = user;
+    this->ownerUsername = ownerUsername;
+    this->imageName = imageName;
 
     Image tempImage;
+    tempImage.setImageDir(user->getUsername());
     string photo;
     Image * im;
+    im->setImageDir(user->getUsername());
     if (tempImage.findImage(ownerUsername, imageName)){
         photo = tempImage.extractImage();
         im = &tempImage;
@@ -33,7 +37,7 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
         for (i=0; i< im->properties.size(); i++){
 
             if (im->properties[i].user_name == user->getUsername()){
-                ui->label_no_views->setText(QString::fromStdString(to_string( im->properties[i].views )));
+                ui->label_no_views->setText(QString::fromStdString("Remaining Views = " + to_string(im->properties[i].views > 0 ? im->properties[i].views-1 : 0)));
                 existsInProperties = true;
 
                 if(im->properties[i].views <= 0){
@@ -42,6 +46,7 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
                 else{
                     path = im->getAuthorizedImagePath();
                     im->properties[i].views--;
+                    ui->pushButton_more_views->setVisible(false);
                 }
                 break;
             }
@@ -50,7 +55,7 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
         im->writeProperties();
 
         if (!existsInProperties){
-            ui->label_no_views->setText(QString::fromStdString("0"));
+            ui->label_no_views->setText(QString::fromStdString("Remaining views = 0"));
             path = im->getUnAuthorizedImagePath();
         }
     } else {
@@ -91,4 +96,9 @@ void ViewPhotoWindow::on_pushButton_logout_clicked()
         mainWindow->show();
         destroy();
     }
+}
+
+void ViewPhotoWindow::on_pushButton_more_views_clicked()
+{
+    user->requestImageAccess(ownerUsername, imageName);
 }

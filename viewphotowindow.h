@@ -24,10 +24,14 @@ private slots:
 
     void on_pushButton_logout_clicked();
 
+    void on_pushButton_more_views_clicked();
+
 private:
     ImageModel image;
     Ui::ViewPhotoWindow *ui;
     User * user;
+    string ownerUsername;
+    string imageName;
 };
 
 #endif // VIEWPHOTOWINDOW_H

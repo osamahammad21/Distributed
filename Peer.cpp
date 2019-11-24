@@ -634,6 +634,7 @@ string Peer::getImageUpdates()
         {
             reply = string(accessMessages.front()->getMessage());
             reply = reply +DELIM+ accessMessages.front()->getSourceIP() +DELIM+to_string(accessMessages.front()->getSourcePort());
+            //requesterUsername+ownerUsername+imageName+requesterIP+requesterPort
             // cout<<reply<<endl;
             accessMtx.lock();
             accessMessages.pop();

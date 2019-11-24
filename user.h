@@ -25,6 +25,8 @@ public:
     void getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages);
     void getMyImages(vector <imageSample> & myPhotos);
     void serveRequestViews();
+    void requestImageAccess(string ownerUsername, string imageName);
+    void giveImageAccess(string targetUsername, string imageName, int views);
 
 private:
     string username;

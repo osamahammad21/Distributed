@@ -3,6 +3,8 @@
 User::User(Peer * peer)
 {
     this->peer = peer;
+
+    thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
 }
 
 bool User :: login(string username, string password){
@@ -48,6 +50,7 @@ bool User :: uploadPhoto(Image image){
     }
     else
         return false;
+
 }
 
 bool User :: logout(){
@@ -141,6 +144,7 @@ void User :: getMyImages(vector <imageSample> & myPhotos){
     do{
         in >> imageName;
         Image i;
+        i.setImageDir(username);
         if (i.findImage(username, imageName)){
             imageSample temp;
             temp.imageName = imageName;
@@ -154,9 +158,29 @@ void User :: getMyImages(vector <imageSample> & myPhotos){
 
 void User :: serveRequestViews(){
     string reply = peer->getImageUpdates();
+    vector <string> args;
+    split(reply, args, ',');
     string requesterUsername, imageName;
-    //get username and imageName from reply using split
-//   viewsRequest * popUp = new viewsRequest(this, requesterUsername, imageName, nullptr);
-//   popUp->show();
+    viewsRequests * popUp = new viewsRequests(peer, args[1], args[0], args[2], nullptr);
+    popUp->show();
 }
 
+void User :: requestImageAccess(string ownerUsername, string imageName){
+    cout << "Message sent from user to DS\n";
+    string reply = peer->getPortnIP(token, ownerUsername);
+    cout << "Reply received by user from DS\n";
+    vector <string> args;
+    split(reply, args, ',');
+    cout << "Message sent to peer\n";
+    peer->requestImageAccess(username, ownerUsername, args[1],stoi(args[0]),imageName);
+}
+
+void User :: giveImageAccess(string targetUsername, string imageName, int views){
+    cout << "Message sent from user to DS\n";
+    string reply = peer->getPortnIP(token, targetUsername);
+    cout << "Reply received by user from DS\n";
+    vector <string> args;
+    split(reply, args, ',');
+    cout << "Message sent to peer\n";
+    peer->sendImageAccess(username, targetUsername, args[1], stoi(args[0]), imageName, views);
+}
