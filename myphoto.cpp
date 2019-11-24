@@ -23,7 +23,6 @@ myPhoto::myPhoto(User * user, string imageName, string preview, Image image, QWi
     QPixmap pixmap("out3_img.jpg");
     ui->label_preview->setPixmap(pixmap);
     ui->label_preview->show();
-    ui->setupUi(this);
 }
 
 myPhoto::~myPhoto()
@@ -35,17 +34,18 @@ void myPhoto::on_pushButton_changeSettings_clicked()
 {
     PhotoSettingsWindow * settingsWin = new PhotoSettingsWindow(false, image, user, nullptr);
     settingsWin->show();
-    destroy();
-}
-
-void myPhoto::on_pushButton_imageName_clicked()
-{
-    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, user->getUsername(), imageName);
-    viewPhotoWindow->show();
     grandparent->close();
 }
 
 void myPhoto::on_pushButton_delete_clicked()
 {
+    cout << "Delete clicked. Not implemented yet\n";
     //not implemented by DS yet
+}
+
+void myPhoto::on_pushButton_viewImage_clicked()
+{
+    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, user->getUsername(), imageName);
+    viewPhotoWindow->show();
+    grandparent->close();
 }

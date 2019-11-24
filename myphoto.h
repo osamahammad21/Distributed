@@ -20,9 +20,9 @@ public:
 private slots:
     void on_pushButton_changeSettings_clicked();
 
-    void on_pushButton_imageName_clicked();
-
     void on_pushButton_delete_clicked();
+
+    void on_pushButton_viewImage_clicked();
 
 private:
     Ui::myPhoto *ui;

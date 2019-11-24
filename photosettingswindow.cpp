@@ -18,7 +18,8 @@ PhotoSettingsWindow::PhotoSettingsWindow(bool upload, Image image, User * user, 
             if (image.properties[i].views!=0){
                 users.insert(std::pair<std::string, int>(image.properties[i].user_name, image.properties[i].views));
                 users[image.properties[i].user_name] = image.properties[i].views;
-            }
+            }   
+        viewItemsInListWidget();    
     }
 }
 

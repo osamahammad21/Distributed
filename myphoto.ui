@@ -44,7 +44,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_imageName">
+           <widget class="QPushButton" name="pushButton_viewImage">
             <property name="text">
              <string>View Photo</string>
             </property>

@@ -25,30 +25,36 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
 
     string path;
     int i;
-    im->readProperties();
-    bool existsInProperties = false;
-    for (i=0; i< im->properties.size(); i++){
+    if (user->getUsername() != ownerUsername){
+        im->readProperties();
+        bool existsInProperties = false;
+        for (i=0; i< im->properties.size(); i++){
 
-        if (im->properties[i].user_name == user->getUsername()){
-            ui->label_no_views->setText(QString::fromStdString(to_string( im->properties[i].views )));
-            existsInProperties = true;
+            if (im->properties[i].user_name == user->getUsername()){
+                ui->label_no_views->setText(QString::fromStdString(to_string( im->properties[i].views )));
+                existsInProperties = true;
 
-            if(im->properties[i].views <= 0){
-                path = im->getUnAuthorizedImagePath();
+                if(im->properties[i].views <= 0){
+                    path = im->getUnAuthorizedImagePath();
+                }
+                else{
+                    path = im->getAuthorizedImagePath();
+                    im->properties[i].views--;
+                }
+                break;
             }
-            else{
-                path = im->getAuthorizedImagePath();
-                im->properties[i].views--;
-            }
-            break;
         }
-    }
 
-    im->writeProperties();
+        im->writeProperties();
 
-    if (!existsInProperties){
-        ui->label_no_views->setText(QString::fromStdString("0"));
-        path = im->getUnAuthorizedImagePath();
+        if (!existsInProperties){
+            ui->label_no_views->setText(QString::fromStdString("0"));
+            path = im->getUnAuthorizedImagePath();
+        }
+    } else {
+        path = im->getAuthorizedImagePath();
+        ui->label_no_views->setText("Owner");
+        ui->pushButton_more_views->setVisible(false);
     }
     this->setWindowTitle(QString::fromStdString(image.image_name));
 
