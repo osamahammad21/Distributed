@@ -16,17 +16,33 @@ int main()
     cout<<token2<<endl;
     // peer.setTimeOut(2);
     cout<<peer.getPortnIP(token2,"test3")<<endl;
-    cout<<peer.uploadImage(token1,"img1", "imgggggg");
+    cout<<peer.uploadImage(token1,"img1", "imggg1");
+    cout<<peer.uploadImage(token1,"img2", "imggg2");
+    cout<<peer.uploadImage(token1,"img3", "imggg3");
+    usleep(2000000);
 
-    int i = 0;
+    cout << peer.removeImage(token1, "img2")<< endl;
+        usleep(2000000);
+
+        cout << peer.removeImage(token1, "img1")<< endl;
+            usleep(2000000);
+
+    cout << "get all imgs " << peer.getAllImagesFromDS( token1) << endl;
+
+
+
+    /*int i = 0;
     while(1)
     {
     cout << "image upload number i " << i++;
     string imgname = "meh" + to_string(i);
     string imtnnname = "mehh" + to_string(i);
+    cout << "upload " << i << endl;
     cout<<peer.uploadImage(token1,imgname,imtnnname);
-    usleep(1000000);
-    }
+    usleep(2000000);
+    cout << peer.removeImage(token1, imgname);
+    cout << "removed " << i << endl;
+    }*/
     // peer.removeTimeOut();
     // cout<<peer.login("ss","123")<<endl;
 
