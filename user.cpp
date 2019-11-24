@@ -146,3 +146,11 @@ void User :: getMyImages(vector <imageSample> & myPhotos){
     }while (!in.eof());
 }
 
+void User :: serveRequestViews(){
+    string reply = peer->getImageUpdates();
+    string requesterUsername, imageName;
+    //get username and imageName from reply using split
+//   viewsRequest * popUp = new viewsRequest(this, requesterUsername, imageName, nullptr);
+//   popUp->show();
+}
+

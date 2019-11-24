@@ -6,6 +6,7 @@ using namespace std;
 #include "Peer.h"
 #include "ImageModel.h"
 #include <fstream>
+#include "viewsrequests.h"
 
 struct imageSample { string imageName; string preview; Image im;};
 
@@ -23,6 +24,7 @@ public:
     void getUsersSamples(map<string, vector<imageSample>> & samples);
     void getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages);
     void getMyImages(vector <imageSample> & myPhotos);
+    void serveRequestViews();
 
 private:
     string username;

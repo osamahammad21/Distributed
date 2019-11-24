@@ -19,6 +19,8 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
     else {
         string photo = user->getImage(ownerUsername, imageName);
         im = new Image();
+        //uncomment this
+//        im->setDirectory(user->getUsername());
         im->writeImage(photo, ownerUsername, imageName);
         im->desteg();
     }

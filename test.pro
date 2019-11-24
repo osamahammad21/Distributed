@@ -35,7 +35,8 @@ SOURCES += \
     Image.cpp \
     UDPSocket.cpp \
     Peer.cpp \
-    viewsamples.cpp
+    viewsamples.cpp \
+    viewsrequests.cpp
 
 HEADERS += \
     ImageModel.h \
@@ -58,7 +59,8 @@ HEADERS += \
     Image.h \
     UDPSocket.h \
     Peer.h \
-    viewsamples.h
+    viewsamples.h \
+    viewsrequests.h
 
 FORMS += \
     allimagesforuser.ui \
@@ -74,7 +76,8 @@ FORMS += \
     viewalluserphotoswin.ui \
     viewmyphotos.ui \
     viewsamples.ui\
-    viewphotowindow.ui
+    viewphotowindow.ui \
+    viewsrequests.ui
 
 
 # Default rules for deployment.

@@ -43,6 +43,8 @@ void UploadPhotoWindow::on_pushButton_upload_clicked()
     }
     if (filename != NULL && imageName != NULL){
         Image image;
+        //uncomment
+//        image.setDirectory(user->getUsername());
         image.setownerUsername(this->user->getUsername());
         image.setImageId(imageName.toStdString());
         image.chooseImage(filename.toStdString());
