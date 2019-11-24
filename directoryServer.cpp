@@ -271,10 +271,12 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 	rapidcsv::Document doc(usersFile);
 
 	vector<string>temp = doc.GetRowNames();
-	string username;//user with the token sent
+	string username="";//user with the token sent
 	for (int i = 0; i < temp.size(); i++)
 		if (usersDict[temp[i]].token == token)
 			username = temp[i];
+	if (username == "")
+		return;
 	if (usersDict[username].imageCount == NULL)
 	{
 		string ok ="image not found";
@@ -296,24 +298,27 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 
 		
 	}
+	int index = 0;
 	for (int j = 6; j < 6 + usersDict[username].imageCount * 2; j += 2)
 	{
 		if (doc.GetCell<string>(j, username) == imagename)
 		{
-			int index = 0;
 			for (int i = 0; i < temp.size(); i++)
 			{
 				if (doc.GetRowName(i) == username)
+				{
 					index = i;
+				}
 			}
 
 			doc.SetCell<string>(j,index,"");
-			doc.SetCell<string>(j,index+1,"");
+			doc.SetCell<string>(j+1,index,"");
 			doc.SetCell<int>("imageCount",username,usersDict[username].imageCount -1);
 			usersDict[username].imageName.erase(usersDict[username].imageName.begin() + j);
-			usersDict[username].image64.erase(usersDict[username].imageName.begin() + j);
+			usersDict[username].image64.erase(usersDict[username].image64.begin() + j);
 			usersDict[username].imageCount--;
 			found = true;
+			doc.Save();
 		}
 		if (found)
 			break;
@@ -437,10 +442,10 @@ string directoryServer::getAllImages(string& token, Message*msg, directoryServer
 		if (doc.GetCell<string>("imageCount", i) == "")
 			continue;
 		int imageCount = doc.GetCell<int>("imageCount", i);
-		for (int j = 0; j < imageCount*2; j+=2)
+		for (int j = 0; j < int(doc.GetColumnCount()-6); j+=2)
 		{
 			if (doc.GetCell<string>(j+6, i) != "")
-				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i)) + ",";
+			imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i)) + ",";
 		}
 	}
 
