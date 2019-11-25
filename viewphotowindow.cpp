@@ -61,7 +61,6 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
     this->setWindowTitle(QString::fromStdString(image.image_name));
 
     int n = path.length();
-    cout << path << endl;
     char *char_array=new char[n+1];
     strcpy(char_array, path.c_str());
     QPixmap pixmap(char_array);

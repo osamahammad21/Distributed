@@ -11,7 +11,6 @@ ViewMyPhotos::ViewMyPhotos(User * user, QWidget *parent) :
 
     vector <imageSample> myPhotos;
     user->getMyImages(myPhotos);
-    cout << myPhotos.size() << endl;
     for (int i=0; i<myPhotos.size(); i++)
         addSample(myPhotos[i].imageName, myPhotos[i].preview, myPhotos[i].im);
 }

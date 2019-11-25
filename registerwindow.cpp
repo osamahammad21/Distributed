@@ -20,7 +20,6 @@ void RegisterWindow::on_pushButton_signup_clicked()
     QString password = ui->lineEdit_password->text();
 
     if (user->signup(username.toStdString(), password.toStdString())){
-        cout << "Sign Up Completed" << endl;
         HomeWindow *homeWindow = new HomeWindow(user, this);
         homeWindow->show();
         destroy();
