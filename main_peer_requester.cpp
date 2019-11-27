@@ -27,6 +27,10 @@ int main()
     cout<<peer.uploadImage(token3,"img2", "imggg2");
     cout<<peer.uploadImage(token3,"img3", "imggg3");
     
+    cin>>start;
+    cout<<peer.removeImage(token1, "img12")<<endl;
+    cout<<peer.removeImage(token2, "img23")<<endl;
+    cout<<peer.removeImage(token3, "img333")<<endl;
 
     cin>>start;
     peer.removeImage(token1, "img1");
