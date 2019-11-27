@@ -4,7 +4,6 @@ User::User(Peer * peer)
 {
     this->peer = peer;
 
-    thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
 }
 
 bool User :: login(string username, string password){
@@ -16,6 +15,7 @@ bool User :: login(string username, string password){
         this->username = username;
         this->token = reply;
         peer->startStatusUpdates(this->token);
+        thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
         return true;
 }
 
@@ -160,18 +160,18 @@ void User :: getMyImages(vector <imageSample> & myPhotos){
     }while (!in.eof());
 }
 void User :: serveRequestViews(){
-    while (1) {
+        cout << "Pop up function" << endl;
         string reply = peer->getImageUpdates();
-        vector <string> args;
-        split(reply, args, ',');
-        string requesterUsername, imageName;
-        viewsRequests * popUp = new viewsRequests(peer, token, args[1], args[0], args[2], nullptr);
-        popUp->show();
-        QEventLoop loop;
-        QObject :: connect(popUp, SIGNAL(destroyed()), & loop, SLOT(quit()));
-        loop.exec();
-        cout<<"destroyed\n";
-    }
+        emit requestAccessPopUp(reply);
+//        vector <string> args;
+//        split(reply, args, ',');
+//        viewsRequests * popUp = new viewsRequests(peer, token, args[1], args[0], args[2], nullptr);
+//        popUp->show();
+
+//        QEventLoop loop;
+//        QObject :: connect(popUp, SIGNAL(destroyed()), & loop, SLOT(serveRequestViews()));
+//        loop.exec();
+//        cout<<"destroyed\n";
 }
 
 void User :: requestImageAccess(string ownerUsername, string imageName){
@@ -182,4 +182,18 @@ void User :: requestImageAccess(string ownerUsername, string imageName){
     split(reply, args, ',');
     cout << "Message sent to peer\n";
     peer->requestImageAccess(username, ownerUsername, args[1],stoi(args[0]),imageName);
+}
+
+void User :: requestAccessPopUp(string reply){
+    vector <string> args;
+    split(reply, args, ',');
+    viewsRequests * popUp = new viewsRequests(peer, token, args[1], args[0], args[2], nullptr);
+    popUp->show();
+
+            QEventLoop loop;
+            QObject :: connect(popUp, SIGNAL(destroyed()), & loop, SLOT(QUIT()));
+            thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
+            cout << "destroyed 0\n";
+            loop.exec();
+            cout << "destroyed\n";
 }

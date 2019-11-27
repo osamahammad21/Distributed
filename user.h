@@ -8,6 +8,7 @@ using namespace std;
 #include <fstream>
 #include "viewsrequests.h"
 #include <QEventLoop>
+#include <QObject>
 
 struct imageSample { string imageName; string preview; Image im;};
 
@@ -25,9 +26,17 @@ public:
     void getUsersSamples(map<string, vector<imageSample>> & samples);
     void getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages);
     void getMyImages(vector <imageSample> & myPhotos);
-    void serveRequestViews();
     void requestImageAccess(string ownerUsername, string imageName);
     void giveImageAccess(string targetUsername, string imageName, int views);
+    void serveRequestViews();
+
+private slots:
+    void requestAccessPopUp(string);
+
+signals:
+    void requestAccessReceived();
+
+
 
 private:
     string username;

@@ -28,6 +28,12 @@ viewsRequests::viewsRequests(Peer * peer, string token, string ownerUsername, st
     QPixmap pixmap("out4_img.jpg");
     ui->label_preview->setPixmap(pixmap);
     ui->label_preview->show();
+
+     connect(ui->pushButton_reject, SIGNAL(clicked()), this, SLOT(on_pushButton_reject_clicked()));
+     connect(ui->pushButton_giveAccess, SIGNAL(clicked()), this, SLOT(on_pushButton_giveAccess_clicked()));
+//    class thread * giveAccess = new std::thread(& viewsRequests:: on_pushButton_giveAccess_clicked, this);
+//    class thread * rejectAccess = new std::thread(& viewsRequests:: on_pushButton_reject_clicked, this);
+
 }
 
 viewsRequests::~viewsRequests()
