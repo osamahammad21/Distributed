@@ -204,7 +204,7 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 	if(count != "")
 	{
 		int count_int = doc.GetCell<int>("imageCount",username);
-		if (count_int >= 3)
+		if (count_int >= 10)
 		{
 			string ok ="maximum samples reached";
 			cout << "maxmimum samples reached" << endl;
@@ -275,6 +275,7 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 	for (int i = 0; i < temp.size(); i++)
 		if (usersDict[temp[i]].token == token)
 			username = temp[i];
+	mtx.unlock();
 	if (username == "")
 		return;
 	if (usersDict[username].imageCount == NULL)
@@ -310,7 +311,7 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 					index = i;
 				}
 			}
-
+			mtx.lock();
 			doc.SetCell<string>(j,index,"");
 			doc.SetCell<string>(j+1,index,"");
 			doc.SetCell<int>("imageCount",username,usersDict[username].imageCount -1);
@@ -319,6 +320,7 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 			usersDict[username].imageCount--;
 			found = true;
 			doc.Save();
+			mtx.unlock();
 		}
 		if (found)
 			break;
@@ -344,7 +346,6 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 	}
 
 	
-	mtx.unlock();
 	string ok ="image removed";
 	int n = ok.length(); 
     char *char_array=new char[n+1]; 

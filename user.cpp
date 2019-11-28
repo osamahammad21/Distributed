@@ -146,12 +146,13 @@ int User :: getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwn
     cout << "Reply received by user from DS\n";
     vector <string> args;
     split(reply, args, ',');
+    peer->setTimeOut(60);
     cout << "Message sent to peer\n";
     reply = peer->getAllImagesFromPeer(username, ownerUsername, args[1], stoi(args[0]));
     if (reply == CONN_TIMEOUT)
         return CONN_FAILURE;
     cout << "Reply received from peer\n";
-
+    peer->setTimeOut(20);
     split(reply, args, ',');
     for (int i=0; i < args.size(); i+=2){
         imageSample temp;
@@ -182,7 +183,7 @@ void User :: getMyImages(vector <imageSample> & myPhotos){
     }while (!in.eof());
 }
 void User :: serveRequestViews(){
-        cout << "Pop up function" << endl;
+        cout << "Listening for access requests" << endl;
         string reply = peer->getImageUpdates();
         emit requestAccessPopUp(reply);
 }
@@ -212,4 +213,20 @@ void User :: requestAccessPopUp(string reply){
     cout << "destroyed 0\n";
     loop.exec();
     cout << "destroyed\n";
+}
+
+int User :: removeImage(string imageName){
+    cout << "Message sent to DS\n";
+    string reply = peer->removeImage(token, imageName);
+    cout << "Reply received from DS\n";
+
+    cout << "Removing image locally\n";
+    peer->removeImageLocally(imageName);
+    cout << "Removed image locally\n";
+
+    if (reply == CONN_TIMEOUT)
+        return CONN_FAILURE;
+    if (reply == "image not found")
+        return PARAM_ERROR;
+    return MSG_SUCCESS;
 }

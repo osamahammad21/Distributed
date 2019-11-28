@@ -29,6 +29,7 @@ private:
     User * user;
     string imageName;
     QWidget * grandparent;
+    QWidget * parent;
     Image image;
 
 };

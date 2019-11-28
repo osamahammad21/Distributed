@@ -8,6 +8,7 @@ myPhoto::myPhoto(User * user, string imageName, string preview, Image image, QWi
     ui->setupUi(this);
     this->user = user;
     this->imageName = imageName;
+    this->parent = parent;
     this->grandparent = grandparent;
     this->image = image;
 
@@ -45,8 +46,11 @@ void myPhoto::on_pushButton_changeSettings_clicked()
 
 void myPhoto::on_pushButton_delete_clicked()
 {
-    cout << "Delete clicked. Not implemented yet\n";
-    //not implemented by DS yet
+    int status = user->removeImage(imageName);
+    if (status == CONN_FAILURE)
+        ui->label_status->setText("Connection error. Try again later.");
+    destroy();
+    setVisible(false);
 }
 
 void myPhoto::on_pushButton_viewImage_clicked()

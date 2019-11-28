@@ -27,7 +27,7 @@ void ViewMyPhotos :: addSample(string imageName, string preview, Image image)
 {
     myPhoto* widget = new myPhoto(user, imageName, preview, image, this, parent);
     QListWidgetItem* lwi = new QListWidgetItem("");
-    lwi->setSizeHint(QSize(0,90));
+    lwi->setSizeHint(QSize(0,110));
     lwi->setFlags(lwi->flags() & ~Qt::ItemIsSelectable);
     ui->listWidget->addItem(lwi);
     ui->listWidget->setItemWidget(lwi, widget);

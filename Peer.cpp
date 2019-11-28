@@ -590,7 +590,6 @@ void Peer::serve()
                     
                 }else if(serveMessages[i]->getOperation()==Operation::addImageAccess)
                 {
-                    cout << "Adding access\n";
                     vector<string> fields;
                     split(serveMessages[i]->getMessage(),fields,',');
                     if(fields.size()<4)
@@ -608,7 +607,6 @@ void Peer::serve()
                         {
                             found=true;
                             img.properties[i].views+=stoi(fields[3]);
-                            cout << fields[3] << endl;
                         }
                     if(!found)
                     {
@@ -616,7 +614,6 @@ void Peer::serve()
                         prop.user_name=fields[1];
                         prop.views=stoi(fields[3]);
                         img.properties.push_back(prop);
-                        cout << fields[1] << " " << fields[3] << endl;
                     }
                     img.updateProperties();
                     img.desteg();
@@ -632,13 +629,11 @@ void Peer::serve()
 }
 string Peer::getImageUpdates()
 {
-    cout << "I am waiting for access request" << endl;
     string reply;
     while(!dest)
     {
         if(!accessMessages.empty())
         {
-            cout << "Access request" << endl;
             reply = string(accessMessages.front()->getMessage());
             reply = reply +DELIM+ accessMessages.front()->getSourceIP() +DELIM+to_string(accessMessages.front()->getSourcePort());
             //requesterUsername+ownerUsername+imageName+requesterIP+requesterPort
