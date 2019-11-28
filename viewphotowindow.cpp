@@ -109,5 +109,10 @@ void ViewPhotoWindow::on_pushButton_logout_clicked()
 
 void ViewPhotoWindow::on_pushButton_more_views_clicked()
 {
-    user->requestImageAccess(ownerUsername, imageName);
+    int status = user->requestImageAccess(ownerUsername, imageName);
+    if (status == CONN_FAILURE){
+        ui->label_status->setText("Connection error. Try again later.");
+        ui->label_status->setVisible(true);
+    }
+        
 }

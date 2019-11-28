@@ -181,25 +181,19 @@ void User :: serveRequestViews(){
         cout << "Pop up function" << endl;
         string reply = peer->getImageUpdates();
         emit requestAccessPopUp(reply);
-//        vector <string> args;
-//        split(reply, args, ',');
-//        viewsRequests * popUp = new viewsRequests(peer, token, args[1], args[0], args[2], nullptr);
-//        popUp->show();
-
-//        QEventLoop loop;
-//        QObject :: connect(popUp, SIGNAL(destroyed()), & loop, SLOT(serveRequestViews()));
-//        loop.exec();
-//        cout<<"destroyed\n";
 }
 
-void User :: requestImageAccess(string ownerUsername, string imageName){
+int User :: requestImageAccess(string ownerUsername, string imageName){
     cout << "Message sent from user to DS\n";
     string reply = peer->getPortnIP(token, ownerUsername);
+    if (reply == CONN_TIMEOUT)
+        return CONN_FAILURE;
     cout << "Reply received by user from DS\n";
     vector <string> args;
     split(reply, args, ',');
     cout << "Message sent to peer\n";
     peer->requestImageAccess(username, ownerUsername, args[1],stoi(args[0]),imageName);
+    return MSG_SUCCESS;
 }
 
 void User :: requestAccessPopUp(string reply){

@@ -31,7 +31,7 @@ public:
     int getUsersSamples(map<string, vector<imageSample>> & samples);
     int getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages);
     void getMyImages(vector <imageSample> & myPhotos);
-    void requestImageAccess(string ownerUsername, string imageName);
+    int requestImageAccess(string ownerUsername, string imageName);
     void giveImageAccess(string targetUsername, string imageName, int views);
     void serveRequestViews();
 
