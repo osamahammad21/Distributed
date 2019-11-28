@@ -12,60 +12,31 @@ int main(int argc, char ** argv)
     unsigned int myPort = stoi(argv[3]);
     unsigned int destPort = stoi(argv[4]);
 
-    bool stop = false;
     string input;
-
+    bool stop = false;
     UDPSocket sockobj;
-    struct sockaddr_in peerAddr;
 
     bool meh = sockobj.initializeSocket(myPort);
     cout << "MY IP" << sockobj.getMachineIP();
-    cout << "finished Contrustion wtf holly shit" << endl;
-    time_t meeh = 90;
-    int i=0;
-    ifstream inputfile;
-    inputfile.open("data.txt");
-    string book="";
-    while(!inputfile.eof())  
-    {
-        getline(inputfile,input);
-        book+=input;
-    } 
-    //read jpg
 
-    //cout << extract << endl;
     int j = 0;
-    while(true)
+    int i = 0;
+    while(!stop)
     {
     cin >> input;
+
+    if(input == "q")
+        stop=true;
 
     ifstream fin("trial.jpg",ios::binary);
     string extract = string(istreambuf_iterator<char>(fin), istreambuf_iterator<char>());
     extract = base64_encode(reinterpret_cast<const unsigned char*>(reinterpret_cast<const unsigned char*> (extract.c_str())), extract.size() + 1);
-    //extract = "helloz";
     char * str = new char[extract.size()];  
     strcpy(str, extract.c_str());
-    //cout << "extract size" << extract.size() << endl;
     Message *m =new Message(Request, 1, 3, sockobj.getMyIP(), sockobj.getMyPort(), destIP, destPort, ++i, 8, extract.size(), str);
-    sockobj.sendMessage(m);
-    /*Message * newM = sockobj.receiveMsg();
-    if(newM != NULL)
-    {
-    int size = newM->getMessageSize();
-    char *c = new char[size];
-    c = newM->getMessage();
-    int i=0;
-    string img;
-    while(size--)
-    img+=c[i++];
-    img = base64_decode(img);
 
-    ofstream out;
-    string path = "out_img" + to_string(j) + ".jpg";
-    out.open(path, ios_base::out | ios_base::binary);
-    out << img;
-    out.close();
-    }*/
+    sockobj.sendMessage(m);
+
     }
 
     // while(!stop && input != "q")

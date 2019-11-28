@@ -37,17 +37,23 @@ class UDPSocket
         string myAddress_str;
         thread * ReceiveThread;
         thread* SendThread;
+        thread * FaultThread;
         mutex ReceiveBufferMtx;
         mutex SendBufferMtx;
+        mutex NonAckedMtx;
+        mutex sockMtx;
         bool enabled = true;
         unsigned int FRAG_MSG_SIZE = 10000;
         unsigned int SOCK_MAX_BUFFER_SIZE = 100000;
+        unsigned int faultTrials = 4;
         ofstream outFile;
         bool dest=false;
 	void setBroadcast(int s);
     public:   
         queue<Message *> ReceiveBuffer;
         queue<Message *> SendBuffer; 
+        //<string(MSGID+fragc), <trialsLeft, Message *>>
+        unordered_map<string, pair<unsigned int, Message *>> NonAcked;
         UDPSocket ();    
         bool initializeSocket(char * _myAddr, unsigned int _myPort);
         bool initializeSocket(unsigned int _myPort);
@@ -59,8 +65,11 @@ class UDPSocket
         bool sendMessage(Message * FullMessage);
         void fragmentMsg(Message * FullMessage, vector<Message *> & frags);
         string getMsgID(Message* message);
+        string getFragmentID(Message* message);
+
         void sendingHandler(UDPSocket * myUDPSocket);
         void receiveHandler(UDPSocket * myUDPSocket);
+        void faultToleranceHandler(UDPSocket * myUDPSockeT);
         ~UDPSocket ( );
 };
 #endif // UDPSOCKET_H

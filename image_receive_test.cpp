@@ -16,21 +16,18 @@ int main(int argc, char ** argv)
     string input;
 
     UDPSocket sockobj;
-    struct sockaddr_in peerAddr;
-
+    cout << "what's wrong" << endl;
     bool meh = sockobj.initializeSocket(myPort);
     cout << "MY IP" << sockobj.getMachineIP();
-    cout << "finished Contrustion " << endl;
-    time_t meeh = 90;
-    int i=0;
-   
+
+    int i=0;   
     int j = 0;
     string extract;
     while(true)
     {
         Message * newM = sockobj.receiveMsg();
         cout << "Received Msg of size " << newM->getMessageSize() << endl;
-        cout << "time stamp = " << newM->getMessageTimestamp() << endl;
+        cout << "Time stamp = " << newM->getMessageTimestamp() << endl;
         
         if(newM != NULL)
         {
@@ -44,7 +41,7 @@ int main(int argc, char ** argv)
         img = base64_decode(img);
 
         ofstream out;
-        string path = "out_img" + to_string(j) + ".jpg";
+        string path = "out_img" + to_string(j++) + ".jpg";
         out.open(path, ios_base::out | ios_base::binary);
         out << img;
         out.close();

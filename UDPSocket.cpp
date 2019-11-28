@@ -115,6 +115,8 @@ bool UDPSocket ::initializeSocket(unsigned int _myPort)
 
     this->ReceiveThread = new thread(&UDPSocket::receiveHandler,this, this);
     this->SendThread = new thread(&UDPSocket::sendingHandler,this, this);  
+    this->FaultThread = new thread(&UDPSocket::faultToleranceHandler,this, this);  
+
 
     return true; 
 }
@@ -202,6 +204,11 @@ string UDPSocket::getMsgID(Message* message)
     string ID = message->getSourceIP() +to_string(message->getSourcePort()) +to_string(message->getRPCId()) + to_string(message->getMessageTimestamp());
     return ID;
 }
+string UDPSocket::getFragmentID(Message* message)
+{
+    string ID = message->getSourceIP() +to_string(message->getSourcePort()) +to_string(message->getRPCId()) +to_string(message->getFragmentCount());
+    return ID;
+}
 void UDPSocket::receiveHandler(UDPSocket * myUDPSocket)
 {
 
@@ -227,13 +234,32 @@ void UDPSocket::receiveHandler(UDPSocket * myUDPSocket)
     {
         int bytesAtPort = recvfrom(sock, buffer, myUDPSocket->SOCK_MAX_BUFFER_SIZE,0, (struct sockaddr*)&from, &fromlen);
 
-        if(bytesAtPort<0){
-            myUDPSocket->outFile<<"ReceiveHandler: receive failed";
+        if(bytesAtPort<0)
+        {
+            myUDPSocket->outFile<<"ReceiveHandlNonAckeder: receive failed";
             continue;
         }
 
         Message * currMessage = new Message(buffer);
         string msgID = myUDPSocket->getMsgID(currMessage);
+
+        if(currMessage->getMessageType() == MessageType::Ack)
+        {
+            string id = myUDPSocket->getFragmentID(currMessage);
+            myUDPSocket->NonAckedMtx.lock();
+            myUDPSocket->NonAcked.erase(id);
+            myUDPSocket->NonAckedMtx.unlock();
+
+        }
+        else
+        {
+            currMessage->setMessageType(MessageType::Ack);
+            myUDPSocket->SendBufferMtx.lock();
+            myUDPSocket->sendMessage(currMessage);
+            myUDPSocket->SendBufferMtx.unlock();
+
+        }
+        
 
         //First fragment
         if(Map.find(msgID) == Map.end())
@@ -275,12 +301,67 @@ void UDPSocket::receiveHandler(UDPSocket * myUDPSocket)
 
 }
 
+void UDPSocket::faultToleranceHandler(UDPSocket * myUDPSocket)
+{
+    if(!dest)
+    {
+        if(myUDPSocket->NonAcked.size())
+        {
+            seconds ms = duration_cast< seconds >(system_clock::now().time_since_epoch());  
+            int now = ms.count();
+            auto it = myUDPSocket->NonAcked.begin();
+            myUDPSocket->NonAckedMtx.lock();
+            for(auto x: myUDPSocket->NonAcked)
+            {
+                Message *toBeResent = x.second.second;
+                if( x.second.first >0)
+                {    
+                    if(now - toBeResent->getMessageTimestamp() >=1)
+                    {
+                        struct sockaddr_in destAddr;
+                        memset((char*)&destAddr, 0, sizeof(destAddr));
+                        string destIP = (toBeResent->getDestinationIP());
+                        char *meh = new char [destIP.size()+1];
+                        strcpy(meh, destIP.c_str());
+                        struct hostent *host;
+                        destAddr.sin_family  =  AF_INET;
+                        if((host = gethostbyname(meh))== (void*)(0))
+                        {
+                            printf("Unknown host name\n");
+                            exit(-1);
+                        }
+                        destAddr.sin_addr = *(struct in_addr *) (host->h_addr_list[0]);
+                        destAddr.sin_port = htons(toBeResent->getDestinationPort());
+                        string msgStr = toBeResent->marshal();
+                        char *msgPtr = new char [msgStr.size()+1];
+                        strcpy(msgPtr, msgStr.c_str());
+
+                        myUDPSocket->sockMtx.lock();
+                        int n = sendto(myUDPSocket->sock, msgPtr, strlen(msgPtr), 0,(sockaddr*) &destAddr,sizeof(destAddr));
+                        myUDPSocket->sockMtx.lock();
+
+                        string id = myUDPSocket->getFragmentID(toBeResent);
+                        myUDPSocket->NonAcked[id].first--;
+                    }
+                }
+                else
+                {
+                    myUDPSocket->NonAcked.erase(it);
+                }
+                it++;
+
+            }
+            myUDPSocket->NonAckedMtx.unlock();
+        }
+    }
+}
 
 void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
 {
     vector<Message *> fragments;
     while(!dest)
     {
+
         if(SendBuffer.size())
         {
             myUDPSocket->SendBufferMtx.lock();     
@@ -295,7 +376,6 @@ void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
 
 
             fragmentMsg(topMsg, fragments);
-
             struct sockaddr_in destAddr;
             memset((char*)&destAddr, 0, sizeof(destAddr));
             string destIP = (topMsg->getDestinationIP());
@@ -304,7 +384,6 @@ void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
             //inet_aton(meh, &destAddr.sin_addr);
             //destAddr.sin_addr.s_addr = htonl(INADDR_ANY);
             //destAddr.sin_port = htons(topMsg->getDestinationPort());
-
             struct hostent *host;
             destAddr.sin_family  =  AF_INET;
             if((host = gethostbyname(meh))== (void*)(0))
@@ -320,7 +399,18 @@ void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
                 string msgStr = fragments[i]->marshal();
                 char *msgPtr = new char [msgStr.size()+1];
                 strcpy(msgPtr, msgStr.c_str());
+
+                myUDPSocket->sockMtx.lock();
                 int n = sendto(myUDPSocket->sock, msgPtr, strlen(msgPtr), 0,(sockaddr*) &destAddr,sizeof(destAddr));
+                myUDPSocket->sockMtx.unlock();
+
+                string fragID = myUDPSocket->getFragmentID(fragments[i]);
+
+                NonAckedMtx.lock();
+                if(fragments[i]->getMessageType() != MessageType::Ack)
+                myUDPSocket->NonAcked[fragID] = {myUDPSocket->faultTrials, fragments[i]};
+                NonAckedMtx.unlock();
+
                 usleep(1000);
             }  
             #ifdef DEBUG 
