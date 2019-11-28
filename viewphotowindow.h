@@ -15,7 +15,7 @@ class ViewPhotoWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ViewPhotoWindow(User * user = nullptr, string ownerUsername="", string imageName="", QWidget *parent = nullptr);
+    explicit ViewPhotoWindow(User * user = nullptr, string ownerUsername="", string imageName="",  Image * im = new Image(), string photo = "",  QWidget *parent = nullptr);
     void setImage(ImageModel image);
     ~ViewPhotoWindow();
 

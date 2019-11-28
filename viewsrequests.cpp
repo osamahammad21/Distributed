@@ -21,8 +21,8 @@ viewsRequests::viewsRequests(Peer * peer, string token, string ownerUsername, st
     ui->label_info->setText(QString:: fromStdString("User " + requesterUsername + " requests access\nto image " + imageName));
     image.setImageDir(ownerUsername);
     image.findImage(ownerUsername, imageName);
-//    image.setImageDir(ownerUsername);
     image.desteg();
+
     string preview = image.getSmallScaleImage();
     preview = base64_decode(preview);
     preview = base64_decode(preview);
@@ -38,9 +38,6 @@ viewsRequests::viewsRequests(Peer * peer, string token, string ownerUsername, st
 
      connect(ui->pushButton_reject, SIGNAL(clicked()), this, SLOT(on_pushButton_reject_clicked()));
      connect(ui->pushButton_giveAccess, SIGNAL(clicked()), this, SLOT(on_pushButton_giveAccess_clicked()));
-//    class thread * giveAccess = new std::thread(& viewsRequests:: on_pushButton_giveAccess_clicked, this);
-//    class thread * rejectAccess = new std::thread(& viewsRequests:: on_pushButton_reject_clicked, this);
-
 }
 
 viewsRequests::~viewsRequests()
@@ -80,6 +77,8 @@ void viewsRequests::on_pushButton_giveAccess_clicked()
         cout << "Message sent from user to DS\n";
         string reply = peer->getPortnIP(token, requesterUsername);
         cout << "Reply received by user from DS\n";
+        if (reply == CONN_TIMEOUT)
+            ui->label_status->setText("Connection error. Try again later");
         vector <string> args;
         split(reply, args, ',');
         cout << "Message sent to peer\n";

@@ -7,6 +7,9 @@
 #include "Image.h"
 #include "user.h"
 #define BACKGROUND_PATH "../Distributed/background.jpeg"
+
+#define CONN_TIMEOUT "connection timeout"
+
 using namespace std;
 
 namespace Ui {

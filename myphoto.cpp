@@ -51,7 +51,13 @@ void myPhoto::on_pushButton_delete_clicked()
 
 void myPhoto::on_pushButton_viewImage_clicked()
 {
-    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, user->getUsername(), imageName);
-    viewPhotoWindow->show();
-    grandparent->close();
+    string photo;
+    Image * im = new Image();
+    im->setImageDir(user->getUsername());
+    if (im->findImage(user->getUsername(),imageName)){
+        photo = im->extractImage();
+        ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, user->getUsername(), imageName, im, photo, nullptr);
+        viewPhotoWindow->show();
+        grandparent->close();
+    }  
 }

@@ -37,10 +37,30 @@ imageSampleWidget::~imageSampleWidget()
 
 void imageSampleWidget::on_pushButton_imageName_clicked()
 {
-    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, ownerUsername, imageName);
-    viewPhotoWindow->show();
-    grandparent->close();
-
+    string photo;
+    Image * im = new Image();
+    im->setImageDir(user->getUsername());
+    if (im->findImage(ownerUsername,imageName)){
+        photo = im->extractImage();
+        ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, ownerUsername, imageName, im, photo, nullptr);
+        viewPhotoWindow->show();
+        grandparent->close();
+    }
+    else {
+        int status = user->getImage(ownerUsername, imageName, photo);
+        if (status == CONN_FAILURE){
+            ui->label_status->setText("Connection error. Try again later");
+        }
+        else {
+            im = new Image();
+            im->setImageDir(user->getUsername());
+            im->writeImage(photo, ownerUsername, imageName);
+            im->desteg();
+            ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, ownerUsername, imageName, im, photo, nullptr);
+            viewPhotoWindow->show();
+            grandparent->close();
+        }
+    }
 }
 
 void imageSampleWidget::on_pushButton_username_clicked()

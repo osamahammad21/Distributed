@@ -114,16 +114,20 @@ int User:: getAllImages(){
     return MSG_SUCCESS;
 }
 
-string User :: getImage(string ownerUsername, string imageName){
+int User :: getImage(string ownerUsername, string imageName, string & image){
     cout << "Message sent from user to DS\n";
     string reply = peer->getPortnIP(token, ownerUsername);
     cout << "Reply received by user from DS\n";
+    if (reply == CONN_TIMEOUT)
+        return CONN_FAILURE;
     vector <string> args;
     split(reply, args, ',');
     cout << "Message sent to peer\n";
-    reply = peer->getImage(username, ownerUsername, args[1], stoi(args[0]), imageName);
+    image = peer->getImage(username, ownerUsername, args[1], stoi(args[0]), imageName);
     cout << "Reply received from peer\n";
-    return reply;
+    if (image == CONN_TIMEOUT)
+        return CONN_FAILURE;
+    return MSG_SUCCESS;
 }
 
 int User:: getUsersSamples(map<string, vector<imageSample>> & samples){
@@ -202,10 +206,10 @@ void User :: requestAccessPopUp(string reply){
     viewsRequests * popUp = new viewsRequests(peer, token, args[1], args[0], args[2], nullptr);
     popUp->show();
 
-            QEventLoop loop;
-            QObject :: connect(popUp, SIGNAL(destroyed()), & loop, SLOT(QUIT()));
-            thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
-            cout << "destroyed 0\n";
-            loop.exec();
-            cout << "destroyed\n";
+    QEventLoop loop;
+    QObject :: connect(popUp, SIGNAL(destroyed()), & loop, SLOT(QUIT()));
+    thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
+    cout << "destroyed 0\n";
+    loop.exec();
+    cout << "destroyed\n";
 }

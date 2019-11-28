@@ -34,7 +34,32 @@ AllImagesForUser::~AllImagesForUser()
 
 void AllImagesForUser::on_pushButton_imageName_clicked()
 {
-    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, ownerusername, imageName, nullptr);
-    viewPhotoWindow->show();
-    parent->close();
+    string photo;
+    Image * im = new Image();
+    im->setImageDir(user->getUsername());
+    if (im->findImage(ownerusername, imageName)){
+        photo = im->extractImage();
+
+
+        ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, ownerusername, imageName, im, photo, nullptr);
+        viewPhotoWindow->show();
+        parent->close();
+    }
+    else {
+        int status = user->getImage(ownerusername, imageName, photo);
+        if (status == CONN_FAILURE){
+            ui->label_status->setText("Connection error. Try again later.");
+            ui->label_status->setVisible(true);
+        }
+        else {
+            im = new Image();
+            im->setImageDir(user->getUsername());
+            im->writeImage(photo, ownerusername, imageName);
+            im->desteg();
+
+            ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, ownerusername, imageName, im, photo, nullptr);
+            viewPhotoWindow->show();
+            parent->close();
+        }
+    }
 }

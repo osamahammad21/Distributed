@@ -25,7 +25,7 @@ void ViewAllUserPhotosWin :: addSample(string username, string imageName, string
 {
     AllImagesForUser* Widget = new AllImagesForUser(user, ownerUsername, imageName, preview, this);
     QListWidgetItem* lwi = new QListWidgetItem("");
-    lwi->setSizeHint(QSize(0,90));
+    lwi->setSizeHint(QSize(0,110));
     lwi->setFlags(lwi->flags() & ~Qt::ItemIsSelectable);
     ui->listWidget->addItem(lwi);
     ui->listWidget->setItemWidget(lwi, Widget);

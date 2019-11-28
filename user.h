@@ -27,21 +27,13 @@ public:
     int uploadPhoto(Image image);
     int logout();
     int getAllImages();
-    string getImage(string ownerUsername, string imageName);
+    int getImage(string ownerUsername, string imageName, string & image);
     int getUsersSamples(map<string, vector<imageSample>> & samples);
     int getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages);
     void getMyImages(vector <imageSample> & myPhotos);
     int requestImageAccess(string ownerUsername, string imageName);
-    void giveImageAccess(string targetUsername, string imageName, int views);
     void serveRequestViews();
-
-private slots:
     void requestAccessPopUp(string);
-
-signals:
-    void requestAccessReceived();
-
-
 
 private:
     string username;

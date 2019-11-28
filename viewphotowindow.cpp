@@ -2,7 +2,7 @@
 #include "ui_viewphotowindow.h"
 #include "string"
 using namespace std;
-ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string imageName, QWidget *parent) :
+ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string imageName, Image * im, string photo,  QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ViewPhotoWindow)
 {   
@@ -10,20 +10,6 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
     this->user = user;
     this->ownerUsername = ownerUsername;
     this->imageName = imageName;
-
-    string photo;
-    Image * im = new Image();
-    im->setImageDir(user->getUsername());
-    if (im->findImage(ownerUsername,imageName)){
-        photo = im->extractImage();
-    }
-    else {
-        photo = user->getImage(ownerUsername, imageName);
-        im = new Image();
-        im->setImageDir(user->getUsername());
-        im->writeImage(photo, ownerUsername, imageName);
-        im->desteg();
-    }
 
     string path;
     int i;
