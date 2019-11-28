@@ -9,6 +9,14 @@ ViewMyPhotos::ViewMyPhotos(User * user, QWidget *parent) :
     this->user = user;
     this->parent = parent;
 
+    ui->listWidget->setStyleSheet("background-color: transparent");
+
+    QPixmap bkgnd(BACKGROUND_PATH);
+    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
+    QPalette palette;
+    palette.setBrush(QPalette::Background, bkgnd);
+    this->setPalette(palette);
+
     vector <imageSample> myPhotos;
     user->getMyImages(myPhotos);
     for (int i=0; i<myPhotos.size(); i++)

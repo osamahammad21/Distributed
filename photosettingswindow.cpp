@@ -10,6 +10,13 @@ PhotoSettingsWindow::PhotoSettingsWindow(bool upload, Image image, User * user, 
     this->user = user;
     this->image = image;
     this->upload = upload;
+
+    QPixmap bkgnd(BACKGROUND_PATH);
+    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
+    QPalette palette;
+    palette.setBrush(QPalette::Background, bkgnd);
+    this->setPalette(palette);
+
     if (!upload){
         ui->pushButton_upload->setText("Change Settings");
         image.readProperties();
@@ -84,15 +91,18 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
     image.steg();
 
     if (upload){
-        if (user->uploadPhoto(image)){
-            hide();
-            HomeWindow *homeWindow = new HomeWindow(user, this);
-            homeWindow->show();
-            destroy();
-        }
+        int uploadStatus = user->uploadPhoto(image); 
+        map<string, vector<imageSample>> samples;
+        user->getUsersSamples(samples);
+        hide();
+        HomeWindow *homeWindow = new HomeWindow(user, uploadStatus, samples, this);
+        homeWindow->show();
+        destroy();   
     } else {
         hide();
-        HomeWindow *homeWindow = new HomeWindow(user, this);
+        map<string, vector<imageSample>> samples;
+        user->getUsersSamples(samples);
+        HomeWindow *homeWindow = new HomeWindow(user, MSG_SUCCESS, samples, this);
         homeWindow->show();
         destroy();
     }
@@ -100,17 +110,23 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
 
 void PhotoSettingsWindow::on_pushButton_logout_clicked()
 {
-    if( user->logout()){
+    int status = user->logout();
+    if( status == MSG_SUCCESS){
         hide();
         MainWindow * mainWindow = new MainWindow(user, this);
         mainWindow->show();
         destroy();
+    } else {
+        ui->label_status->setText("Connection error. Try again later.");
+        ui->label_status->setVisible(true);
     }
 }
 
 void PhotoSettingsWindow::on_pushButton_home_clicked()
 {
-    HomeWindow *homeWindow = new HomeWindow(user, this);
+    map<string, vector<imageSample>> samples;
+    user->getUsersSamples(samples);
+    HomeWindow *homeWindow = new HomeWindow(user, -10, samples, this);
     homeWindow->show();
     destroy();
 }

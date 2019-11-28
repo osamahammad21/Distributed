@@ -9,6 +9,8 @@ viewSamples::viewSamples(User * user, map <string, vector<imageSample>> samples,
     this->user = user;
     this->parent = parent;
 
+    ui->listWidget->setStyleSheet("background-color: transparent");
+
     map<string, vector<imageSample>>::iterator it;
     for ( it = samples.begin(); it != samples.end(); it++ )
     {

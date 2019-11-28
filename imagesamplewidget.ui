@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -45,6 +45,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_imageName">
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
             <property name="text">
              <string>Image Name</string>
             </property>
@@ -65,6 +68,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_username">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
           <property name="text">
            <string>username</string>
           </property>

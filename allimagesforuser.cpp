@@ -5,15 +5,13 @@ AllImagesForUser::AllImagesForUser(User * user, string ownerusername, string ima
     QWidget(parent),
     ui(new Ui::AllImagesForUser)
 {
-
-
-
     ui->setupUi(this);
     this->user = user;
     this->parent = parent;
     this->ownerusername = ownerusername;
     this->imageName = imageName;
     ui->pushButton_imageName->setText(QString::fromStdString(imageName));
+    ui->pushButton_imageName->setStyleSheet("background-color: white");
 
     preview = base64_decode(preview);
     preview = base64_decode(preview);
@@ -36,7 +34,7 @@ AllImagesForUser::~AllImagesForUser()
 
 void AllImagesForUser::on_pushButton_imageName_clicked()
 {
-    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, ownerusername, imageName, this);
+    ViewPhotoWindow * viewPhotoWindow = new ViewPhotoWindow(user, ownerusername, imageName, nullptr);
     viewPhotoWindow->show();
     parent->close();
 }

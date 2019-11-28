@@ -7,6 +7,11 @@ MainWindow::MainWindow(User * user,QWidget *parent)
 {
     this->user = user;
     ui->setupUi(this);
+    QPixmap bkgnd(BACKGROUND_PATH);
+    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
+    QPalette palette;
+    palette.setBrush(QPalette::Background, bkgnd);
+    this->setPalette(palette);
 }
 
 MainWindow::~MainWindow()
@@ -19,15 +24,20 @@ void MainWindow::on_pushButton_login_clicked()
 {
     QString username = ui->lineEdit_username->text();
     QString password = ui->lineEdit_password->text();
-    if (user->login(username.toStdString(), password.toStdString())){
-        HomeWindow *homeWindow = new HomeWindow(user, this);
+    int status = user->login(username.toStdString(), password.toStdString());
+    if (status == MSG_SUCCESS){
+        map<string, vector<imageSample>> samples;
+        user->getUsersSamples(samples);
+        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, this);
         homeWindow->show();
         destroy();
     }
-    else {
+    else if (status == PARAM_ERROR)
+    {
         ui->label_successMessage->setText("Wrong username or password");
+    } else {
+        ui->label_successMessage->setText("Connection error. Please try again later.");
     }
-
 }
 
 void MainWindow::on_pushButton_signup_clicked()

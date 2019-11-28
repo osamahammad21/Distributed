@@ -9,6 +9,14 @@ ViewAllUserPhotosWin::ViewAllUserPhotosWin(User * user, string ownerUsername, QW
     this->user = user;
     this->ownerUsername = ownerUsername;
 
+    QPixmap bkgnd(BACKGROUND_PATH);
+    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
+    QPalette palette;
+    palette.setBrush(QPalette::Background, bkgnd);
+    this->setPalette(palette);
+
+    ui->listWidget->setStyleSheet("background-color: transparent");
+
     vector <imageSample> allOwnerImages;
     user->getAllOwnerImages(ownerUsername, allOwnerImages);
         for (int i=0; i< allOwnerImages.size(); i++)
@@ -32,17 +40,23 @@ ViewAllUserPhotosWin::~ViewAllUserPhotosWin()
 
 void ViewAllUserPhotosWin::on_pushButton_home_clicked()
 {
-    HomeWindow *homeWindow = new HomeWindow(user, this);
+    map<string, vector<imageSample>> samples;
+    user->getUsersSamples(samples);
+    HomeWindow *homeWindow = new HomeWindow(user, -10, samples, this);
     homeWindow->show();
     destroy();
 }
 
 void ViewAllUserPhotosWin::on_pushButton_logout_clicked()
 {
-    if( user->logout()){
+    int status = user->logout();
+    if(status == MSG_SUCCESS){
         hide();
         MainWindow * mainWindow = new MainWindow(user, this);
         mainWindow->show();
         destroy();
+    } else {
+        ui->label_status->setText("Connection error. Try again later.");
+        ui->label_status->setVisible(true);
     }
 }

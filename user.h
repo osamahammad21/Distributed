@@ -10,20 +10,25 @@ using namespace std;
 #include <QEventLoop>
 #include <QObject>
 
+#define CONN_TIMEOUT "connection timeout"
+#define CONN_FAILURE -1
+#define MSG_SUCCESS 1
+#define PARAM_ERROR 0
+
 struct imageSample { string imageName; string preview; Image im;};
 
 class User
 {
 public:
     User(Peer * peer);
-    bool login(string username, string password);
-    bool signup(string username, string password);
+    int login(string username, string password);
+    int signup(string username, string password);
     string getUsername();
-    bool uploadPhoto(Image image);
-    bool logout();
-    bool getAllImages();
+    int uploadPhoto(Image image);
+    int logout();
+    int getAllImages();
     string getImage(string ownerUsername, string imageName);
-    void getUsersSamples(map<string, vector<imageSample>> & samples);
+    int getUsersSamples(map<string, vector<imageSample>> & samples);
     void getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages);
     void getMyImages(vector <imageSample> & myPhotos);
     void requestImageAccess(string ownerUsername, string imageName);

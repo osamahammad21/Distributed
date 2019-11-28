@@ -3,40 +3,44 @@
 User::User(Peer * peer)
 {
     this->peer = peer;
-
+    peer->setTimeOut(20);
 }
 
-bool User :: login(string username, string password){
+int User :: login(string username, string password){
        cout << "Message sent from user to DS\n";
        string reply = peer->login(username, password);
        cout << "Reply received by user from DS\n";
        if(reply == "not a user")
-            return false;
+            return PARAM_ERROR;
+       if (reply == CONN_TIMEOUT)
+           return CONN_FAILURE;
         this->username = username;
         this->token = reply;
         peer->startStatusUpdates(this->token);
         thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
-        return true;
+        return MSG_SUCCESS;
 }
 
-bool User :: signup(string username, string password){
+int User :: signup(string username, string password){
     cout << "Message sent from user to DS\n";
     string reply = peer->signup(username, password);
     cout << "Reply received by user from DS\n";
     if(reply == "username already exists")
-         return false;
-     this->username = username;
-     this->token = reply;
-     cout << "Peer started sending status updates\n";
-     peer->startStatusUpdates(this->token);
-     return true;
+         return PARAM_ERROR;
+    if (reply == CONN_TIMEOUT)
+        return CONN_FAILURE;
+    this->username = username;
+    this->token = reply;
+    cout << "Peer started sending status updates\n";
+    peer->startStatusUpdates(this->token);
+    return MSG_SUCCESS;
 }
 
 string User :: getUsername(){
     return username;
 }
 
-bool User :: uploadPhoto(Image image){
+int User :: uploadPhoto(Image image){
     string imageName;
     image.getImageId(imageName);
     peer->addImageLocally(imageName);
@@ -46,18 +50,20 @@ bool User :: uploadPhoto(Image image){
     cout << "Reply received by user from DS\n";
     if (reply == "ok"){
         image.removeMiddleFiles();
-        return true;
+        return MSG_SUCCESS;
     }
+    if (reply == CONN_TIMEOUT)
+        return CONN_FAILURE;
     if (reply == "maximum samples reached"){
         cout << "Add image locally" << endl;
         peer->addImageLocally(imageName);
+        return MSG_SUCCESS;
     }
-    else
-        return false;
+    return PARAM_ERROR;
 
 }
 
-bool User :: logout(){
+int User :: logout(){
     cout << "Message sent from user to DS\n";
     string reply = peer -> logout(token);
     cout << "Reply received by user from DS\n";
@@ -66,9 +72,11 @@ bool User :: logout(){
         this->token = "";
         this->usersImageSamples.clear();
         peer->stopStatusUpdates();
-        return true;
+        return MSG_SUCCESS;
     }
-    return false;
+    if (reply == CONN_TIMEOUT)
+        return CONN_FAILURE;
+    return PARAM_ERROR;
 }
 
 inline void split(string str, vector<string>& cont, char delim = ' ')
@@ -86,13 +94,15 @@ inline void split(string str, vector<string>& cont, char delim = ' ')
     }
 }
 
-bool User:: getAllImages(){
+int User:: getAllImages(){
     cout << "Message sent from user to DS\n";
     string reply = peer->getAllImagesFromDS(token);
     cout << "Reply received by user from DS\n";
     vector <string> args;
     if(reply=="no images")
-       return false;
+       return PARAM_ERROR;
+    if (reply == CONN_TIMEOUT)
+        return CONN_FAILURE;
     split(reply, args, ',');
     usersImageSamples.clear();
     for (int i=0; i < args.size(); i+=3){
@@ -101,7 +111,7 @@ bool User:: getAllImages(){
         temp.imageName = args[i+1];
         usersImageSamples[args[i]].push_back(temp);
     }
-    return true;
+    return MSG_SUCCESS;
 }
 
 string User :: getImage(string ownerUsername, string imageName){
@@ -116,9 +126,12 @@ string User :: getImage(string ownerUsername, string imageName){
     return reply;
 }
 
-void User:: getUsersSamples(map<string, vector<imageSample>> & samples){
-    if (getAllImages())
+int User:: getUsersSamples(map<string, vector<imageSample>> & samples){
+    int status = getAllImages();
+    if (status == MSG_SUCCESS)
         samples =  usersImageSamples;
+    return status;
+
 }
 
 void User :: getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages){

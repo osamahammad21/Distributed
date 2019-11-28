@@ -159,7 +159,7 @@
        <x>20</x>
        <y>50</y>
        <width>741</width>
-       <height>321</height>
+       <height>291</height>
       </rect>
      </property>
     </widget>
@@ -200,6 +200,19 @@
      </property>
      <property name="text">
       <string>Home</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_status">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>350</y>
+       <width>741</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </widget>

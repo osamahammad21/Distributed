@@ -11,6 +11,13 @@ viewsRequests::viewsRequests(Peer * peer, string token, string ownerUsername, st
     this->imageName = imageName;
     this->peer = peer;
     this->token = token;
+
+    QPixmap bkgnd(BACKGROUND_PATH);
+    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
+    QPalette palette;
+    palette.setBrush(QPalette::Background, bkgnd);
+    this->setPalette(palette);
+
     ui->label_info->setText(QString:: fromStdString("User " + requesterUsername + " requests access\nto image " + imageName));
     image.setImageDir(ownerUsername);
     image.findImage(ownerUsername, imageName);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>593</width>
+    <height>420</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>170</y>
+      <x>170</x>
+      <y>110</y>
       <width>261</width>
       <height>161</height>
      </rect>
@@ -77,8 +77,8 @@
    <widget class="QLabel" name="label_successMessage">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>330</y>
+      <x>170</x>
+      <y>270</y>
       <width>261</width>
       <height>21</height>
      </rect>
@@ -90,8 +90,8 @@
    <widget class="QPushButton" name="pushButton_back">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>360</y>
+      <x>170</x>
+      <y>300</y>
       <width>261</width>
       <height>21</height>
      </rect>
@@ -106,7 +106,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>593</width>
      <height>22</height>
     </rect>
    </property>

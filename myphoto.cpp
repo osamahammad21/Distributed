@@ -11,6 +11,10 @@ myPhoto::myPhoto(User * user, string imageName, string preview, Image image, QWi
     this->grandparent = grandparent;
     this->image = image;
 
+    ui->pushButton_delete->setStyleSheet("background-color: white");
+    ui->pushButton_viewImage->setStyleSheet("background-color: white");
+    ui->pushButton_changeSettings->setStyleSheet("background-color: white");
+
     preview = base64_decode(preview);
     preview = base64_decode(preview);
 

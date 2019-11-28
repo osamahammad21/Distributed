@@ -14,6 +14,12 @@ UploadPhotoWindow::UploadPhotoWindow(User * user, QWidget *parent)
 {
     this->user = user;
     ui->setupUi(this);
+
+    QPixmap bkgnd(BACKGROUND_PATH);
+    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
+    QPalette palette;
+    palette.setBrush(QPalette::Background, bkgnd);
+    this->setPalette(palette);
 }
 
 UploadPhotoWindow::~UploadPhotoWindow()
@@ -57,17 +63,23 @@ void UploadPhotoWindow::on_pushButton_upload_clicked()
 
 void UploadPhotoWindow::on_pushButton_logout_clicked()
 {
-    if( user->logout()){
+    int status = user->logout();
+    if( status == MSG_SUCCESS){
         hide();
         MainWindow * mainWindow = new MainWindow(user, this);
         mainWindow->show();
         destroy();
+    } else {
+        ui->label_successMessage->setText("Connection error. Try again later.");
+        ui->label_successMessage->setVisible(true);
     }
 }
 
 void UploadPhotoWindow::on_pushButton_home_clicked()
 {
-    HomeWindow *homeWindow = new HomeWindow(user, this);
+    map<string, vector<imageSample>> samples;
+    user->getUsersSamples(samples);
+    HomeWindow *homeWindow = new HomeWindow(user, -10, samples, this);
     homeWindow->show();
     destroy();
 }

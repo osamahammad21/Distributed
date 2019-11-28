@@ -8,6 +8,9 @@ imageSampleWidget::imageSampleWidget(string imageName, string preview, string us
     ui->setupUi(this);
     ui->pushButton_imageName->setText(QString::fromStdString(imageName));
     ui->pushButton_username->setText(QString::fromStdString(username));
+
+    ui->pushButton_imageName->setStyleSheet("background-color: white");
+    ui->pushButton_username->setStyleSheet("background-color: white");
     this->user = user;
     this->ownerUsername = username;
     this->imageName = imageName;

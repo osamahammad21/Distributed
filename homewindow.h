@@ -14,7 +14,7 @@ class HomeWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit HomeWindow(User * user, QWidget *parent = nullptr);
+    explicit HomeWindow(User * user, int uploadStatus, map<string, vector<imageSample>> samples, QWidget *parent = nullptr);
     ~HomeWindow();
 
 private slots:
