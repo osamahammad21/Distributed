@@ -14,7 +14,7 @@ class ViewAllUserPhotosWin : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ViewAllUserPhotosWin(User * user, string ownerUsername, QWidget *parent = nullptr);
+    explicit ViewAllUserPhotosWin(User * user, string ownerUsername, vector <imageSample> allOwnerImages, QWidget *parent = nullptr);
     ~ViewAllUserPhotosWin();
 
 private slots:

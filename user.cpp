@@ -134,14 +134,18 @@ int User:: getUsersSamples(map<string, vector<imageSample>> & samples){
 
 }
 
-void User :: getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages){
+int User :: getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages){
     cout << "Message sent from user to DS\n";
     string reply = peer->getPortnIP(token, ownerUsername);
+    if (reply == CONN_TIMEOUT)
+        return CONN_FAILURE;
     cout << "Reply received by user from DS\n";
     vector <string> args;
     split(reply, args, ',');
     cout << "Message sent to peer\n";
     reply = peer->getAllImagesFromPeer(username, ownerUsername, args[1], stoi(args[0]));
+    if (reply == CONN_TIMEOUT)
+        return CONN_FAILURE;
     cout << "Reply received from peer\n";
 
     split(reply, args, ',');
@@ -151,6 +155,7 @@ void User :: getAllOwnerImages(string ownerUsername, vector <imageSample> &allOw
         temp.imageName = args[i];
         allOwnerImages.push_back(temp);
     }
+    return MSG_SUCCESS;
 }
 void User :: getMyImages(vector <imageSample> & myPhotos){
     ifstream in (username+".txt");

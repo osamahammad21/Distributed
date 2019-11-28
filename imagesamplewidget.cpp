@@ -45,7 +45,15 @@ void imageSampleWidget::on_pushButton_imageName_clicked()
 
 void imageSampleWidget::on_pushButton_username_clicked()
 {
-    ViewAllUserPhotosWin * allUserPhotos = new ViewAllUserPhotosWin(user, ownerUsername, nullptr);
-    allUserPhotos->show();
-    grandparent->close();
+
+    vector <imageSample> allOwnerImages;
+    int status = user->getAllOwnerImages(ownerUsername, allOwnerImages);
+    if (status == MSG_SUCCESS){
+        ViewAllUserPhotosWin * allUserPhotos = new ViewAllUserPhotosWin(user, ownerUsername, allOwnerImages, nullptr);
+        allUserPhotos->show();
+        grandparent->close();
+    } else if (status == CONN_FAILURE){
+        ui->label_status->setText("Connection error. Try again later");
+    }
+
 }

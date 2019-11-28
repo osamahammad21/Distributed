@@ -25,7 +25,7 @@ void viewSamples :: addSample(string username, string imageName, string preview)
 {
     imageSampleWidget* iWidget = new imageSampleWidget(imageName, preview, username, user, this, this->parent);
     QListWidgetItem* lwi = new QListWidgetItem("");
-    lwi->setSizeHint(QSize(0,90));
+    lwi->setSizeHint(QSize(0,110));
     lwi->setFlags(lwi->flags() & ~Qt::ItemIsSelectable);
     ui->listWidget->addItem(lwi);
     ui->listWidget->setItemWidget(lwi, iWidget);
