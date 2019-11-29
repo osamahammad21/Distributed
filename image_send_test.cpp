@@ -33,7 +33,7 @@ int main(int argc, char ** argv)
     extract = base64_encode(reinterpret_cast<const unsigned char*>(reinterpret_cast<const unsigned char*> (extract.c_str())), extract.size() + 1);
     char * str = new char[extract.size()];  
     strcpy(str, extract.c_str());
-    extract = input;
+    //extract = input;
     Message *m =new Message(Request, 1, 3, sockobj.getMyIP(), sockobj.getMyPort(), destIP, destPort, ++i, 8, extract.size(), str);
 
     sockobj.sendMessage(m);

@@ -43,7 +43,7 @@ class UDPSocket
         mutex NonAckedMtx;
         mutex sockMtx;
         bool enabled = true;
-        unsigned int FRAG_MSG_SIZE = 20;
+        unsigned int FRAG_MSG_SIZE = 10000;
         unsigned int SOCK_MAX_BUFFER_SIZE = 100000;
         unsigned int faultTrials = 10;
         ofstream outFile;

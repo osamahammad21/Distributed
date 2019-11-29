@@ -261,12 +261,11 @@ void UDPSocket::receiveHandler(UDPSocket * myUDPSocket)
     {
         int bytesAtPort = recvfrom(sock, buffer, myUDPSocket->SOCK_MAX_BUFFER_SIZE,0, (struct sockaddr*)&from, &fromlen);
 
-        if(bytesAtPort<0)
+        if(bytesAtPort<=0)
         {
-            myUDPSocket->outFile<<"ReceiveHandlNonAckeder: receive failed";
             continue;
         }
-
+                        cout << "is this fail " <<endl;
         Message * currMessage = new Message(buffer);
         string msgID = myUDPSocket->getMsgID(currMessage);
 
@@ -274,22 +273,15 @@ void UDPSocket::receiveHandler(UDPSocket * myUDPSocket)
         {
             int size = currMessage->getMessageSize();
             cout << "Message size of ack " << size << endl;
-            int i =0;
-            char *c = new char [size+1];
-            c = currMessage->getMessage();
-            string str = "";
-            while(size--)
-            str += c[i++];
-            string ackidddd = myUDPSocket->getAckFragmentID(currMessage);
+            string ackFragID = myUDPSocket->getAckFragmentID(currMessage);
 
 
             myUDPSocket->NonAckedMtx.lock();
-            if(NonAcked.end() != NonAcked.find(ackidddd))
+            if(myUDPSocket->NonAcked.end() != myUDPSocket->NonAcked.find(ackFragID) && !myUDPSocket->NonAcked.empty())
             {
-                myUDPSocket->NonAcked.erase(ackidddd);
-                cout << "Received ACK of frag ID " << ackidddd << endl;
-                cout << "Erasing ACK of frag ID " << ackidddd << endl;
-
+                cout << "Received ACK of frag ID " << ackFragID << endl;
+                cout << "Erasing ACK of frag ID " << ackFragID << endl;
+                myUDPSocket->NonAcked.erase(ackFragID);
             }
             myUDPSocket->NonAckedMtx.unlock();
 
@@ -298,68 +290,70 @@ void UDPSocket::receiveHandler(UDPSocket * myUDPSocket)
         }
         else
         {
-            Message * AckMsg = currMessage;
-            string id = myUDPSocket->getFragmentID(currMessage);
+            cout << "is this fail " << endl;
+            Message * AckMsg = new Message(buffer);
+            cout << "no it aint  fail " << endl;
+            string id = myUDPSocket->getFragmentID(AckMsg);
             char * ackID = new char [id.size()+1];
             strcpy(ackID, id.c_str());
             cout << "Sending ack of id = " << ackID << endl;
             AckMsg->setMessage(ackID);
             AckMsg->setMessageType(MessageType::Ack);
             AckMsg->setMessageSize(id.size());
-            //seconds ms = duration_cast< seconds >(system_clock::now().time_since_epoch());  
-            string destIP = (currMessage->getSourceIP());
-            unsigned int destPort = (currMessage->getSourcePort());
+            string destIP = (AckMsg->getSourceIP());
+            unsigned int destPort = (AckMsg->getSourcePort());
             // //AckMsg->setMessageTimestamp(ms.count());
-            // AckMsg->setSourceIP(string(myUDPSocket->myAddress_str));
-            // AckMsg->setSourcePort(myUDPSocket->getMyPort());
+            AckMsg->setSourceIP(string(myUDPSocket->myAddress_str));
+            AckMsg->setSourcePort(myUDPSocket->getMyPort());
             AckMsg->setDestinationIP(destIP);
             AckMsg->setDestinationPort(destPort);
 
             myUDPSocket->sendMessage(AckMsg);
 
-        }
+        
         
 
-        //First fragment
-        if(Map.find(msgID) == Map.end())
-        {
-            //cout << "First frag" << endl;
-            vector<Message *> frags;
-            frags.resize(currMessage->getFragmentTotal());
+            //First fragment
+            if(Map.find(msgID) == Map.end())
+            {
+                //cout << "First frag" << endl;
+                vector<Message *> frags;
+                frags.resize(currMessage->getFragmentTotal());
 
-            for(int i = 0; i < frags.size(); i++) frags[i] = NULL;
-            Map[msgID] = pair<int,vector<Message *>>(0,frags);
-        }
+                for(int i = 0; i < frags.size(); i++) frags[i] = NULL;
+                Map[msgID] = pair<int,vector<Message *>>(0,frags);
+            }
 
-        if(((Map[msgID]).second)[currMessage->getFragmentCount()-1] == NULL)
-        {
-            ((Map[msgID]).second)[currMessage->getFragmentCount()-1] = currMessage;
-            (Map[msgID]).first++;
-        }
+            if(((Map[msgID]).second)[currMessage->getFragmentCount()-1] == NULL)
+            {
+                ((Map[msgID]).second)[currMessage->getFragmentCount()-1] = currMessage;
+                (Map[msgID]).first++;
+            }
 
-        if((Map[msgID]).first == (Map[msgID]).second.size())
-        {
+            if((Map[msgID]).first == (Map[msgID]).second.size())
+            {
 
-            string MsgStr((char *)(Map[msgID]).second[0]->getMessage());
-            Message * fullMsg = (Map[msgID]).second[0];
+                string MsgStr((char *)(Map[msgID]).second[0]->getMessage());
+                Message * fullMsg = (Map[msgID]).second[0];
 
-            //Concatenate Message field of all fragments
-            for(int i = 1; i < fullMsg->getFragmentTotal(); i++)
-                MsgStr += string((char *)(Map[msgID]).second[i]->getMessage());
+                //Concatenate Message field of all fragments
+                for(int i = 1; i < fullMsg->getFragmentTotal(); i++)
+                    MsgStr += string((char *)(Map[msgID]).second[i]->getMessage());
 
-            #ifdef RECEIVE_OUTPUT_FILE_LOG
-            myUDPSocket->outFile <<  MsgStr;
-            #endif
-                        //cout << "last msg" << endl;
+                #ifdef RECEIVE_OUTPUT_FILE_LOG
+                myUDPSocket->outFile <<  MsgStr;
+                #endif
+                            //cout << "last msg" << endl;
 
-            char * cStrsAreMeh = new char[MsgStr.size()+1];
-            strcpy(cStrsAreMeh, MsgStr.c_str());
-            fullMsg->setMessage(cStrsAreMeh, MsgStr.size());
-            (myUDPSocket->ReceiveBufferMtx).lock();
-            (myUDPSocket->ReceiveBuffer).push(fullMsg);
-            (myUDPSocket->ReceiveBufferMtx).unlock();
-                        //cout << "last msg" << endl;
+                char * cStrsAreMeh = new char[MsgStr.size()+1];
+                strcpy(cStrsAreMeh, MsgStr.c_str());
+                fullMsg->setMessage(cStrsAreMeh, MsgStr.size());
+                (myUDPSocket->ReceiveBufferMtx).lock();
+                (myUDPSocket->ReceiveBuffer).push(fullMsg);
+                (myUDPSocket->ReceiveBufferMtx).unlock();
+                            //cout << "last msg" << endl;
 
+            }
         }
     }
 
@@ -369,30 +363,37 @@ void UDPSocket::faultToleranceHandler(UDPSocket * myUDPSocket)
 {
     while(!dest)
     {
-        if(myUDPSocket->NonAcked.size())
+        //if(myUDPSocket->NonAcked.size())
         {
-
+            bool MapEmpty = false;
+            Message *toBeResent ;
+            unsigned int trials;
+            string fragID;
 
             myUDPSocket->NonAckedMtx.lock();
-            auto it = myUDPSocket->NonAcked.begin();
+            if(!myUDPSocket->NonAcked.empty())
+            {
+                auto x = myUDPSocket->NonAcked.begin();
+                toBeResent = x->second.second;
+                trials = x->second.first;
+                fragID = x->first;
+                MapEmpty= false;
+            }
+            else
+            {
+                MapEmpty = true;
+            }            
             myUDPSocket->NonAckedMtx.unlock();
 
-            for(auto x: myUDPSocket->NonAcked)
+            if(!MapEmpty)
             {
-                myUDPSocket->NonAckedMtx.lock();
-                //auto x = myUDPSocket->NonAcked.begin();
-                Message *toBeResent = x.second.second;
-                unsigned int trials = x.second.first;
-                string fragID = x.first;
-                myUDPSocket->NonAckedMtx.unlock();
                 if( trials >0)
                 {    
                     struct timeval tp;
                     gettimeofday(&tp, NULL);
-                    unsigned long long ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
-                    //seconds ms = duration_cast< seconds >(system_clock::now().time_since_epoch());  
-                    unsigned long long now = ms;
-                    if(now - (toBeResent->getMessageTimestamp() + 1000*((myUDPSocket->faultTrials) - trials)) >= 800)
+                    unsigned long long now = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+                    
+                    if(now - (toBeResent->getMessageTimestamp() + 1000*((myUDPSocket->faultTrials) - trials)) >= 1000)
                     {
                         cout << "Resending  frag ID " << fragID << " trials " << trials << endl;
                         struct sockaddr_in destAddr;
@@ -418,6 +419,7 @@ void UDPSocket::faultToleranceHandler(UDPSocket * myUDPSocket)
                         myUDPSocket->sockMtx.unlock();
 
                         myUDPSocket->NonAckedMtx.lock();
+                        if(!myUDPSocket->NonAcked.empty())
                         myUDPSocket->NonAcked[fragID].first--;
                         myUDPSocket->NonAckedMtx.unlock();
 
@@ -426,14 +428,18 @@ void UDPSocket::faultToleranceHandler(UDPSocket * myUDPSocket)
                 else
                 {
                     myUDPSocket->NonAckedMtx.lock();
-                    myUDPSocket->NonAcked.erase(fragID);
+                    if(myUDPSocket->NonAcked.find(fragID) != myUDPSocket->NonAcked.end() && !myUDPSocket->NonAcked.empty())
+                    {  
+                        cout << "finished trials. Deleting " << fragID << endl;
+                        myUDPSocket->NonAcked.erase(fragID);
+                    }
                     myUDPSocket->NonAckedMtx.unlock();
 
                 }
             }
-            //usleep(10000);
-            
+
         }
+
 
     }
 }
@@ -481,7 +487,6 @@ void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
         
             for(int i=0; i<fragments.size(); i++)
             {
-                //cout << "sending frag i " << fragments[i]->getFragmentCount() << endl;
                 string msgStr = fragments[i]->marshal();
                 char *msgPtr = new char [msgStr.size()+1];
                 strcpy(msgPtr, msgStr.c_str());
@@ -492,7 +497,6 @@ void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
 
                 if(fragments[i]->getMessageType() != MessageType::Ack)
                 {
-
                     Message * temp = new Message;
                     temp->setDestinationIP(fragments[i]->getDestinationIP());
                     temp->setFragState(i+1, fragments.size());
@@ -509,12 +513,12 @@ void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
                     string fragID = (myUDPSocket->getFragmentID(temp));
                     cout << "Non acked frag id " << fragID << endl;
 
-                    NonAckedMtx.lock();
+                    myUDPSocket->NonAckedMtx.lock();
                     myUDPSocket->NonAcked[fragID] = {myUDPSocket->faultTrials, temp};
-                    NonAckedMtx.unlock();
+                    myUDPSocket->NonAckedMtx.unlock();
                 }
 
-                usleep(100);
+                //usleep(1000);
             }  
             #ifdef DEBUG 
             #endif
