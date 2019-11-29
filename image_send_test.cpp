@@ -38,7 +38,6 @@ int main(int argc, char ** argv)
 
     sockobj.sendMessage(m);
     cout << "message of size " << m->getMessageSize() << " sent to " << destIP << endl;
-
     }
 
     // while(!stop && input != "q")

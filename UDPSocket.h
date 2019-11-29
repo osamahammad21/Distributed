@@ -42,18 +42,18 @@ class UDPSocket
         mutex SendBufferMtx;
         mutex NonAckedMtx;
         mutex sockMtx;
+        //<string(MSGID+fragc), <trialsLeft, Message *>>
+        unordered_map<string, pair<unsigned int, Message *>> NonAcked;
+        queue<Message *> ReceiveBuffer;
+        queue<Message *> SendBuffer; 
         bool enabled = true;
         unsigned int FRAG_MSG_SIZE = 10000;
         unsigned int SOCK_MAX_BUFFER_SIZE = 100000;
-        unsigned int faultTrials = 10;
+        unsigned int faultTrials = 20;
         ofstream outFile;
         bool dest=false;
-	    void setBroadcast(int s);
     public:   
-        queue<Message *> ReceiveBuffer;
-        queue<Message *> SendBuffer; 
-        //<string(MSGID+fragc), <trialsLeft, Message *>>
-        unordered_map<string, pair<unsigned int, Message *>> NonAcked;
+
         UDPSocket ();    
         bool initializeSocket(char * _myAddr, unsigned int _myPort);
         bool initializeSocket(unsigned int _myPort);
@@ -70,6 +70,7 @@ class UDPSocket
         void sendingHandler(UDPSocket * myUDPSocket);
         void receiveHandler(UDPSocket * myUDPSocket);
         void faultToleranceHandler(UDPSocket * myUDPSockeT);
+        void setBroadcast(int s);
         ~UDPSocket ( );
 };
 #endif // UDPSOCKET_H

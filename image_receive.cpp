@@ -1,5 +1,4 @@
 #include "UDPSocket.h"
-
 #include <iostream>
 #include <string>
 #include<fstream>
@@ -12,7 +11,7 @@ int main(int argc, char ** argv)
     unsigned int myPort = stoi(argv[3]);
     unsigned int destPort = stoi(argv[4]);
 
-    string input;
+    string input= "meh";
     bool stop = false;
     UDPSocket sockobj;
 
@@ -22,11 +21,11 @@ int main(int argc, char ** argv)
     int i=0;   
     int j = 0;
     string extract;
-    while(!stop)
+    while(!stop && input != "q")
     {
         Message * newM = sockobj.receiveMsg();
         cout << "Received Msg of size " << newM->getMessageSize() << endl;
-        
+
         if(newM != NULL)
         {
         int size = newM->getMessageSize();
