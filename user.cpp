@@ -230,3 +230,16 @@ int User :: removeImage(string imageName){
         return PARAM_ERROR;
     return MSG_SUCCESS;
 }
+
+int User:: sendImageAccess(string targetUsername, string imageName, int views){
+    cout << "Message sent from user to DS\n";
+    string reply = peer->getPortnIP(token, targetUsername);
+    if (reply == CONN_TIMEOUT)
+        return CONN_FAILURE;
+    cout << "Reply received by user from DS\n";
+    vector <string> args;
+    split(reply, args, ',');
+    cout << "Message sent to peer\n";
+    peer->sendImageAccess(username, targetUsername, args[1], stoi(args[0]), imageName, views);
+    return MSG_SUCCESS;
+}

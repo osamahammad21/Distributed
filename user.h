@@ -35,6 +35,7 @@ public:
     void serveRequestViews();
     void requestAccessPopUp(string);
     int removeImage(string imageName);
+    int sendImageAccess(string targetUsername, string imageName, int views);
 
 private:
     string username;

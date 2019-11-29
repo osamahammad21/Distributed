@@ -33,6 +33,9 @@ HomeWindow::HomeWindow(User * user, int uploadStatus, map<string, vector<imageSa
         case MSG_SUCCESS:
              ui->label_uploadStatus->setText("Upload succeeded");
         break;
+        case 10:
+            ui->label_uploadStatus->setText("Change settings succeeded");
+        break;
         default:
             ui->label_uploadStatus->clear();
 

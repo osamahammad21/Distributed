@@ -79,18 +79,34 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
     {
         prop.user_name = it->first;
         prop.views = it->second;
-        image.properties.push_back(prop);
+        if (upload){
+            bool found = false;
+            for (int i=0; i < image.properties.size(); i++)
+                if (image.properties[i].user_name == it->first){
+                    string imageName;
+                    image.getImageId(imageName);
+                    user->sendImageAccess(it->first, imageName, it->second);
+                    image.properties[i].views = it->second;
+                    found = true;
+                }
+            if (!found)
+                image.properties.push_back(prop);
+        }
+        else {
+            image.properties.push_back(prop);
+        }
     }
 
     
     if (upload)
         image.writeProperties();
-    else
+    else {
         image.updateProperties();
-
-    image.steg();
+        image.desteg();
+    }
 
     if (upload){
+        image.steg();
         int uploadStatus = user->uploadPhoto(image); 
         map<string, vector<imageSample>> samples;
         user->getUsersSamples(samples);
@@ -102,7 +118,7 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
         hide();
         map<string, vector<imageSample>> samples;
         user->getUsersSamples(samples);
-        HomeWindow *homeWindow = new HomeWindow(user, MSG_SUCCESS, samples, this);
+        HomeWindow *homeWindow = new HomeWindow(user, 10, samples, this);
         homeWindow->show();
         destroy();
     }
