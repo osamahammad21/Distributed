@@ -187,12 +187,15 @@ void UDPSocket::fragmentMsg(Message * FullMessage, vector<Message *> &frags)
 
         if(FullMessage->getMessageType() == MessageType::Ack)
         {
-            string fragid = this->getAckFragmentID(fragi);
-            char * ackContent = new char[fragid.size()];
-            cout << "fragment function frag id " << ackContent << endl;
-            strcpy(ackContent, fragid.c_str());
-            fragi->setMessage(ackContent);
-            fragi->setMessageSize(fragid.size());
+            fragi->setFragState(FullMessage->getFragmentCount(), NumberOfFrags);
+            // string fragid = this->getAckFragmentID(fragi);
+            // char * ackContent = new char[fragid.size()];
+            // cout << "fragment function frag id " << ackContent << endl;
+            // strcpy(ackContent, fragid.c_str());
+            // fragi->setMessage(ackContent);
+            // fragi->setMessageSize(fragid.size());
+            fragi->setMessage(s);
+            fragi->setMessageSize(FullMessage->getMessageSize());
         }
         else
         {  
@@ -269,19 +272,27 @@ void UDPSocket::receiveHandler(UDPSocket * myUDPSocket)
 
         if(currMessage->getMessageType() == MessageType::Ack)
         {
-            myUDPSocket->NonAckedMtx.lock();
             int size = currMessage->getMessageSize();
+            cout << "Message size of ack " << size << endl;
             int i =0;
-            char *c = new char [size];
+            char *c = new char [size+1];
             c = currMessage->getMessage();
             string str = "";
             while(size--)
             str += c[i++];
+            string ackidddd = myUDPSocket->getAckFragmentID(currMessage);
 
-            cout << "ACK of " << str << endl;
-            cout << "erasing id " << str<< endl;
-            myUDPSocket->NonAcked.erase(str);
+
+            myUDPSocket->NonAckedMtx.lock();
+            if(NonAcked.end() != NonAcked.find(ackidddd))
+            {
+                myUDPSocket->NonAcked.erase(ackidddd);
+                cout << "Received ACK of frag ID " << ackidddd << endl;
+                cout << "Erasing ACK of frag ID " << ackidddd << endl;
+
+            }
             myUDPSocket->NonAckedMtx.unlock();
+
             continue;
 
         }
@@ -289,11 +300,12 @@ void UDPSocket::receiveHandler(UDPSocket * myUDPSocket)
         {
             Message * AckMsg = currMessage;
             string id = myUDPSocket->getFragmentID(currMessage);
-            char * ackID = new char [id.size()];
+            char * ackID = new char [id.size()+1];
             strcpy(ackID, id.c_str());
-            cout << "Sending ack of id = " << id<< endl;
+            cout << "Sending ack of id = " << ackID << endl;
             AckMsg->setMessage(ackID);
             AckMsg->setMessageType(MessageType::Ack);
+            AckMsg->setMessageSize(id.size());
             //seconds ms = duration_cast< seconds >(system_clock::now().time_since_epoch());  
             string destIP = (currMessage->getSourceIP());
             unsigned int destPort = (currMessage->getSourcePort());
@@ -311,7 +323,7 @@ void UDPSocket::receiveHandler(UDPSocket * myUDPSocket)
         //First fragment
         if(Map.find(msgID) == Map.end())
         {
-            cout << "First frag" << endl;
+            //cout << "First frag" << endl;
             vector<Message *> frags;
             frags.resize(currMessage->getFragmentTotal());
 
@@ -338,7 +350,7 @@ void UDPSocket::receiveHandler(UDPSocket * myUDPSocket)
             #ifdef RECEIVE_OUTPUT_FILE_LOG
             myUDPSocket->outFile <<  MsgStr;
             #endif
-                        cout << "last msg" << endl;
+                        //cout << "last msg" << endl;
 
             char * cStrsAreMeh = new char[MsgStr.size()+1];
             strcpy(cStrsAreMeh, MsgStr.c_str());
@@ -346,7 +358,7 @@ void UDPSocket::receiveHandler(UDPSocket * myUDPSocket)
             (myUDPSocket->ReceiveBufferMtx).lock();
             (myUDPSocket->ReceiveBuffer).push(fullMsg);
             (myUDPSocket->ReceiveBufferMtx).unlock();
-                        cout << "last msg" << endl;
+                        //cout << "last msg" << endl;
 
         }
     }
@@ -367,20 +379,20 @@ void UDPSocket::faultToleranceHandler(UDPSocket * myUDPSocket)
             auto it = myUDPSocket->NonAcked.begin();
             myUDPSocket->NonAckedMtx.unlock();
 
-            //for(auto x: myUDPSocket->NonAcked)
+            for(auto x: myUDPSocket->NonAcked)
             {
                 myUDPSocket->NonAckedMtx.lock();
-                auto x = myUDPSocket->NonAcked.begin();
-                Message *toBeResent = x->second.second;
-                unsigned int trials = x->second.first;
-                string fragID = x->first;
+                //auto x = myUDPSocket->NonAcked.begin();
+                Message *toBeResent = x.second.second;
+                unsigned int trials = x.second.first;
+                string fragID = x.first;
                 myUDPSocket->NonAckedMtx.unlock();
                 if( trials >0)
                 {    
-                    //if(now - (toBeResent->getMessageTimestamp() + (myUDPSocket->faultTrials) - trials) >=1)
-                    //{
+                    if(now - (toBeResent->getMessageTimestamp() + (myUDPSocket->faultTrials) - trials) >=1)
+                    {
 
-                        cout << "Resending  frag i " << (toBeResent->getFragmentCount()) << " trials " << trials << endl;
+                        cout << "Resending  frag ID " << fragID << " trials " << trials << endl;
                         struct sockaddr_in destAddr;
                         memset((char*)&destAddr, 0, sizeof(destAddr));
                         string destIP = (toBeResent->getDestinationIP());
@@ -407,7 +419,7 @@ void UDPSocket::faultToleranceHandler(UDPSocket * myUDPSocket)
                         myUDPSocket->NonAcked[fragID].first--;
                         myUDPSocket->NonAckedMtx.unlock();
 
-                    //}
+                    }
                 }
                 else
                 {
@@ -416,9 +428,8 @@ void UDPSocket::faultToleranceHandler(UDPSocket * myUDPSocket)
                     myUDPSocket->NonAckedMtx.unlock();
 
                 }
-                myUDPSocket->NonAckedMtx.unlock();
             }
-            usleep(10000);
+            //usleep(10000);
             
         }
 
@@ -465,7 +476,7 @@ void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
         
             for(int i=0; i<fragments.size(); i++)
             {
-                cout << "sending frag i " << fragments[i]->getFragmentCount() << endl;
+                //cout << "sending frag i " << fragments[i]->getFragmentCount() << endl;
                 string msgStr = fragments[i]->marshal();
                 char *msgPtr = new char [msgStr.size()+1];
                 strcpy(msgPtr, msgStr.c_str());
@@ -476,8 +487,7 @@ void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
 
                 if(fragments[i]->getMessageType() != MessageType::Ack)
                 {
-                    string fragID = (myUDPSocket->getFragmentID(fragments[i]));
-                    cout << "Non acked frag id " << fragID << endl;
+
                     Message * temp = new Message;
                     temp->setDestinationIP(fragments[i]->getDestinationIP());
                     temp->setFragState(i+1, fragments.size());
@@ -491,6 +501,8 @@ void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
                     temp->setRPCID(fragments[i]->getRPCId());
                     temp->setMessageType(fragments[i]->getMessageType());
                     temp->setOperation(fragments[i]->getOperation());
+                    string fragID = (myUDPSocket->getFragmentID(temp));
+                    cout << "Non acked frag id " << fragID << endl;
 
                     NonAckedMtx.lock();
                     myUDPSocket->NonAcked[fragID] = {myUDPSocket->faultTrials, temp};
@@ -514,5 +526,6 @@ UDPSocket :: ~UDPSocket ( ){
     dest = true;
     ReceiveThread->join();
     SendThread->join();
+    FaultThread->join();
     close(sock);
 }

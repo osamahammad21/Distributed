@@ -37,6 +37,8 @@ int main(int argc, char ** argv)
         while(size--)
         img+=c[i++];
         img = base64_decode(img);
+        if(img == "q")
+        stop = true;
         ofstream out;
         string path = "out_img" + to_string(j) + ".jpg";
         out.open(path, ios_base::out | ios_base::binary);
