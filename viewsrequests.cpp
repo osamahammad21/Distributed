@@ -71,8 +71,8 @@ void viewsRequests::on_pushButton_giveAccess_clicked()
                 break;
             }
         }
-        image.writeProperties();
-
+        image.updateProperties();
+        image.desteg();
 
         cout << "Message sent from user to DS\n";
         string reply = peer->getPortnIP(token, requesterUsername);

@@ -17,5 +17,4 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 
-//requestAccess gives double the assigned views
 //requestAccess does not update the local copy

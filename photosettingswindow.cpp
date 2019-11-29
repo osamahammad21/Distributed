@@ -52,7 +52,8 @@ void PhotoSettingsWindow::on_pushButton_add_clicked()
 void PhotoSettingsWindow::on_pushButton_delete_clicked()
 {
     std::string username = ui->lineEdit_usernameDEL->text().toStdString();
-    users.erase(username);
+//    users.erase(username);
+    users[username] = 0;
     ui->lineEdit_usernameDEL->clear();
     viewItemsInListWidget();
 }
@@ -75,52 +76,87 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
 
     std::map<std::string, int>::iterator it;
     ui->listWidget->clear();
-    for ( it = users.begin(); it != users.end(); it++ )
-    {
-        prop.user_name = it->first;
-        prop.views = it->second;
-        if (upload){
+    image.readProperties();
+    if (!upload){
+//        image.readProperties();
+        for ( it = users.begin(); it != users.end(); it++ )
+        {
+            prop.user_name = it->first;
+            prop.views = it->second;
+            cout << "Not upload\n";
             bool found = false;
-            for (int i=0; i < image.properties.size(); i++)
+            for (int i=0; i < image.properties.size(); i++){
                 if (image.properties[i].user_name == it->first){
+                    cout << "found\n";
+                    found = true;
+                    if (image.properties[i].views != it->second){
+                        string imageName;
+                        image.getImageId(imageName);
+                        cout << "sending image access to " <<it->first << endl;
+                        int status = user->sendImageAccess(it->first, imageName, it->second);
+                        if (status == MSG_SUCCESS){
+                            cout << "succeeded to send access\n";
+                            image.properties[i].views = it->second;
+                            cout << "Properties " << image.properties[i].views << endl;
+                            break;
+                        } else {
+                            cout << "failed to send acces\n";
+                            ui->label_status->setText("Connection error. User's views not updated.");
+                            break;
+                        }
+                     } else {
+                         break;
+                     }
+//                    
+                }
+                if (!found){
+                    cout << "not found\n";
                     string imageName;
                     image.getImageId(imageName);
-                    user->sendImageAccess(it->first, imageName, it->second);
-                    image.properties[i].views = it->second;
-                    found = true;
+                    cout << "sending image access to " <<  it->first << endl;
+                    int status = user->sendImageAccess(it->first, imageName, it->second);
+                    if (status == MSG_SUCCESS){
+                        cout << "succeeded to send access\n";
+                        image.properties.push_back(prop);
+                        break;
+                    } else {
+                        cout << "failed to send acces\n";
+                        ui->label_status->setText("Connection error. User's views not updated.");
+                        break;
+                    }
                 }
-            if (!found)
-                image.properties.push_back(prop);
+            }
         }
-        else {
-            image.properties.push_back(prop);
-        }
-    }
-
-    
-    if (upload)
-        image.writeProperties();
-    else {
+        cout << "updating properties" << endl;
         image.updateProperties();
         image.desteg();
-    }
-
-    if (upload){
-        image.steg();
-        int uploadStatus = user->uploadPhoto(image); 
-        map<string, vector<imageSample>> samples;
-        user->getUsersSamples(samples);
-        hide();
-        HomeWindow *homeWindow = new HomeWindow(user, uploadStatus, samples, this);
-        homeWindow->show();
-        destroy();   
-    } else {
         hide();
         map<string, vector<imageSample>> samples;
         user->getUsersSamples(samples);
         HomeWindow *homeWindow = new HomeWindow(user, 10, samples, this);
         homeWindow->show();
         destroy();
+        return;
+    }
+    else {
+        for ( it = users.begin(); it != users.end(); it++ )
+        {
+            prop.user_name = it->first;
+            prop.views = it->second;
+            cout << "upload \n";
+            image.properties.push_back(prop);
+        }
+
+        image.writeProperties();
+        image.steg();
+        int uploadStatus = user->uploadPhoto(image);
+        map<string, vector<imageSample>> samples;
+        user->getUsersSamples(samples);
+        hide();
+        HomeWindow *homeWindow = new HomeWindow(user, uploadStatus, samples, this);
+        homeWindow->show();
+        destroy();
+        return;
     }
 }
 

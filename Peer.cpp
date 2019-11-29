@@ -606,7 +606,7 @@ void Peer::serve()
                         if(img.properties[i].user_name==fields[1])
                         {
                             found=true;
-                            img.properties[i].views+=stoi(fields[3]);
+                            img.properties[i].views=stoi(fields[3]);
                         }
                     if(!found)
                     {

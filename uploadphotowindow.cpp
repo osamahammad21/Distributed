@@ -43,9 +43,21 @@ void UploadPhotoWindow::on_pushButton_upload_clicked()
     QString imageName = ui->lineEdit_imageName->text();
     if (filename == NULL){
         ui->label_successMessage->setText("Must enter a valid image");
+        return;
     }
     if (imageName == NULL){
         ui->label_successMessage->setText("Must enter a valid image name");
+        return;
+    }
+    if (imageName.toStdString().find(" ")!=-1){
+        ui->label_successMessage->setText("Must enter a valid image name. Remove space characters");
+        return;
+    }
+    Image im;
+    im.setImageDir(user->getUsername());
+    if (im.findImage(user->getUsername(), imageName.toStdString())){
+        ui->label_successMessage->setText("Image name already exists. Choose different name.");
+        return;
     }
     if (filename != NULL && imageName != NULL){
         Image image;
