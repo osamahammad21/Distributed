@@ -53,7 +53,7 @@ private:
     unsigned int rpc_id;
     unsigned int operation; //Which function to call on server side
     unsigned int message_size;   
-    long long  timeStamp; 
+    unsigned long long  timeStamp; 
     char * message;         
 
 public:
@@ -68,7 +68,7 @@ unsigned int getFragmentCount();
 unsigned int getFragmentTotal();
 void setFragState(unsigned int curr_frag, unsigned int totalFrags);
 string getSourceIP();
-long long getMessageTimestamp();
+unsigned long long getMessageTimestamp();
 void setMessageTimestamp(long long _timeStamp);
 void setSourceIP(string ip);
 string getDestinationIP();

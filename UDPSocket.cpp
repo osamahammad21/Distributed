@@ -371,9 +371,7 @@ void UDPSocket::faultToleranceHandler(UDPSocket * myUDPSocket)
     {
         if(myUDPSocket->NonAcked.size())
         {
-            
-            seconds ms = duration_cast< seconds >(system_clock::now().time_since_epoch());  
-            int now = ms.count();
+
 
             myUDPSocket->NonAckedMtx.lock();
             auto it = myUDPSocket->NonAcked.begin();
@@ -389,9 +387,13 @@ void UDPSocket::faultToleranceHandler(UDPSocket * myUDPSocket)
                 myUDPSocket->NonAckedMtx.unlock();
                 if( trials >0)
                 {    
-                    if(now - (toBeResent->getMessageTimestamp() + (myUDPSocket->faultTrials) - trials) >=1)
+                    struct timeval tp;
+                    gettimeofday(&tp, NULL);
+                    unsigned long long ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+                    //seconds ms = duration_cast< seconds >(system_clock::now().time_since_epoch());  
+                    unsigned long long now = ms;
+                    if(now - (toBeResent->getMessageTimestamp() + 1000*((myUDPSocket->faultTrials) - trials)) >= 800)
                     {
-
                         cout << "Resending  frag ID " << fragID << " trials " << trials << endl;
                         struct sockaddr_in destAddr;
                         memset((char*)&destAddr, 0, sizeof(destAddr));
@@ -449,10 +451,13 @@ void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
             (myUDPSocket->SendBuffer).pop();
             SendBufferMtx.unlock();
 
-            seconds ms = duration_cast< seconds >(system_clock::now().time_since_epoch());  
+            struct timeval tp;
+            gettimeofday(&tp, NULL);
+            unsigned long long ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+            //seconds ms = duration_cast< seconds >(system_clock::now().time_since_epoch());  
 
             if(topMsg->getMessageType() != MessageType::Ack)
-                topMsg->setMessageTimestamp(ms.count());
+                topMsg->setMessageTimestamp(ms);
 
             topMsg->setSourceIP(string(myUDPSocket->myAddress_str));
             topMsg->setSourcePort(myUDPSocket->getMyPort());

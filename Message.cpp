@@ -76,7 +76,7 @@ char * Message :: marshal ()
     string destPort_s       = int_to_hex((int)this->destPort);
     string rpc_id_s     =  int_to_hex((int)this->rpc_id);  
     string op_s         =  int_to_hex((int)this->operation);
-    string time_stamp_s =  int_to_hex((long long)this->timeStamp);                 
+    string time_stamp_s =  int_to_hex((unsigned long long)this->timeStamp);                 
     string msg_size_s   = int_to_hex((long long) this->message_size); 
     string message((char * ) this->message); 
 
@@ -114,7 +114,7 @@ string Message :: getSourceIP()
 {
     return this->sourceIP;
 }
-long long Message::getMessageTimestamp()
+unsigned long long Message::getMessageTimestamp()
 {
     return this->timeStamp;
 }
