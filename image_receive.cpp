@@ -12,22 +12,20 @@ int main(int argc, char ** argv)
     unsigned int myPort = stoi(argv[3]);
     unsigned int destPort = stoi(argv[4]);
 
-    bool stop = false;
     string input;
-
+    bool stop = false;
     UDPSocket sockobj;
-    cout << "what's wrong" << endl;
+
     bool meh = sockobj.initializeSocket(myPort);
-    cout << "MY IP" << sockobj.getMachineIP();
+    cout << "MY IP" << sockobj.getMyIP() << endl;;
 
     int i=0;   
     int j = 0;
     string extract;
-    while(true)
+    while(!stop)
     {
         Message * newM = sockobj.receiveMsg();
         cout << "Received Msg of size " << newM->getMessageSize() << endl;
-        cout << "Time stamp = " << newM->getMessageTimestamp() << endl;
         
         if(newM != NULL)
         {
@@ -39,9 +37,8 @@ int main(int argc, char ** argv)
         while(size--)
         img+=c[i++];
         img = base64_decode(img);
-
         ofstream out;
-        string path = "out_img" + to_string(j++) + ".jpg";
+        string path = "out_img" + to_string(j) + ".jpg";
         out.open(path, ios_base::out | ios_base::binary);
         out << img;
         out.close();

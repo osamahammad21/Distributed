@@ -43,12 +43,12 @@ class UDPSocket
         mutex NonAckedMtx;
         mutex sockMtx;
         bool enabled = true;
-        unsigned int FRAG_MSG_SIZE = 10000;
+        unsigned int FRAG_MSG_SIZE = 500;
         unsigned int SOCK_MAX_BUFFER_SIZE = 100000;
-        unsigned int faultTrials = 4;
+        unsigned int faultTrials = 10;
         ofstream outFile;
         bool dest=false;
-	void setBroadcast(int s);
+	    void setBroadcast(int s);
     public:   
         queue<Message *> ReceiveBuffer;
         queue<Message *> SendBuffer; 
@@ -66,7 +66,7 @@ class UDPSocket
         void fragmentMsg(Message * FullMessage, vector<Message *> & frags);
         string getMsgID(Message* message);
         string getFragmentID(Message* message);
-
+        string getAckFragmentID(Message* message);
         void sendingHandler(UDPSocket * myUDPSocket);
         void receiveHandler(UDPSocket * myUDPSocket);
         void faultToleranceHandler(UDPSocket * myUDPSockeT);
