@@ -76,9 +76,8 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
 
     std::map<std::string, int>::iterator it;
     ui->listWidget->clear();
-    image.readProperties();
     if (!upload){
-//        image.readProperties();
+        image.readProperties();
         for ( it = users.begin(); it != users.end(); it++ )
         {
             prop.user_name = it->first;
