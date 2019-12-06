@@ -10,17 +10,17 @@ directoryServer::directoryServer(unsigned int port)
 	int totalUsers = doc.GetRowCount();
 	udpObj.initializeSocket(port);
 	//cout<<udpObj.getMyIP()<<endl;
-	listen_thread = new thread(&directoryServer::listen,this);
-	status_thread = new thread(&directoryServer::decrementStatus,this);
+	listen_thread = new thread(&directoryServer::listen, this);
+	status_thread = new thread(&directoryServer::decrementStatus, this);
 
-	for (int i = 0; i<totalUsers;i++)
+	for (int i = 0; i < totalUsers; i++)
 	{
 		string username = doc.GetRowName(i);
-		usersDict[username].password = doc.GetCell<string>(0,i);
+		usersDict[username].password = doc.GetCell<string>(0, i);
 		if (doc.GetCell<string>(1, i) != "")
 			usersDict[username].online = doc.GetCell<int>(1, i);
 		usersDict[username].ip = doc.GetCell<string>(2, i);
-		if (doc.GetCell<string>(3, i)!="")
+		if (doc.GetCell<string>(3, i) != "")
 			usersDict[username].port = doc.GetCell<unsigned int>(3, i);
 		usersDict[username].token = doc.GetCell<string>(4, i);
 		if (doc.GetCell<string>(5, i) != "")
@@ -39,22 +39,26 @@ directoryServer::~directoryServer()
 {
 }
 
-void directoryServer::login(string &username, string &password, Message* msg, directoryServer* ds)
+void directoryServer::login(string &username, string &password, Message *msg, directoryServer *ds)
 {
-    bool isAuthenticated = false;
+	bool isAuthenticated = false;
 	string reply;
 	//UDPSocket sockobj;
-    if (ds->authenticate(username, password))
-    {
+	if (ds->checkOnline(username))
+	{
+		reply = "user already logged in";
+	}
+	else if (ds->authenticate(username, password))
+	{
 		mtx.lock();
 		rapidcsv::Document doc(usersFile);
-        data onlineUser;
+		data onlineUser;
 		//update struct
 		usersDict[username].online = true;
 		usersDict[username].port = msg->getSourcePort();
 		usersDict[username].ip = msg->getSourceIP();
 		usersDict[username].token = username + password;
-        
+
 		//update file
 		doc.SetCell<int>("online", username, usersDict[username].online);
 		doc.SetCell<unsigned int>("port", username, usersDict[username].port);
@@ -63,92 +67,98 @@ void directoryServer::login(string &username, string &password, Message* msg, di
 		doc.Save();
 		mtx.unlock();
 		isAuthenticated = true;
-		reply=usersDict[username].token;
-    }
+		reply = usersDict[username].token;
+	}
 	else
 	{
-		reply="not a user";
+		reply = "not a user";
 	}
-	
-	//send appropriate reply
-	int n = reply.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, reply.c_str()); 
 
-    Message *message = new Message();
+	//send appropriate reply
+	int n = reply.length();
+	char *char_array = new char[n + 1];
+	strcpy(char_array, reply.c_str());
+
+	Message *message = new Message();
 	message->setSourceIP(udpObj.getMyIP());
-    message->setSourcePort(udpObj.getMyPort());
-    message->setRPCID(msg->getRPCId());
-    message->setDestinationIP(msg->getSourceIP());
-    message->setDestinationPort(msg->getSourcePort());
-    message->setOperation(Operation::login);
+	message->setSourcePort(udpObj.getMyPort());
+	message->setRPCID(msg->getRPCId());
+	message->setDestinationIP(msg->getSourceIP());
+	message->setDestinationPort(msg->getSourcePort());
+	message->setOperation(Operation::login);
 	message->setMessageType(MessageType::Reply);
-	message->setMessage(char_array,n);
+	message->setMessage(char_array, n);
 	udpObj.sendMessage(message);
-	
+}
+
+bool directoryServer::checkOnline(string &username)
+{
+	rapidcsv::Document doc(usersFile);
+	if (doc.GetCell<int>("online", username) == 1)
+		return true;
+	return false;
 }
 
 bool directoryServer::authenticate(string &username, string &password)
 {
 
 	rapidcsv::Document doc(usersFile);
-	vector<string>temp = doc.GetRowNames();
+	vector<string> temp = doc.GetRowNames();
 	int row = 0;
 	for (int i = 0; i < temp.size(); i++)
 		if (temp[i] == username)
 		{
-			if (doc.GetCell<string>("password",temp[i]) == password)
+			if (doc.GetCell<string>("password", temp[i]) == password)
 				return true;
 		}
 	return false;
-
 }
 
-void directoryServer::logout(string& token, Message* msg, directoryServer* ds)
+void directoryServer::logout(string &token, Message *msg, directoryServer *ds)
 {
 	rapidcsv::Document doc(usersFile);
-	vector<string>temp = doc.GetRowNames();
-	string username;//user with the token sent
+	vector<string> temp = doc.GetRowNames();
+	string username; //user with the token sent
 	int row = 0;
 	for (int i = 0; i < temp.size(); i++)
 		if (usersDict[temp[i]].token == token)
 			username = temp[i];
-	
+
 	string reply;
 	if (ds->usernameExists(username))
-    {
+	{
 		mtx.lock();
 		ds->usersDict[username].online = 0;
 		//update file
 		doc.SetCell<int>("online", username, usersDict[username].online);
-		
+
 		doc.Save();
 		mtx.unlock();
-		reply ="ok";
-	}else
-	{
-		reply="not a user";
+		reply = "ok";
 	}
-	int n = reply.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, reply.c_str()); 
-    Message *message = new Message();
+	else
+	{
+		reply = "not a user";
+	}
+	int n = reply.length();
+	char *char_array = new char[n + 1];
+	strcpy(char_array, reply.c_str());
+	Message *message = new Message();
 	message->setSourceIP(udpObj.getMyIP());
-    message->setSourcePort(udpObj.getMyPort());
-    message->setRPCID(msg->getRPCId());
-    message->setDestinationIP(msg->getSourceIP());
-    message->setDestinationPort(msg->getSourcePort());
-    message->setOperation(Operation::logout);
+	message->setSourcePort(udpObj.getMyPort());
+	message->setRPCID(msg->getRPCId());
+	message->setDestinationIP(msg->getSourceIP());
+	message->setDestinationPort(msg->getSourcePort());
+	message->setOperation(Operation::logout);
 	message->setMessageType(MessageType::Reply);
-	message->setMessage(char_array,n);
+	message->setMessage(char_array, n);
 	udpObj.sendMessage(message);
-	
 }
-void directoryServer::signup(string& username, string& password, Message* msg, directoryServer* ds)
+void directoryServer::signup(string &username, string &password, Message *msg, directoryServer *ds)
 {
-	
+
 	//update struct and file with new user
-	if (!(usernameExists(username))) 
+	if (!(usernameExists(username)))
 	{
 		mtx.lock();
 		rapidcsv::Document doc(usersFile);
@@ -158,14 +168,14 @@ void directoryServer::signup(string& username, string& password, Message* msg, d
 		doc.Save();
 		mtx.unlock();
 		//login after signup
-		login(username,password,msg,ds);
+		login(username, password, msg, ds);
 	}
 	else
 	{
-		string reply="username already exists";
-		int n = reply.length(); 
-		char *char_array=new char[n+1]; 
-		strcpy(char_array, reply.c_str()); 
+		string reply = "username already exists";
+		int n = reply.length();
+		char *char_array = new char[n + 1];
+		strcpy(char_array, reply.c_str());
 		Message *message = new Message();
 		message->setSourceIP(udpObj.getMyIP());
 		message->setSourcePort(udpObj.getMyPort());
@@ -174,43 +184,41 @@ void directoryServer::signup(string& username, string& password, Message* msg, d
 		message->setDestinationPort(msg->getSourcePort());
 		message->setOperation(Operation::signup);
 		message->setMessageType(MessageType::Reply);
-		message->setMessage(char_array,n);
+		message->setMessage(char_array, n);
 		udpObj.sendMessage(message);
 	}
-	
 }
 
-bool directoryServer::usernameExists(string& username)
+bool directoryServer::usernameExists(string &username)
 {
 	return (usersDict.find(username) != usersDict.end());
 }
 
-void directoryServer::uploadimage(string& token, string& imagename,string& image64, Message* msg, directoryServer* ds)
+void directoryServer::uploadimage(string &token, string &imagename, string &image64, Message *msg, directoryServer *ds)
 {
-	
+
 	mtx.lock();
 	rapidcsv::Document doc(usersFile);
 
-	vector<string>temp = doc.GetRowNames();
-	string username;//user with the token sent
+	vector<string> temp = doc.GetRowNames();
+	string username; //user with the token sent
 	int row = 0;
 	for (int i = 0; i < temp.size(); i++)
 		if (usersDict[temp[i]].token == token)
 			username = temp[i];
 	mtx.unlock();
 
-
-	string count = doc.GetCell<string>("imageCount",username);
-	if(count != "")
+	string count = doc.GetCell<string>("imageCount", username);
+	if (count != "")
 	{
-		int count_int = doc.GetCell<int>("imageCount",username);
+		int count_int = doc.GetCell<int>("imageCount", username);
 		if (count_int >= 10)
 		{
-			string ok ="maximum samples reached";
+			string ok = "maximum samples reached";
 			cout << "maxmimum samples reached" << endl;
-			int n = ok.length(); 
-			char *char_array=new char[n+1]; 
-			strcpy(char_array, ok.c_str()); 
+			int n = ok.length();
+			char *char_array = new char[n + 1];
+			strcpy(char_array, ok.c_str());
 
 			Message *message = new Message();
 			message->setSourceIP(udpObj.getMyIP());
@@ -220,7 +228,7 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 			message->setDestinationPort(msg->getSourcePort());
 			message->setOperation(Operation::uploadImage);
 			message->setMessageType(MessageType::Reply);
-			message->setMessage(char_array,n);
+			message->setMessage(char_array, n);
 			udpObj.sendMessage(message);
 
 			return;
@@ -231,7 +239,7 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 	ds->usersDict[username].imageCount += 1;
 	ds->usersDict[username].image64.push_back(image64);
 	ds->usersDict[username].imageName.push_back(imagename);
-	
+
 	//add to users.csv
 	doc.SetCell<int>("imageCount", username, usersDict[username].imageCount);
 	temp = doc.GetRowNames();
@@ -240,38 +248,37 @@ void directoryServer::uploadimage(string& token, string& imagename,string& image
 		if (temp[i] == username)
 			row = i;
 
-	doc.SetCell<string>(4 + usersDict[username].imageCount*2, row, usersDict[username].imageName.back());
-	doc.SetCell<string>(4 + usersDict[username].imageCount*2 + 1, row, usersDict[username].image64.back());
+	doc.SetCell<string>(4 + usersDict[username].imageCount * 2, row, usersDict[username].imageName.back());
+	doc.SetCell<string>(4 + usersDict[username].imageCount * 2 + 1, row, usersDict[username].image64.back());
 	doc.Save();
 	mtx.unlock();
 
-	string ok ="ok";
-	int n = ok.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, ok.c_str()); 
+	string ok = "ok";
+	int n = ok.length();
+	char *char_array = new char[n + 1];
+	strcpy(char_array, ok.c_str());
 
 	Message *message = new Message();
 	message->setSourceIP(udpObj.getMyIP());
-    message->setSourcePort(udpObj.getMyPort());
-    message->setRPCID(msg->getRPCId());
-    message->setDestinationIP(msg->getSourceIP());
-    message->setDestinationPort(msg->getSourcePort());
-    message->setOperation(Operation::uploadImage);
+	message->setSourcePort(udpObj.getMyPort());
+	message->setRPCID(msg->getRPCId());
+	message->setDestinationIP(msg->getSourceIP());
+	message->setDestinationPort(msg->getSourcePort());
+	message->setOperation(Operation::uploadImage);
 	message->setMessageType(MessageType::Reply);
-	message->setMessage(char_array,n);
+	message->setMessage(char_array, n);
 	udpObj.sendMessage(message);
 	return;
-	
 }
 
-void directoryServer::removeImage(string& token, string&imagename, Message* msg, directoryServer* ds)
+void directoryServer::removeImage(string &token, string &imagename, Message *msg, directoryServer *ds)
 {
 	mtx.lock();
 	bool found = false;
 	rapidcsv::Document doc(usersFile);
 
-	vector<string>temp = doc.GetRowNames();
-	string username="";//user with the token sent
+	vector<string> temp = doc.GetRowNames();
+	string username = ""; //user with the token sent
 	for (int i = 0; i < temp.size(); i++)
 		if (usersDict[temp[i]].token == token)
 			username = temp[i];
@@ -280,10 +287,10 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 		return;
 	if (usersDict[username].imageCount == NULL)
 	{
-		string ok ="image not found";
-		int n = ok.length(); 
-		char *char_array=new char[n+1]; 
-		strcpy(char_array, ok.c_str()); 
+		string ok = "image not found";
+		int n = ok.length();
+		char *char_array = new char[n + 1];
+		strcpy(char_array, ok.c_str());
 
 		Message *message = new Message();
 		message->setSourceIP(udpObj.getMyIP());
@@ -293,11 +300,9 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 		message->setDestinationPort(msg->getSourcePort());
 		message->setOperation(Operation::removeImage);
 		message->setMessageType(MessageType::Reply);
-		message->setMessage(char_array,n);
+		message->setMessage(char_array, n);
 		udpObj.sendMessage(message);
 		return;
-
-		
 	}
 	int index = 0;
 	for (int j = 6; j < 6 + usersDict[username].imageCount * 2; j += 2)
@@ -312,9 +317,9 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 				}
 			}
 			mtx.lock();
-			doc.SetCell<string>(j,index,"");
-			doc.SetCell<string>(j+1,index,"");
-			doc.SetCell<int>("imageCount",username,usersDict[username].imageCount -1);
+			doc.SetCell<string>(j, index, "");
+			doc.SetCell<string>(j + 1, index, "");
+			doc.SetCell<int>("imageCount", username, usersDict[username].imageCount - 1);
 			usersDict[username].imageName.erase(usersDict[username].imageName.begin() + j);
 			usersDict[username].image64.erase(usersDict[username].image64.begin() + j);
 			usersDict[username].imageCount--;
@@ -327,10 +332,10 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 	}
 	if (!found)
 	{
-		string ok ="image not found";
-		int n = ok.length(); 
-		char *char_array=new char[n+1]; 
-		strcpy(char_array, ok.c_str()); 
+		string ok = "image not found";
+		int n = ok.length();
+		char *char_array = new char[n + 1];
+		strcpy(char_array, ok.c_str());
 
 		Message *message = new Message();
 		message->setSourceIP(udpObj.getMyIP());
@@ -340,42 +345,37 @@ void directoryServer::removeImage(string& token, string&imagename, Message* msg,
 		message->setDestinationPort(msg->getSourcePort());
 		message->setOperation(Operation::removeImage);
 		message->setMessageType(MessageType::Reply);
-		message->setMessage(char_array,n);
+		message->setMessage(char_array, n);
 		udpObj.sendMessage(message);
 		return;
 	}
 
-	
-	string ok ="image removed";
-	int n = ok.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, ok.c_str()); 
+	string ok = "image removed";
+	int n = ok.length();
+	char *char_array = new char[n + 1];
+	strcpy(char_array, ok.c_str());
 
 	Message *message = new Message();
 	message->setSourceIP(udpObj.getMyIP());
-    message->setSourcePort(udpObj.getMyPort());
-    message->setRPCID(msg->getRPCId());
-    message->setDestinationIP(msg->getSourceIP());
-    message->setDestinationPort(msg->getSourcePort());
-    message->setOperation(Operation::removeImage);
+	message->setSourcePort(udpObj.getMyPort());
+	message->setRPCID(msg->getRPCId());
+	message->setDestinationIP(msg->getSourceIP());
+	message->setDestinationPort(msg->getSourcePort());
+	message->setOperation(Operation::removeImage);
 	message->setMessageType(MessageType::Reply);
-	message->setMessage(char_array,n);
+	message->setMessage(char_array, n);
 	udpObj.sendMessage(message);
 	return;
-
-
-	
-
 }
-string directoryServer::getPortnIP(string& token, string& username, Message* msg, directoryServer* ds)
+string directoryServer::getPortnIP(string &token, string &username, Message *msg, directoryServer *ds)
 {
 	rapidcsv::Document doc(usersFile);
-	if(usernameExists(username))
+	if (usernameExists(username))
 	{
-		string pandip =doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip",username);
-		int n = pandip.length(); 
-		char *char_array=new char[n+1]; 
-		strcpy(char_array, pandip.c_str()); 
+		string pandip = doc.GetCell<string>("port", username) + "," + doc.GetCell<string>("ip", username);
+		int n = pandip.length();
+		char *char_array = new char[n + 1];
+		strcpy(char_array, pandip.c_str());
 
 		Message *message = new Message();
 		message->setSourceIP(udpObj.getMyIP());
@@ -385,7 +385,7 @@ string directoryServer::getPortnIP(string& token, string& username, Message* msg
 		message->setDestinationPort(msg->getSourcePort());
 		message->setOperation(Operation::getPortnIP);
 		message->setMessageType(MessageType::Reply);
-		message->setMessage(char_array,n);
+		message->setMessage(char_array, n);
 		udpObj.sendMessage(message);
 
 		return pandip;
@@ -393,9 +393,9 @@ string directoryServer::getPortnIP(string& token, string& username, Message* msg
 	else
 	{
 		string pandip = "not a user";
-		int n = pandip.length(); 
-		char *char_array=new char[n+1]; 
-		strcpy(char_array, pandip.c_str()); 
+		int n = pandip.length();
+		char *char_array = new char[n + 1];
+		strcpy(char_array, pandip.c_str());
 
 		Message *message = new Message();
 		message->setSourceIP(udpObj.getMyIP());
@@ -405,23 +405,23 @@ string directoryServer::getPortnIP(string& token, string& username, Message* msg
 		message->setDestinationPort(msg->getSourcePort());
 		message->setOperation(Operation::getPortnIP);
 		message->setMessageType(MessageType::Reply);
-		message->setMessage(char_array,n);
+		message->setMessage(char_array, n);
 		udpObj.sendMessage(message);
 
 		return pandip;
 	}
 }
 
-string directoryServer::getAllImages(string& token, Message*msg, directoryServer*ds)
+string directoryServer::getAllImages(string &token, Message *msg, directoryServer *ds)
 {
 
 	rapidcsv::Document doc(usersFile);
 	if (doc.GetColumnCount() <= 7)
 	{
-		string images ="no images";
-		int n = images.length(); 
-		char *char_array=new char[n+1]; 
-		strcpy(char_array, images.c_str()); 
+		string images = "no images";
+		int n = images.length();
+		char *char_array = new char[n + 1];
+		strcpy(char_array, images.c_str());
 
 		Message *message = new Message();
 		message->setSourceIP(udpObj.getMyIP());
@@ -431,7 +431,7 @@ string directoryServer::getAllImages(string& token, Message*msg, directoryServer
 		message->setDestinationPort(msg->getSourcePort());
 		message->setOperation(Operation::getAllImages);
 		message->setMessageType(MessageType::Reply);
-		message->setMessage(char_array,n);
+		message->setMessage(char_array, n);
 		udpObj.sendMessage(message);
 
 		return images;
@@ -443,53 +443,85 @@ string directoryServer::getAllImages(string& token, Message*msg, directoryServer
 		if (doc.GetCell<string>("imageCount", i) == "")
 			continue;
 		int imageCount = doc.GetCell<int>("imageCount", i);
-		for (int j = 0; j < int(doc.GetColumnCount()-6); j+=2)
+		for (int j = 0; j < int(doc.GetColumnCount() - 6); j += 2)
 		{
-			if (doc.GetCell<string>(j+6, i) != "")
-			imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j+6, i) + "," + doc.GetCell<string>(j+7,i)) + ",";
+			if (doc.GetCell<string>(j + 6, i) != "")
+				imagesNames += (doc.GetRowName(i) + "," + doc.GetCell<string>(j + 6, i) + "," + doc.GetCell<string>(j + 7, i)) + ",";
 		}
 	}
 
-	string images =imagesNames.substr(0, imagesNames.size() - 1);
-	int n = images.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, images.c_str()); 
+	string images = imagesNames.substr(0, imagesNames.size() - 1);
+	int n = images.length();
+	char *char_array = new char[n + 1];
+	strcpy(char_array, images.c_str());
 
 	Message *message = new Message();
 	message->setSourceIP(udpObj.getMyIP());
-    message->setSourcePort(udpObj.getMyPort());
-    message->setRPCID(msg->getRPCId());
-    message->setDestinationIP(msg->getSourceIP());
-    message->setDestinationPort(msg->getSourcePort());
-    message->setOperation(Operation::getAllImages);
+	message->setSourcePort(udpObj.getMyPort());
+	message->setRPCID(msg->getRPCId());
+	message->setDestinationIP(msg->getSourceIP());
+	message->setDestinationPort(msg->getSourcePort());
+	message->setOperation(Operation::getAllImages);
 	message->setMessageType(MessageType::Reply);
-	message->setMessage(char_array,n);
+	message->setMessage(char_array, n);
 	udpObj.sendMessage(message);
 
 	return imagesNames.substr(0, imagesNames.size() - 1);
 }
 
-void directoryServer::listen()
+string directoryServer::getOnlineUsers(string &token, Message *msg, directoryServer *ds)
 {
-    while(true){
-        Message *request=udpObj.receiveMsg();
-		//cout<< request->getMessageArgs()[0]<<endl;
-		thread *th = new thread(&directoryServer::doOperation,this,request);
-    }
+
+	rapidcsv::Document doc(usersFile);
+
+	string onlineUsers = "";
+	int userCount = doc.GetRowCount();
+	for (int i = 0; i < userCount; i++)
+	{
+		onlineUsers += doc.GetRowName(i) + "," + doc.GetCell<string>("online", i) + ",";
+	}
+	string userString = onlineUsers.substr(0, onlineUsers.size() - 1);
+
+	int n = userString.length();
+	char *char_array = new char[n + 1];
+	strcpy(char_array, userString.c_str());
+
+	Message *message = new Message();
+	message->setSourceIP(udpObj.getMyIP());
+	message->setSourcePort(udpObj.getMyPort());
+	message->setRPCID(msg->getRPCId());
+	message->setDestinationIP(msg->getSourceIP());
+	message->setDestinationPort(msg->getSourcePort());
+	message->setOperation(Operation::getOnlineUsers);
+	message->setMessageType(MessageType::Reply);
+	message->setMessage(char_array, n);
+	udpObj.sendMessage(message);
+
+	return userString;
 }
 
-void directoryServer::updateStatus(string& token, directoryServer* ds)
+void directoryServer::listen()
+{
+	while (true)
+	{
+		Message *request = udpObj.receiveMsg();
+		//cout<< request->getMessageArgs()[0]<<endl;
+		thread *th = new thread(&directoryServer::doOperation, this, request);
+	}
+}
+
+void directoryServer::updateStatus(string &token, directoryServer *ds)
 {
 	rapidcsv::Document doc(usersFile);
-	vector<string>temp = doc.GetRowNames();
-	string username;//user with the token sent
+	vector<string> temp = doc.GetRowNames();
+	string username; //user with the token sent
 	int row = 0;
 	for (int i = 0; i < temp.size(); i++)
 		if (usersDict[temp[i]].token == token)
 			username = temp[i];
-	
+
 	mtxStatus.lock();
-	statusDict[username]=TIMEOUT; //TIMEOUT defined in directoryServer.h (30 seconds)
+	statusDict[username] = TIMEOUT; //TIMEOUT defined in directoryServer.h (30 seconds)
 	mtxStatus.unlock();
 	//cout<<"status for user:"<<username<<"updated"<<endl;
 }
@@ -498,70 +530,73 @@ void directoryServer::decrementStatus()
 {
 	while (true)
 	{
-		for (auto& x: statusDict)
+		for (auto &x : statusDict)
 		{
 			mtxStatus.lock();
-			x.second--; //decrement TIMEOUT
+			x.second--;		   //decrement TIMEOUT
 			if (x.second == 0) //user no longer online
 			{
 				//remove entry from SatusDict
 				usersDict.erase(x.first);
 				//set as offline in users.csv
-				mtx.lock(); 
+				mtx.lock();
 				rapidcsv::Document doc(usersFile);
 				usersDict[x.first].online = 0;
 				doc.SetCell<int>("online", x.first, usersDict[x.first].online);
 				doc.Save();
 				mtx.unlock();
-			} 
+			}
 			mtxStatus.unlock();
 		}
-		usleep(1000000);//usleep takes microseconds 
+		usleep(1000000); //usleep takes microseconds
 	}
 }
 
 void directoryServer::clearUsers()
 {
-	
 }
 
-void directoryServer::doOperation(Message* request)
+void directoryServer::doOperation(Message *request)
 {
 	int operationID = request->getOperation();
-	thread* receiverThread;
-	string input = string((char*)request->getMessage());
+	thread *receiverThread;
+	string input = string((char *)request->getMessage());
 	vector<string> args = request->getMessageArgs();
-	
+
 	if (operationID == Operation::login)
 	{
-		directoryServer::login(args[0],args[1],request,this);
+		directoryServer::login(args[0], args[1], request, this);
 	}
 	else if (operationID == Operation::logout)
 	{
-		directoryServer::logout(args[0],request,this);
+		directoryServer::logout(args[0], request, this);
 	}
 	else if (operationID == Operation::signup)
 	{
-		directoryServer::signup(args[0],args[1],request,this);
+		directoryServer::signup(args[0], args[1], request, this);
 	}
 	else if (operationID == Operation::uploadImage)
 	{
-		directoryServer::uploadimage(args[0],args[1],args[2],request,this);
+		directoryServer::uploadimage(args[0], args[1], args[2], request, this);
 	}
 	else if (operationID == Operation::getPortnIP)
 	{
-		directoryServer::getPortnIP(args[0],args[1], request,this);
+		directoryServer::getPortnIP(args[0], args[1], request, this);
 	}
 	else if (operationID == Operation::getAllImages)
 	{
-		directoryServer::getAllImages(args[0],request,this);
+		directoryServer::getAllImages(args[0], request, this);
 	}
 	else if (operationID == Operation::updateStatus)
 	{
-		directoryServer::updateStatus(args[0],this);
+		directoryServer::updateStatus(args[0], this);
 	}
 	else if (operationID == Operation::removeImage)
 	{
-		directoryServer::removeImage(args[0],args[1],request,this);
+		directoryServer::removeImage(args[0], args[1], request, this);
+	}
+	else if (operationID == Operation::getOnlineUsers)
+	{
+		directoryServer::getOnlineUsers(args[0], request, this);
 	}
 }
