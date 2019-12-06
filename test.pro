@@ -15,14 +15,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 SOURCES += \
+    accessrequest.cpp \
     allimagesforuser.cpp \
     homewindow.cpp \
     imagesamplewidget.cpp \
     main.cpp \
     mainwindow.cpp \
     myphoto.cpp \
+    onlineuser.cpp \
+    onlineuserslist.cpp \
     photosettingswindow.cpp \
-    registerwindow.cpp \
     uploadphotowindow.cpp \
     user.cpp \
     viewalluserphotoswin.cpp \
@@ -38,13 +40,15 @@ SOURCES += \
 
 HEADERS += \
     ImageModel.h \
+    accessrequest.h \
     allimagesforuser.h \
     homewindow.h \
     imagesamplewidget.h \
     mainwindow.h \
     myphoto.h \
+    onlineuser.h \
+    onlineuserslist.h \
     photosettingswindow.h \
-    registerwindow.h \
     uploadphotowindow.h \
     user.h \
     viewalluserphotoswin.h \
@@ -59,13 +63,15 @@ HEADERS += \
     viewsrequests.h
 
 FORMS += \
+    accessrequest.ui \
     allimagesforuser.ui \
     homewindow.ui \
     imagesamplewidget.ui \
     mainwindow.ui \
     myphoto.ui \
+    onlineuser.ui \
+    onlineuserslist.ui \
     photosettingswindow.ui \
-    registerwindow.ui \
     uploadphotowindow.ui \
     viewalluserphotoswin.ui \
     viewmyphotos.ui \
