@@ -48,6 +48,9 @@ class directoryServer
 		bool usernameExists(string&);
 		void updateStatus(string& , directoryServer*);
 		void removeImage(string&, string&, Message*, directoryServer*);
+		string getOnlineUsers(string&, Message*, directoryServer*);
+		bool checkOnline(string&);
+
 		void decrementStatus();
 		void clearUsers();
 
