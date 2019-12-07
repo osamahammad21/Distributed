@@ -37,8 +37,9 @@ class directoryServer
 		};
 		unordered_map<string, data> usersDict;
 		unordered_map<string, int> statusDict;
+		unordered_map<string, vector<Message*>> buffer;
 
-        void login(string&, string&, Message* , directoryServer*);
+		void login(string&, string&, Message* , directoryServer*);
         void logout(string&, Message*, directoryServer*);
         void signup(string&, string&, Message* , directoryServer*);
         void uploadimage(string&, string&, string&, Message* , directoryServer*);
@@ -50,6 +51,10 @@ class directoryServer
 		void removeImage(string&, string&, Message*, directoryServer*);
 		string getOnlineUsers(string&, Message*, directoryServer*);
 		bool checkOnline(string&);
+
+		void requestImageAccess(string&, string&, string&, Message*, directoryServer*);
+		void addImageAccess(string&, string&, string&, string&, Message*, directoryServer*);
+
 
 		void decrementStatus();
 		void clearUsers();
