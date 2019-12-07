@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "registerwindow.h"
 MainWindow::MainWindow(User * user,QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -42,7 +41,19 @@ void MainWindow::on_pushButton_login_clicked()
 
 void MainWindow::on_pushButton_signup_clicked()
 {
-    RegisterWindow *registerwindow = new RegisterWindow(user, this);
-    registerwindow->show();
-    destroy();
+    QString username = ui->lineEdit_username->text();
+    QString password = ui->lineEdit_password->text();
+    int status = user->signup(username.toStdString(), password.toStdString());
+    if (status == MSG_SUCCESS){
+        map<string, vector<imageSample>> samples;
+        user->getUsersSamples(samples);
+        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, this);
+        homeWindow->show();
+        destroy();
+    }
+    else if (status == PARAM_ERROR){
+        ui->label_successMessage->setText("Username taken");
+    } else {
+        ui->label_successMessage->setText("Connection error. Try again later.");
+    }
 }

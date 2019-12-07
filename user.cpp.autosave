@@ -136,7 +136,6 @@ int User:: getUsersSamples(map<string, vector<imageSample>> & samples){
     if (status == MSG_SUCCESS)
         samples =  usersImageSamples;
     return status;
-
 }
 
 int User :: getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages){

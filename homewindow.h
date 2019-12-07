@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "uploadphotowindow.h"
 #include "user.h"
+#include "onlineuserslist.h"
 
 namespace Ui {
 class HomeWindow;
@@ -21,6 +22,8 @@ private slots:
     void on_pushButton_uploaphoto_clicked();
 
     void on_pushButton_logout_clicked();
+
+    void on_pushButton_refresh_clicked();
 
 private:
     Ui::HomeWindow *ui;

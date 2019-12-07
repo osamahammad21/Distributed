@@ -39,10 +39,15 @@ ViewAllUserPhotosWin::~ViewAllUserPhotosWin()
 void ViewAllUserPhotosWin::on_pushButton_home_clicked()
 {
     map<string, vector<imageSample>> samples;
-    user->getUsersSamples(samples);
-    HomeWindow *homeWindow = new HomeWindow(user, -10, samples, this);
-    homeWindow->show();
-    destroy();
+    int status = user->getUsersSamples(samples);
+    if (status == MSG_SUCCESS){
+        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, nullptr);
+        homeWindow->show();
+        destroy();
+    }
+    else {
+        ui->label_status->setText("Connection error. Try again later.");
+    }
 }
 
 void ViewAllUserPhotosWin::on_pushButton_logout_clicked()

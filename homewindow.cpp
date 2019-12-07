@@ -21,6 +21,7 @@ HomeWindow::HomeWindow(User * user, int uploadStatus, map<string, vector<imageSa
 
     ui->tabWidget->addTab( new viewSamples(user, samples, this),"User's samples");
     ui->tabWidget->addTab( new ViewMyPhotos(user, this),"My Photos");
+    ui->tabWidget->addTab( new onlineUsersList(user, this), "Online Users");
 
 
     switch (uploadStatus){
@@ -64,6 +65,23 @@ void HomeWindow::on_pushButton_logout_clicked()
         mainWindow->show();
         destroy();
     } else {
+        ui->label_uploadStatus->setText("Connection error. Try again later.");
+        ui->label_uploadStatus->setVisible(true);
+    }
+}
+
+void HomeWindow::on_pushButton_refresh_clicked()
+{
+    ui->tabWidget->clear();
+
+    map<string, vector<imageSample>> samples;
+    int status = user->getUsersSamples(samples);
+    if (status == MSG_SUCCESS){
+        ui->tabWidget->addTab( new viewSamples(user, samples, this),"User's samples");
+        ui->tabWidget->addTab( new ViewMyPhotos(user, this),"My Photos");
+        ui->tabWidget->addTab( new onlineUsersList(user, this), "Online Users");
+    }
+    else {
         ui->label_uploadStatus->setText("Connection error. Try again later.");
         ui->label_uploadStatus->setVisible(true);
     }
