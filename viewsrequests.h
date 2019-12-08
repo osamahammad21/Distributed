@@ -6,7 +6,7 @@
 #include <QWidget>
 #include "Image.h"
 #include "user.h"
-#define BACKGROUND_PATH "../Distributed/background.jpeg"
+#define BACKGROUND_PATH "background.jpeg"
 
 #define CONN_TIMEOUT "connection timeout"
 

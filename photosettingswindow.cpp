@@ -108,21 +108,36 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
                      }
 //                    
                 }
-                if (!found){
-                    cout << "not found\n";
-                    string imageName;
-                    image.getImageId(imageName);
-                    cout << "sending image access to " <<  it->first << endl;
-                    int status = user->sendImageAccess(it->first, imageName, it->second);
-                    if (status == MSG_SUCCESS){
-                        cout << "succeeded to send access\n";
-                        image.properties.push_back(prop);
-                        break;
-                    } else {
-                        cout << "failed to send acces\n";
-                        ui->label_status->setText("Connection error. User's views not updated.");
-                        break;
-                    }
+//                if (!found){
+//                    cout << "not found\n";
+//                    string imageName;
+//                    image.getImageId(imageName);
+//                    cout << "sending image access to " <<  it->first << endl;
+//                    int status = user->sendImageAccess(it->first, imageName, it->second);
+//                    if (status == MSG_SUCCESS){
+//                        cout << "succeeded to send access\n";
+//                        image.properties.push_back(prop);
+//                        break;
+//                    } else {
+//                        cout << "failed to send acces\n";
+//                        ui->label_status->setText("Connection error. User's views not updated.");
+//                        break;
+//                    }
+                }
+            if (!found){
+                cout << "not found\n";
+                string imageName;
+                image.getImageId(imageName);
+                cout << "sending image access to " <<  it->first << endl;
+                int status = user->sendImageAccess(it->first, imageName, it->second);
+                if (status == MSG_SUCCESS){
+                    cout << "succeeded to send access\n";
+                    image.properties.push_back(prop);
+                    break;
+                } else {
+                    cout << "failed to send acces\n";
+                    ui->label_status->setText("Connection error. User's views not updated.");
+                    break;
                 }
             }
         }

@@ -57,8 +57,8 @@ class Peer
         string getOnlineUsers(string token);
         string getAllImagesFromPeer(string myusername,string targetusername,string ip,int port);
         string getImage(string myusername,string ownerusername,string targetadd,unsigned int targetport,string imagename);
-        string requestImageAccess(string myusername,string ownerusername,string imagename);
-        string sendImageAccess(string myusername,string targetusername,string imagename,int addedViews);
+        string requestImageAccess(string token,string ownerusername,string imagename);
+        string sendImageAccess(string token,string targetusername,string imagename,int addedViews);
         void stopStatusUpdates();
         ~Peer();
 

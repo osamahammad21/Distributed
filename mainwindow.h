@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include "homewindow.h"
 #include "user.h"
-#define BACKGROUND_PATH "../Distributed/background.jpeg"
+#define BACKGROUND_PATH "background.jpeg"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE

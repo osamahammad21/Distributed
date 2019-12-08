@@ -60,6 +60,8 @@ void MainWindow::on_pushButton_signup_clicked()
             HomeWindow *homeWindow = new HomeWindow(user, -10, samples, onlineUsers, this);
             homeWindow->show();
             destroy();
+        } else{
+            ui->label_successMessage->setText("Connection error. Try again later.");
         }
     }
     else if (status == PARAM_ERROR){

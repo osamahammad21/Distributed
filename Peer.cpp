@@ -494,7 +494,7 @@ string Peer::getImage(string myusername,string ownerusername,string targetadd,un
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
-string Peer::requestImageAccess(string myusername,string ownerusername,string imagename)
+string Peer::requestImageAccess(string token,string ownerusername,string imagename)
 {
     rpcidmtx.lock();
     int rpcId = rpccount++;
@@ -506,7 +506,7 @@ string Peer::requestImageAccess(string myusername,string ownerusername,string im
     message->setDestinationIP(dsaddr);
     message->setDestinationPort(dsport);
     message->setOperation(Operation::requestImageAccess);
-    string request = myusername+DELIM+ownerusername+DELIM+imagename;
+    string request = token+DELIM+ownerusername+DELIM+imagename;
     int n = request.length();
     char *char_array=new char[n+1];
     strcpy(char_array, request.c_str());
@@ -515,7 +515,7 @@ string Peer::requestImageAccess(string myusername,string ownerusername,string im
     while(!sock.sendMessage(message)){}
     return "sent successfully";
 }
-string Peer::sendImageAccess(string myusername,string targetusername,string imagename,int addedViews)
+string Peer::sendImageAccess(string token,string targetusername,string imagename,int addedViews)
 {
     cout << "Sending access" << endl;
     rpcidmtx.lock();
@@ -528,7 +528,7 @@ string Peer::sendImageAccess(string myusername,string targetusername,string imag
     message->setDestinationIP(dsaddr);
     message->setDestinationPort(dsport);
     message->setOperation(Operation::addImageAccess);
-    string request = myusername+DELIM+targetusername+DELIM+imagename+DELIM+to_string(addedViews);
+    string request = token+DELIM+targetusername+DELIM+imagename+DELIM+to_string(addedViews);
     int n = request.length();
     char *char_array=new char[n+1];
     strcpy(char_array, request.c_str());

@@ -103,7 +103,7 @@ int User:: getAllImages(){
     cout << "Reply received by user from DS\n";
     vector <string> args;
     if(reply=="no images")
-       return PARAM_ERROR;
+       return MSG_SUCCESS;
     if (reply == CONN_TIMEOUT)
         return CONN_FAILURE;
     split(reply, args, ',');
@@ -203,7 +203,7 @@ void User :: requestAccessPopUp(string reply){
     popUp->show();
 
     QEventLoop loop;
-    QObject :: connect(popUp, SIGNAL(destroyed()), & loop, SLOT(QUIT()));
+    QObject :: connect(popUp, SIGNAL(destroyed()), & loop, SLOT(quit()));
     thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
     cout << "destroyed 0\n";
     loop.exec();

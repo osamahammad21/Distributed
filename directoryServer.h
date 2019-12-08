@@ -12,7 +12,7 @@
 #include "rapidcsv.h"
 
 #define TIMEOUT 30;
-//#define MAX_SAMPLES 10;
+#define MAX_SAMPLES 2;
 using namespace std;
 
 class directoryServer
