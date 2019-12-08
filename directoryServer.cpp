@@ -5,6 +5,10 @@ using namespace std;
 
 directoryServer::directoryServer(unsigned int port)
 {
+	string syscall = "sudo snap install ahavi";
+	system(syscall.c_str());
+	syscall = "ahavi-set-host-name directoryGroupH"
+	system(syscall.c_str());
 	mtx.lock();
 	rapidcsv::Document doc(usersFile);
 	int totalUsers = doc.GetRowCount();
