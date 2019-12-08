@@ -15,7 +15,7 @@ Peer :: Peer(int port){
     sock.initializeSocket(port);
     read_thread = new std::thread(&Peer::listen,this);
     serve_thread = new std::thread(&Peer::serve,this);
-    
+
 }
 void Peer::startStatusUpdates(string token)
 {
@@ -48,7 +48,7 @@ void Peer::addImageLocally(string imageId)
         {
             imagesFile<<myImages[i]<<endl;
         }
-        
+
     }
     imagesFile.close();
 }
@@ -72,7 +72,7 @@ void Peer::removeImageLocally(string imageId)
         {
             imagesFile<<myImages[i]<<endl;
         }
-        
+
     }
     imagesFile.close();
 }
@@ -99,16 +99,16 @@ string Peer::login(string username,string password)
     message->setDestinationPort(dsport);
     message->setOperation(Operation::login);
     string request=username+DELIM+password;
-    int n = request.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, request.c_str()); 
+    int n = request.length();
+    char *char_array=new char[n+1];
+    strcpy(char_array, request.c_str());
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
     long long ticks=0;
     while(true)
     {
-        
+
         if(replyMessages.find(rpcId)!=replyMessages.end())
         {
             if(replyMessages[rpcId]->getMessageType()==MessageType::Reply)
@@ -156,16 +156,16 @@ string Peer::logout(string token)
     message->setDestinationPort(dsport);
     message->setOperation(Operation::logout);
     string request=token;
-    int n = request.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, request.c_str()); 
+    int n = request.length();
+    char *char_array=new char[n+1];
+    strcpy(char_array, request.c_str());
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
     long long ticks=0;
     while(true)
     {
-        
+
         if(replyMessages.find(rpcId)!=replyMessages.end())
         {
             if(replyMessages[rpcId]->getMessageType()==MessageType::Reply)
@@ -192,9 +192,9 @@ string Peer::signup(string username,string password)
     message->setDestinationPort(dsport);
     message->setOperation(Operation::signup);
     string request=username+DELIM+password;
-    int n = request.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, request.c_str()); 
+    int n = request.length();
+    char *char_array=new char[n+1];
+    strcpy(char_array, request.c_str());
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
@@ -251,9 +251,9 @@ string Peer::uploadImage(string token,string imagename,string image64)
     message->setDestinationPort(dsport);
     message->setOperation(Operation::uploadImage);
     string request=token+DELIM+imagename+DELIM+image64;
-    int n = request.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, request.c_str()); 
+    int n = request.length();
+    char *char_array=new char[n+1];
+    strcpy(char_array, request.c_str());
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
@@ -286,9 +286,9 @@ string Peer::removeImage(string token,string imagename)
     message->setDestinationPort(dsport);
     message->setOperation(Operation::removeImage);
     string request=token+DELIM+imagename;
-    int n = request.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, request.c_str()); 
+    int n = request.length();
+    char *char_array=new char[n+1];
+    strcpy(char_array, request.c_str());
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
@@ -322,9 +322,9 @@ string Peer::getAllImagesFromDS(string token)
     message->setDestinationPort(dsport);
     message->setOperation(Operation::getAllImages);
     string request = token;
-    int n = request.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, request.c_str()); 
+    int n = request.length();
+    char *char_array=new char[n+1];
+    strcpy(char_array, request.c_str());
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
@@ -339,6 +339,44 @@ string Peer::getAllImagesFromDS(string token)
                 return s;
             }
         }
+        if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
+            return CONN_TIMEOUT;
+        usleep(100000);//sleep for 100 Milliseconds
+    }
+}
+string Peer::getOnlineUsers(string token)
+{
+    rpcidmtx.lock();
+    int rpcId = rpccount++;
+    rpcidmtx.unlock();
+    Message *message = new Message();
+    message->setSourceIP(sock.getMyIP());
+    message->setSourcePort(sock.getMyPort());
+    message->setRPCID(rpcId);
+    message->setDestinationIP(dsaddr);
+    message->setDestinationPort(dsport);
+    message->setOperation(Operation::getOnlineUsers);
+    string request = token;
+    int n = request.length();
+    char *char_array=new char[n+1];
+    strcpy(char_array, request.c_str());
+    message->setMessage(char_array,n);
+    message->setMessageType(MessageType::Request);
+    while(!sock.sendMessage(message)){}
+    long long ticks=0;
+    while(true)
+    {
+        if(replyMessages.find(rpcId)!=replyMessages.end())
+        {
+            if(replyMessages[rpcId]->getMessageType()==MessageType::Reply)
+            {
+                string s(replyMessages[rpcId]->getMessage());
+                return s;
+            }
+        }
+        if( timeOutIsSet && (ticks++ / 10 >= timeOutSeconds) )
+            return CONN_TIMEOUT;
+        usleep(100000);//sleep for 100 Milliseconds
     }
 }
 //care that each image is encoded64 twice on the Peer level so you need to decode it twice to use it
@@ -355,9 +393,9 @@ string Peer::getAllImagesFromPeer(string myusername,string targetusername,string
     message->setDestinationPort(port);
     message->setOperation(Operation::getThumbnails);
     string request = myusername+DELIM+targetusername;
-    int n = request.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, request.c_str()); 
+    int n = request.length();
+    char *char_array=new char[n+1];
+    strcpy(char_array, request.c_str());
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
@@ -391,9 +429,9 @@ string Peer::getPortnIP(string token,string targetusername)
     message->setDestinationPort(dsport);
     message->setOperation(Operation::getPortnIP);
     string request = token+DELIM+targetusername;
-    int n = request.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, request.c_str()); 
+    int n = request.length();
+    char *char_array=new char[n+1];
+    strcpy(char_array, request.c_str());
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
@@ -434,9 +472,9 @@ string Peer::getImage(string myusername,string ownerusername,string targetadd,un
     message->setDestinationPort(targetport);
     message->setOperation(Operation::getImage);
     string request = myusername+DELIM+ownerusername+DELIM+imagename;
-    int n = request.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, request.c_str()); 
+    int n = request.length();
+    char *char_array=new char[n+1];
+    strcpy(char_array, request.c_str());
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
@@ -456,7 +494,7 @@ string Peer::getImage(string myusername,string ownerusername,string targetadd,un
         usleep(100000);//sleep for 100 Milliseconds
     }
 }
-string Peer::requestImageAccess(string myusername,string ownerusername,string targetadd,unsigned int targetport,string imagename)
+string Peer::requestImageAccess(string myusername,string ownerusername,string imagename)
 {
     rpcidmtx.lock();
     int rpcId = rpccount++;
@@ -465,19 +503,19 @@ string Peer::requestImageAccess(string myusername,string ownerusername,string ta
     message->setSourceIP(sock.getMyIP());
     message->setSourcePort(sock.getMyPort());
     message->setRPCID(rpcId);
-    message->setDestinationIP(targetadd);
-    message->setDestinationPort(targetport);
+    message->setDestinationIP(dsaddr);
+    message->setDestinationPort(dsport);
     message->setOperation(Operation::requestImageAccess);
     string request = myusername+DELIM+ownerusername+DELIM+imagename;
-    int n = request.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, request.c_str()); 
+    int n = request.length();
+    char *char_array=new char[n+1];
+    strcpy(char_array, request.c_str());
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
     return "sent successfully";
 }
-string Peer::sendImageAccess(string myusername,string targetusername,string targetadd,unsigned int targetport,string imagename,int addedViews)
+string Peer::sendImageAccess(string myusername,string targetusername,string imagename,int addedViews)
 {
     cout << "Sending access" << endl;
     rpcidmtx.lock();
@@ -487,13 +525,13 @@ string Peer::sendImageAccess(string myusername,string targetusername,string targ
     message->setSourceIP(sock.getMyIP());
     message->setSourcePort(sock.getMyPort());
     message->setRPCID(rpcId);
-    message->setDestinationIP(targetadd);
-    message->setDestinationPort(targetport);
+    message->setDestinationIP(dsaddr);
+    message->setDestinationPort(dsport);
     message->setOperation(Operation::addImageAccess);
     string request = myusername+DELIM+targetusername+DELIM+imagename+DELIM+to_string(addedViews);
-    int n = request.length(); 
-    char *char_array=new char[n+1]; 
-    strcpy(char_array, request.c_str()); 
+    int n = request.length();
+    char *char_array=new char[n+1];
+    strcpy(char_array, request.c_str());
     message->setMessage(char_array,n);
     message->setMessageType(MessageType::Request);
     while(!sock.sendMessage(message)){}
@@ -508,7 +546,7 @@ void Peer::serve()
         if(!serveMessages.empty())
         {
             for(int i =0;i<serveMessages.size();i++)
-            { 
+            {
                 if(serveMessages[i]->getOperation()==Operation::getImage){
                     cout<<"Full Image"<<endl;
                     vector<string> fields;
@@ -540,12 +578,12 @@ void Peer::serve()
                     message->setDestinationPort(serveMessages[i]->getSourcePort());
                     message->setOperation(Operation::getImage);
                     message->setMessageType(MessageType::Reply);
-                    int n = request.length(); 
-                    char *char_array=new char[n+1]; 
-                    strcpy(char_array, request.c_str()); 
+                    int n = request.length();
+                    char *char_array=new char[n+1];
+                    strcpy(char_array, request.c_str());
                     message->setMessage(char_array,n);
                     while(!sock.sendMessage(message)){}
-                    
+
 
                 }else if(serveMessages[i]->getOperation()==Operation::getThumbnails)
                 {
@@ -554,7 +592,7 @@ void Peer::serve()
                     split(serveMessages[i]->getMessage(),fields,',');
                     if(fields.size()<2)
                         continue;
-                    
+
                     string images="";
                     bool first=true;
                     for(int i =0;i<myImages.size();i++)
@@ -582,12 +620,12 @@ void Peer::serve()
                     message->setDestinationPort(serveMessages[i]->getSourcePort());
                     message->setOperation(Operation::getThumbnails);
                     message->setMessageType(MessageType::Reply);
-                    int n = images.length(); 
-                    char *char_array=new char[n+1]; 
-                    strcpy(char_array, images.c_str()); 
+                    int n = images.length();
+                    char *char_array=new char[n+1];
+                    strcpy(char_array, images.c_str());
                     message->setMessage(char_array,n);
                     while(!sock.sendMessage(message)){}
-                    
+
                 }else if(serveMessages[i]->getOperation()==Operation::addImageAccess)
                 {
                     vector<string> fields;
@@ -677,7 +715,7 @@ void Peer::listen()
             serveMessages.push_back(reply);
             vectorMtx.unlock();
         }
-        
+
     }
 }
 void Peer::status(string input)
@@ -695,15 +733,15 @@ void Peer::status(string input)
         message->setDestinationIP(dsaddr);
         message->setDestinationPort(dsport);
         message->setOperation(Operation::updateStatus);
-        char *char_array=new char[token.length()+1]; 
-        strcpy(char_array, token.c_str()); 
+        char *char_array=new char[token.length()+1];
+        strcpy(char_array, token.c_str());
         message->setMessage(char_array,token.length());
         message->setMessageType(MessageType::Request);
         while(!sock.sendMessage(message)){}
         sleep(STATUS_UPDATE_TIME);
         //cout<<"update SENT"<<endl;
     }
-    
+
 }
 Peer :: ~Peer()
 {
@@ -711,5 +749,5 @@ Peer :: ~Peer()
     serve_thread->join();
     read_thread->join();
     if(statusUpdatesRunning)
-        status_thread->join();        
+        status_thread->join();
 }

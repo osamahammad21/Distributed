@@ -14,7 +14,7 @@
 #define STATUS_UPDATE_TIME 4
 // #define IMAGES_DB_PATH "myimagesdb.txt"
 #define CONN_TIMEOUT "connection timeout"
-using namespace std; 
+using namespace std;
 class Peer
 {
     private:
@@ -36,10 +36,10 @@ class Peer
         void listen();//thread
         void serve();//thread
         void status(string input);//thread
-        bool timeOutIsSet=false,statusupdates=false;;
+        bool timeOutIsSet=false,statusupdates=false;
         int timeOutSeconds=0;
     public:
-        Peer(int port); 
+        Peer(int port);
         string getImageUpdates();
         void addImageLocally(string imageId);
         void removeImageLocally(string imageId);
@@ -54,10 +54,11 @@ class Peer
         string logout(string token);
         string getPortnIP(string token,string targetusername);
         string getAllImagesFromDS(string token);
+        string getOnlineUsers(string token);
         string getAllImagesFromPeer(string myusername,string targetusername,string ip,int port);
         string getImage(string myusername,string ownerusername,string targetadd,unsigned int targetport,string imagename);
-        string requestImageAccess(string myusername,string ownerusername,string targetadd,unsigned int targetport,string imagename);
-        string sendImageAccess(string myusername,string targetusername,string targetadd,unsigned int targetport,string imagename,int addedViews);
+        string requestImageAccess(string myusername,string ownerusername,string imagename);
+        string sendImageAccess(string myusername,string targetusername,string imagename,int addedViews);
         void stopStatusUpdates();
         ~Peer();
 

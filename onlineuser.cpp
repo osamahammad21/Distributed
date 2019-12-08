@@ -9,6 +9,15 @@ onlineUser::onlineUser( User * user, QWidget * grandparent, string otherUsername
     this->user = user;
     this->grandparent = grandparent;
     this->otherUsername = otherUsername;
+
+    ui->pushButton_viewAllImages->setStyleSheet("background-color: white");
+
+
+    if (status == 1)
+        ui->label_online->setText("online");
+    else
+        ui->label_online->setText("offline");
+    ui->label_username->setText(QString::fromStdString(otherUsername));
 }
 
 onlineUser::~onlineUser()

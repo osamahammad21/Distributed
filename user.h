@@ -14,6 +14,7 @@ using namespace std;
 #define CONN_FAILURE -1
 #define MSG_SUCCESS 1
 #define PARAM_ERROR 0
+#define LOGIN_FAIL -2
 
 struct imageSample { string imageName; string preview; Image im;};
 
@@ -36,6 +37,7 @@ public:
     void requestAccessPopUp(string);
     int removeImage(string imageName);
     int sendImageAccess(string targetUsername, string imageName, int views);
+    int getOnlineUsers(vector <pair<string, int>> &onlineUsers);
 
 private:
     string username;

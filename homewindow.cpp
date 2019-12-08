@@ -6,7 +6,7 @@
 #include "viewsamples.h"
 #include "viewmyphotos.h"
 
-HomeWindow::HomeWindow(User * user, int uploadStatus, map<string, vector<imageSample>> samples, QWidget *parent) :
+HomeWindow::HomeWindow(User * user, int uploadStatus, map<string, vector<imageSample>> samples, vector<pair<string, int>> onlineUsers, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::HomeWindow)
 {
@@ -21,7 +21,7 @@ HomeWindow::HomeWindow(User * user, int uploadStatus, map<string, vector<imageSa
 
     ui->tabWidget->addTab( new viewSamples(user, samples, this),"User's samples");
     ui->tabWidget->addTab( new ViewMyPhotos(user, this),"My Photos");
-    ui->tabWidget->addTab( new onlineUsersList(user, this), "Online Users");
+    ui->tabWidget->addTab( new onlineUsersList(user,  onlineUsers, this), "Online Users");
 
 
     switch (uploadStatus){
@@ -76,10 +76,12 @@ void HomeWindow::on_pushButton_refresh_clicked()
 
     map<string, vector<imageSample>> samples;
     int status = user->getUsersSamples(samples);
-    if (status == MSG_SUCCESS){
+    vector <pair<string, int>> onlineUsers;
+    int status2 = user->getOnlineUsers(onlineUsers);
+    if (status == MSG_SUCCESS && status == status2){
         ui->tabWidget->addTab( new viewSamples(user, samples, this),"User's samples");
         ui->tabWidget->addTab( new ViewMyPhotos(user, this),"My Photos");
-        ui->tabWidget->addTab( new onlineUsersList(user, this), "Online Users");
+        ui->tabWidget->addTab( new onlineUsersList(user, onlineUsers, this), "Online Users");
     }
     else {
         ui->label_uploadStatus->setText("Connection error. Try again later.");

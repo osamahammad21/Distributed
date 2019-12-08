@@ -90,9 +90,11 @@ void UploadPhotoWindow::on_pushButton_logout_clicked()
 void UploadPhotoWindow::on_pushButton_home_clicked()
 {
     map<string, vector<imageSample>> samples;
-    int status = user->getUsersSamples(samples);
-    if (status == MSG_SUCCESS){
-        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, nullptr);
+    int status1 = user->getUsersSamples(samples);
+    vector <pair<string, int>> onlineUsers;
+    int status2 = user->getOnlineUsers(onlineUsers);
+    if (status1 == status2 && status1 == MSG_SUCCESS){
+        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, onlineUsers, this);
         homeWindow->show();
         destroy();
     }

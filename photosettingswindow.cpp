@@ -132,8 +132,9 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
         hide();
         map<string, vector<imageSample>> samples;
         user->getUsersSamples(samples);
-        HomeWindow *homeWindow = new HomeWindow(user, 10, samples, this);
-        homeWindow->show();
+        vector <pair<string, int>> onlineUsers;
+        user->getOnlineUsers(onlineUsers);
+        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, onlineUsers, this);        homeWindow->show();
         destroy();
         return;
     }
@@ -152,8 +153,9 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
         map<string, vector<imageSample>> samples;
         user->getUsersSamples(samples);
         hide();
-        HomeWindow *homeWindow = new HomeWindow(user, uploadStatus, samples, this);
-        homeWindow->show();
+        vector <pair<string, int>> onlineUsers;
+        user->getOnlineUsers(onlineUsers);
+        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, onlineUsers, this);        homeWindow->show();
         destroy();
         return;
     }
@@ -176,9 +178,11 @@ void PhotoSettingsWindow::on_pushButton_logout_clicked()
 void PhotoSettingsWindow::on_pushButton_home_clicked()
 {
     map<string, vector<imageSample>> samples;
-    int status = user->getUsersSamples(samples);
-    if (status == MSG_SUCCESS){
-        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, nullptr);
+    int status1 = user->getUsersSamples(samples);
+    vector <pair<string, int>> onlineUsers;
+    int status2 = user->getOnlineUsers(onlineUsers);
+    if (status1 == status2 && status1 == MSG_SUCCESS){
+        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, onlineUsers, this);
         homeWindow->show();
         destroy();
     }
