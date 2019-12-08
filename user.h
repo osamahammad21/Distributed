@@ -21,6 +21,12 @@ struct imageSample { string imageName; string preview; Image im;};
 class User
 {
 public:
+    struct accessRequester{
+        string username;
+        string imageName;
+        int id;
+    };
+    vector <accessRequester> requesters;
     User(Peer * peer);
     int login(string username, string password);
     int signup(string username, string password);
@@ -44,6 +50,7 @@ private:
     string token;
     Peer * peer;
     map <string, vector <imageSample>> usersImageSamples;
+    int accessRequests;
 };
 
 #endif // USER_H

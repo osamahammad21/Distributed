@@ -5,6 +5,7 @@
 #include "uploadphotowindow.h"
 #include "user.h"
 #include "onlineuserslist.h"
+#include "accessrequestlist.h"
 
 namespace Ui {
 class HomeWindow;
