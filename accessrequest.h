@@ -13,7 +13,7 @@ class AccessRequest : public QWidget
     Q_OBJECT
 
 public:
-    explicit AccessRequest(User * user, string imageName, string requesterUsername, QWidget *parent);
+    explicit AccessRequest(User * user, string imageName, string requesterUsername, int id, QWidget *parent);
     ~AccessRequest();
 
 private slots:
@@ -26,6 +26,7 @@ private:
     Image image;
     User *user;
     string requesterUsername;
+    int id;
 };
 
 #endif // ACCESSREQUEST_H

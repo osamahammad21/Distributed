@@ -22,7 +22,7 @@ HomeWindow::HomeWindow(User * user, int uploadStatus, map<string, vector<imageSa
     ui->tabWidget->addTab( new viewSamples(user, samples, this),"User's samples");
     ui->tabWidget->addTab( new ViewMyPhotos(user, this),"My Photos");
     ui->tabWidget->addTab( new onlineUsersList(user,  onlineUsers, this), "Online Users");
-
+    ui->tabWidget->addTab( new accessRequestList(user, this), "Access requests");
 
     switch (uploadStatus){
         case CONN_FAILURE:
@@ -82,6 +82,7 @@ void HomeWindow::on_pushButton_refresh_clicked()
         ui->tabWidget->addTab( new viewSamples(user, samples, this),"User's samples");
         ui->tabWidget->addTab( new ViewMyPhotos(user, this),"My Photos");
         ui->tabWidget->addTab( new onlineUsersList(user, onlineUsers, this), "Online Users");
+        ui->tabWidget->addTab( new accessRequestList(user, this), "Access requests");
     }
     else {
         ui->label_uploadStatus->setText("Connection error. Try again later.");

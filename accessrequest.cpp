@@ -1,7 +1,7 @@
 #include "accessrequest.h"
 #include "ui_accessrequest.h"
 
-AccessRequest::AccessRequest(User * user, string imageName, string requesterUsername, QWidget *parent) :
+AccessRequest::AccessRequest(User * user, string imageName, string requesterUsername, int id, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::AccessRequest)
 {
@@ -9,14 +9,16 @@ AccessRequest::AccessRequest(User * user, string imageName, string requesterUser
     this->user = user;
     this->image = image;
     this->requesterUsername = requesterUsername;
-
-    this->requesterUsername = requesterUsername;
-
+    this->id = id;
     QPixmap bkgnd(BACKGROUND_PATH);
     bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
     QPalette palette;
     palette.setBrush(QPalette::Background, bkgnd);
     this->setPalette(palette);
+
+    ui->pushButton_reject->setStyleSheet("background-color: white");
+    ui->pushButton_giveAccess->setStyleSheet("background-color: white");
+
 
     ui->label_info->setText(QString:: fromStdString("User " + requesterUsername + " requests access\nto image " + imageName));
     image.setImageDir(user->getUsername());
@@ -44,6 +46,10 @@ AccessRequest::~AccessRequest()
 
 void AccessRequest::on_pushButton_giveAccess_clicked()
 {
+    for (int i = 0; i<user->requesters.size(); i++){
+        if(user->requesters[i].id == id)
+            user->requesters.erase(user->requesters.begin() + i);
+    }
     if (ui->lineEdit_views->text() != NULL){
         int views = stoi(ui->lineEdit_views->text().toStdString());
         image.readProperties();
@@ -57,7 +63,7 @@ void AccessRequest::on_pushButton_giveAccess_clicked()
         image.desteg();
         string imageName;
         image.getImageId(imageName);
-
+        hide();
         user->sendImageAccess(requesterUsername,imageName, views);
         image.removeMiddleFiles();
         destroy();
@@ -66,5 +72,10 @@ void AccessRequest::on_pushButton_giveAccess_clicked()
 
 void AccessRequest::on_pushButton_reject_clicked()
 {
+    for (int i = 0; i<user->requesters.size(); i++){
+        if(user->requesters[i].id == id)
+            user->requesters.erase(user->requesters.begin() + i);
+    }
+    hide();
     destroy();
 }

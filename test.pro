@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 SOURCES += \
     accessrequest.cpp \
+    accessrequestlist.cpp \
     allimagesforuser.cpp \
     homewindow.cpp \
     imagesamplewidget.cpp \
@@ -41,6 +42,7 @@ SOURCES += \
 HEADERS += \
     ImageModel.h \
     accessrequest.h \
+    accessrequestlist.h \
     allimagesforuser.h \
     homewindow.h \
     imagesamplewidget.h \
@@ -64,6 +66,7 @@ HEADERS += \
 
 FORMS += \
     accessrequest.ui \
+    accessrequestlist.ui \
     allimagesforuser.ui \
     homewindow.ui \
     imagesamplewidget.ui \

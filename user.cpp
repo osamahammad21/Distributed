@@ -4,6 +4,7 @@ User::User(Peer * peer)
 {
     this->peer = peer;
     peer->setTimeOut(20);
+    accessRequests = 0;
 }
 
 int User :: login(string username, string password){
@@ -186,9 +187,20 @@ void User :: getMyImages(vector <imageSample> & myPhotos){
     }while (!in.eof());
 }
 void User :: serveRequestViews(){
+    while(true){
         cout << "Listening for access requests" << endl;
         string reply = peer->getImageUpdates();
-        emit requestAccessPopUp(reply);
+        vector <string> args;
+        split(reply, args, ',');
+        accessRequester temp;
+        temp.imageName = args[0];
+        temp.username = args[2];
+        temp.id = ++accessRequests;
+        requesters.push_back(temp);
+//        viewsRequests * popUp = new viewsRequests(peer, token, args[1], args[0], args[2], nullptr);
+//        emit requestAccessPopUp(reply);
+//        thread * requestAccessPopUpThread = new std::thread(& User::requestAccessPopUp, this, reply);
+    }
 }
 
 int User :: requestImageAccess(string ownerUsername, string imageName){
@@ -204,8 +216,9 @@ void User :: requestAccessPopUp(string reply){
     popUp->show();
 
     QEventLoop loop;
-    QObject :: connect(popUp, SIGNAL(destroyed()), & loop, SLOT(quit()));
-    thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
+    QObject :: connect(popUp, SIGNAL(popUp->destroyed()), & loop, SLOT(this->terminate()));
+//    thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
+//    acessRequestThread->detach();
     cout << "destroyed 0\n";
     loop.exec();
     cout << "destroyed\n";
