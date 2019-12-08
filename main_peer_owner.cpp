@@ -24,13 +24,18 @@ int main()
     img.writeProperties();
     img.steg();
     peer.addImageLocally("flower");
-    while(true){
-        string req = peer.getImageUpdates();
-        vector<string>fields;
-        split(req,fields,',');
-        cout<<req<<endl;
-        peer.sendImageAccess(fields[1],fields[0],fields[3],stoi(fields[4]),fields[2],10);
+    while (true)
+    {
+        /* code */
     }
+    
+    // while(true){
+    //     string req = peer.getImageUpdates();
+    //     vector<string>fields;
+    //     split(req,fields,',');
+    //     cout<<req<<endl;
+    //     peer.sendImageAccess(fields[1],fields[0],fields[3],stoi(fields[4]),fields[2],10);
+    // }
     return 0;
     // cout<<"Waiting for upload"<<endl;
     // cout<<peer.uploadImage("token","osos")<<endl;

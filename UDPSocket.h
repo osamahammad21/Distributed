@@ -22,9 +22,10 @@
 #include <time.h> 
 #include <chrono>
 #include <sys/time.h>
-#include <unistd.h>
 #include <ctime>
+#include <unistd.h>
 using namespace std::chrono;
+using namespace std;
 //#define RECEIVE_OUTPUT_FILE_LOG
 //#define DEBUG
 class UDPSocket
@@ -36,15 +37,22 @@ class UDPSocket
         string myAddress_str;
         thread * ReceiveThread;
         thread* SendThread;
+        thread * FaultThread;
         mutex ReceiveBufferMtx;
         mutex SendBufferMtx;
+        mutex NonAckedMtx;
+        mutex sockMtx;
         bool enabled = true;
         unsigned int FRAG_MSG_SIZE = 10000;
         unsigned int SOCK_MAX_BUFFER_SIZE = 100000;
+        unsigned int faultTrials = 10;
         ofstream outFile;
         bool dest=false;
-	void setBroadcast(int s);
+
+        
     public:   
+        //<string(MSGID+fragc), <trialsLeft, Message *>>
+        unordered_map<string, pair<unsigned int, Message *>> NonAcked;
         queue<Message *> ReceiveBuffer;
         queue<Message *> SendBuffer; 
         UDPSocket ();    
@@ -58,8 +66,12 @@ class UDPSocket
         bool sendMessage(Message * FullMessage);
         void fragmentMsg(Message * FullMessage, vector<Message *> & frags);
         string getMsgID(Message* message);
+        string getFragmentID(Message* message);
+        string getAckFragmentID(Message* message);
         void sendingHandler(UDPSocket * myUDPSocket);
         void receiveHandler(UDPSocket * myUDPSocket);
+        void faultToleranceHandler(UDPSocket * myUDPSockeT);
+        void setBroadcast(int s);
         ~UDPSocket ( );
 };
 #endif // UDPSOCKET_H

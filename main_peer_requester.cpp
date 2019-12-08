@@ -27,8 +27,8 @@ int main()
     img1.setImageDir("osama");
     string imgstr = peer.getImage("osama","habiba","10.7.57.221",1,"flower");
     img1.writeImage(imgstr , "habiba" ,"flower");
-    cout<<peer.requestImageAccess("osama","habiba","10.7.57.221",1,"flower")<<endl;
-    cin>>start;
+    // cout<<peer.requestImageAccess("osama","habiba","10.7.57.221",1,"flower")<<endl;
+    // cin>>start;
     Image img;
     if(img.setImageDir("osama")<0)
         return 0;
@@ -37,7 +37,7 @@ int main()
     img.readProperties();
     for(int i = 0;i<img.properties.size();i++)
         cout<<img.properties[i].user_name<<" "<<img.properties[i].views<<endl;
-    img.removeMiddleFiles();
+    // img.removeMiddleFiles();
     // peer.setDS("10.7.57.207",88);
     // cout<<peer.signup("user1","pass1")<<endl;
     // string token = peer.signup("user2","pass2");
