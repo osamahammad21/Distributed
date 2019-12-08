@@ -655,7 +655,9 @@ void directoryServer::decrementStatus()
 				mtx.lock();
 				rapidcsv::Document doc(usersFile);
 				usersDict[x.first].online = 0;
-				doc.SetCell<int>("online", x.first, usersDict[x.first].online);
+				doc.SetCell<string>("online", x.first, "0");
+				doc.SetCell<string>("token", x.first, "");
+
 				doc.Save();
 				mtx.unlock();
 			}
@@ -702,6 +704,8 @@ void directoryServer::requestImageAccess(string &token, string &ownerusername, s
 				message->setMessageType(MessageType::Request);
 				message->setMessage(char_array, n);
 				udpObj.sendMessage(message);
+				cout<<"message sent"<<endl;
+				return;
 			}
 			else
 			{
@@ -711,7 +715,9 @@ void directoryServer::requestImageAccess(string &token, string &ownerusername, s
 		else
 		{
 			//buffer message
+			mtx.lock();
 			buffer[ownerusername].push_back(msg);
+			mtx.unlock();
 		}
 	}
 }
@@ -749,7 +755,7 @@ void directoryServer::addImageAccess(string &token, string &target, string &imag
 				message->setMessageType(MessageType::Request);
 				message->setMessage(char_array, n);
 				udpObj.sendMessage(message);
-
+				cout<<"message sent"<<endl;
 				return;
 			}
 			else
@@ -760,7 +766,9 @@ void directoryServer::addImageAccess(string &token, string &target, string &imag
 		else
 		{
 			//buffer message
+			mtx.lock();
 			buffer[target].push_back(msg);
+			mtx.unlock();
 		}
 	}
 }
