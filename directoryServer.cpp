@@ -18,11 +18,14 @@ directoryServer::directoryServer(unsigned int port)
 		string username = doc.GetRowName(i);
 		usersDict[username].password = doc.GetCell<string>(0, i);
 		if (doc.GetCell<string>(1, i) != "")
-			usersDict[username].online = doc.GetCell<int>(1, i);
+			usersDict[username].online = 0;
+		doc.SetCell<string>(1, i, "0");
 		usersDict[username].ip = doc.GetCell<string>(2, i);
 		if (doc.GetCell<string>(3, i) != "")
 			usersDict[username].port = doc.GetCell<unsigned int>(3, i);
-		usersDict[username].token = doc.GetCell<string>(4, i);
+		doc.SetCell<string>(4, i, "");
+		usersDict[username].token = "";
+		doc.Save();
 		if (doc.GetCell<string>(5, i) != "")
 			usersDict[username].imageCount = doc.GetCell<int>(5, i);
 
@@ -302,7 +305,7 @@ void directoryServer::uploadimage(string &token, string &imagename, string &imag
 		if (count != "")
 		{
 			int count_int = doc.GetCell<int>("imageCount", username);
-			if (count_int >= 10)
+			if (count_int >= 3)
 			{
 				string ok = "maximum samples reached";
 				cout << "maxmimum samples reached" << endl;
