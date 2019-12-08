@@ -5,9 +5,9 @@ using namespace std;
 
 directoryServer::directoryServer(unsigned int port)
 {
-	string syscall = "sudo snap install ahavi";
+	string syscall = "sudo snap install avahi";
 	system(syscall.c_str());
-	syscall = "ahavi-set-host-name directoryGroupH"
+	syscall = "sudo avahi-set-host-name directoryGroupH";
 	system(syscall.c_str());
 	mtx.lock();
 	rapidcsv::Document doc(usersFile);
