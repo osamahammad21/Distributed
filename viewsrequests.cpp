@@ -24,6 +24,7 @@ viewsRequests::viewsRequests(Peer * peer, string token, string ownerUsername, st
     image.desteg();
 
     string preview = image.getSmallScaleImage();
+    image.removeMiddleFiles();
     preview = base64_decode(preview);
     preview = base64_decode(preview);
     ofstream out;
@@ -59,7 +60,6 @@ inline void split(string str, vector<string>& cont, char delim = ' ')
         cont.push_back(token);
     }
 }
-
 void viewsRequests::on_pushButton_giveAccess_clicked()
 {
     if (ui->lineEdit_views->text() != NULL){
@@ -73,11 +73,31 @@ void viewsRequests::on_pushButton_giveAccess_clicked()
         }
         image.updateProperties();
         image.desteg();
-
         cout << "Message sent to peer\n";
         peer->sendImageAccess(token, requesterUsername, imageName, views);
+        image.removeMiddleFiles();
+        destroy();
+    }else
+    {
         destroy();
     }
+//    destroy();
+//    if (ui->lineEdit_views->text() != NULL){
+//        int views = stoi(ui->lineEdit_views->text().toStdString());
+//        image.readProperties();
+//        for (int index = 0; index < image.properties.size(); index++){
+//            if (image.properties[index].user_name == requesterUsername){
+//                image.properties[index].views = views;
+//                break;
+//            }
+//        }
+//        image.updateProperties();
+//        image.desteg();
+
+//        cout << "Message sent to peer\n";
+//        peer->sendImageAccess(token, requesterUsername, imageName, views);
+//        destroy();
+//    }
 }
 
 void viewsRequests::on_pushButton_reject_clicked()

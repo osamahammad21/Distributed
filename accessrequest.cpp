@@ -59,6 +59,7 @@ void AccessRequest::on_pushButton_giveAccess_clicked()
         image.getImageId(imageName);
 
         user->sendImageAccess(requesterUsername,imageName, views);
+        image.removeMiddleFiles();
         destroy();
     }
 }

@@ -148,7 +148,7 @@ int User :: getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwn
     cout << "Reply received by user from DS\n";
     vector <string> args;
     split(reply, args, ',');
-    peer->setTimeOut(60);
+    peer->setTimeOut(10);
     cout << "Message sent to peer\n";
     reply = peer->getAllImagesFromPeer(username, ownerUsername, args[1], stoi(args[0]));
     if (reply == CONN_TIMEOUT)
@@ -180,6 +180,7 @@ void User :: getMyImages(vector <imageSample> & myPhotos){
             i.desteg();
             temp.preview = i.getSmallScaleImage();
             temp.im = i;
+            i.removeMiddleFiles();
             myPhotos.push_back(temp);
         }
     }while (!in.eof());

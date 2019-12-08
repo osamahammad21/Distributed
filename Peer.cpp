@@ -13,6 +13,7 @@ inline bool existf(string name) {
 Peer :: Peer(int port){
     //create client socket
     sock.initializeSocket(port);
+    system("sudo snap install avahi");
     read_thread = new std::thread(&Peer::listen,this);
     serve_thread = new std::thread(&Peer::serve,this);
 
@@ -23,10 +24,23 @@ void Peer::startStatusUpdates(string token)
     status_thread = new std::thread(&Peer::status,this,token);
     statusUpdatesRunning = true;
 }
-void Peer::setDS(string ip,int port)
+void Peer::setDS(string name,int port)
 {
-    dsaddr=ip;
     dsport=port;
+    string command = "sudo avahi-resolve-host-name -4 "+name+".local > dsname.txt";
+    system(command.c_str());
+    if(existf("dsname.txt"))
+    {
+        ifstream dsname;
+        dsname.open("dsname.txt");
+        string input;
+        dsname>>input;
+        dsname>>input;
+        cout<<input<<endl;
+        string ip = input;
+        dsname.close();
+        dsaddr=ip;
+    }
 }
 void Peer::addImageLocally(string imageId)
 {

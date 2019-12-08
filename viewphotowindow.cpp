@@ -32,10 +32,8 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
                 break;
             }
         }
-
         im->updateProperties();
         im->desteg();
-
         if (!existsInProperties){
             ui->label_no_views->setText(QString::fromStdString("Remaining views = 0"));
             path = im->getUnAuthorizedImagePath();
@@ -46,14 +44,13 @@ ViewPhotoWindow::ViewPhotoWindow(User * user, string ownerUsername, string image
         ui->pushButton_more_views->setVisible(false);
     }
     this->setWindowTitle(QString::fromStdString(image.image_name));
-
     int n = path.length();
     char *char_array=new char[n+1];
     strcpy(char_array, path.c_str());
     QPixmap pixmap(char_array);
     ui->label_image->setPixmap(pixmap);
     ui->label_image->show();
-
+    im->removeMiddleFiles();
     QPixmap bkgnd(BACKGROUND_PATH);
     bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
     QPalette palette;

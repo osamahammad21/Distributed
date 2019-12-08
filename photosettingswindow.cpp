@@ -174,6 +174,7 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
         destroy();
         return;
     }
+    image.removeMiddleFiles();
 }
 
 void PhotoSettingsWindow::on_pushButton_logout_clicked()

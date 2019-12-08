@@ -43,7 +43,7 @@ class Peer
         string getImageUpdates();
         void addImageLocally(string imageId);
         void removeImageLocally(string imageId);
-        void setDS(string dsaddr,int dsport);
+        void setDS(string name,int dsport);
         void startStatusUpdates(string token);
         void setTimeOut(int seconds);
         void removeTimeOut();
