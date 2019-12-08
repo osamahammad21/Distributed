@@ -7,7 +7,7 @@ directoryServer::directoryServer(unsigned int port)
 {
 	string syscall = "sudo snap install avahi";
 	system(syscall.c_str());
-	syscall = "sudo avahi-set-host-name directoryGroupH";
+	syscall = "sudo avahi-set-host-name directoryGroupH1";
 	system(syscall.c_str());
 	mtx.lock();
 	rapidcsv::Document doc(usersFile);

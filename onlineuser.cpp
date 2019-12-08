@@ -13,10 +13,16 @@ onlineUser::onlineUser( User * user, QWidget * grandparent, string otherUsername
     ui->pushButton_viewAllImages->setStyleSheet("background-color: white");
 
 
-    if (status == 1)
-        ui->label_online->setText("online");
-    else
-        ui->label_online->setText("offline");
+    if (status == 1){
+        QPixmap pixmap("green.png");
+        ui->label_online->setPixmap(pixmap.scaled(10,10,Qt::KeepAspectRatio));
+        ui->label_online->show();
+    }
+    else{
+        QPixmap pixmap("red.png");
+        ui->label_online->setPixmap(pixmap.scaled(10,10,Qt::KeepAspectRatio));
+        ui->label_online->show();
+    }
     ui->label_username->setText(QString::fromStdString(otherUsername));
 }
 

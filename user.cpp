@@ -20,6 +20,7 @@ int User :: login(string username, string password){
         this->token = reply;
         peer->startStatusUpdates(this->token);
         thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
+        acessRequestThread->detach();
         return MSG_SUCCESS;
 }
 
@@ -36,6 +37,7 @@ int User :: signup(string username, string password){
     cout << "Peer started sending status updates\n";
     peer->startStatusUpdates(this->token);
     thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
+    acessRequestThread->detach();
     return MSG_SUCCESS;
 }
 
@@ -206,6 +208,7 @@ void User :: requestAccessPopUp(string reply){
     QEventLoop loop;
     QObject :: connect(popUp, SIGNAL(destroyed()), & loop, SLOT(quit()));
     thread * acessRequestThread = new std::thread(& User::serveRequestViews, this);
+    acessRequestThread->detach();
     cout << "destroyed 0\n";
     loop.exec();
     cout << "destroyed\n";

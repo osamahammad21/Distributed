@@ -497,7 +497,7 @@ void UDPSocket::sendingHandler(UDPSocket * myUDPSocket)
                     myUDPSocket->NonAckedMtx.unlock();
                 }
 
-                //usleep(1000);
+                usleep(1000);
             }  
             #ifdef DEBUG 
             #endif

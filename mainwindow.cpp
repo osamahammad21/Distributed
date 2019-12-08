@@ -11,6 +11,11 @@ MainWindow::MainWindow(User * user,QWidget *parent)
     QPalette palette;
     palette.setBrush(QPalette::Background, bkgnd);
     this->setPalette(palette);
+
+    QPixmap pixmap("btreek.png");
+    ui->label_logo->setPixmap(pixmap.scaled(200,200,Qt::KeepAspectRatio));
+    ui->label_logo->show();
+
 }
 
 MainWindow::~MainWindow()

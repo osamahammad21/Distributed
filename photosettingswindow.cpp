@@ -105,25 +105,9 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
                         }
                      } else {
                          break;
-                     }
-//                    
+                     }                   
                 }
-//                if (!found){
-//                    cout << "not found\n";
-//                    string imageName;
-//                    image.getImageId(imageName);
-//                    cout << "sending image access to " <<  it->first << endl;
-//                    int status = user->sendImageAccess(it->first, imageName, it->second);
-//                    if (status == MSG_SUCCESS){
-//                        cout << "succeeded to send access\n";
-//                        image.properties.push_back(prop);
-//                        break;
-//                    } else {
-//                        cout << "failed to send acces\n";
-//                        ui->label_status->setText("Connection error. User's views not updated.");
-//                        break;
-//                    }
-                }
+
             if (!found){
                 cout << "not found\n";
                 string imageName;
@@ -140,18 +124,21 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
                     break;
                 }
             }
+            }
         }
         cout << "updating properties" << endl;
         image.updateProperties();
         image.desteg();
         hide();
         map<string, vector<imageSample>> samples;
-        user->getUsersSamples(samples);
+        int status1 = user->getUsersSamples(samples);
         vector <pair<string, int>> onlineUsers;
-        user->getOnlineUsers(onlineUsers);
-        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, onlineUsers, this);        homeWindow->show();
-        destroy();
-        return;
+        int status2 = user->getOnlineUsers(onlineUsers);
+        if (status1 == status2 && status1 == MSG_SUCCESS){
+            HomeWindow *homeWindow = new HomeWindow(user, 10, samples, onlineUsers, this);        homeWindow->show();
+            destroy();
+            return;
+        }
     }
     else {
         for ( it = users.begin(); it != users.end(); it++ )
@@ -166,13 +153,15 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
         image.steg();
         int uploadStatus = user->uploadPhoto(image);
         map<string, vector<imageSample>> samples;
-        user->getUsersSamples(samples);
+        int status1 = user->getUsersSamples(samples);
         hide();
         vector <pair<string, int>> onlineUsers;
-        user->getOnlineUsers(onlineUsers);
-        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, onlineUsers, this);        homeWindow->show();
-        destroy();
-        return;
+        int status2 = user->getOnlineUsers(onlineUsers);
+        if(status1 == status2 && status1 == MSG_SUCCESS){
+            HomeWindow *homeWindow = new HomeWindow(user, MSG_SUCCESS, samples, onlineUsers, this);        homeWindow->show();
+            destroy();
+            return;
+        }
     }
     image.removeMiddleFiles();
 }
