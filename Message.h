@@ -23,7 +23,7 @@
 #include <vector>
 using namespace std;
 enum MessageType { Request, Reply, Ack};
-enum Operation {login, signup, logout, uploadImage, getImage, getPortnIP, getAllImages, updateStatus,requestImageAccess,removeImage,getThumbnails,addImageAccess};
+enum Operation {login, signup, logout, uploadImage, getImage, getPortnIP, getAllImages, updateStatus,requestImageAccess,removeImage,getThumbnails,addImageAccess, getOnlineUsers};
 
 template< typename T >
 std::string int_to_hex( T i )

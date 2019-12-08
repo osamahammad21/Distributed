@@ -13,7 +13,7 @@ class onlineUsersList : public QWidget
     Q_OBJECT
 
 public:
-    explicit onlineUsersList(User * user, QWidget *parent = nullptr);
+    explicit onlineUsersList(User * user, vector<pair<string, int>> onlineUsers, QWidget *parent = nullptr);
     void addUser(string username, int status);
     ~onlineUsersList();
 

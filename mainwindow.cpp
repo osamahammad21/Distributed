@@ -26,15 +26,22 @@ void MainWindow::on_pushButton_login_clicked()
     int status = user->login(username.toStdString(), password.toStdString());
     if (status == MSG_SUCCESS){
         map<string, vector<imageSample>> samples;
-        user->getUsersSamples(samples);
-        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, this);
-        homeWindow->show();
-        destroy();
+        int status1 = user->getUsersSamples(samples);
+        vector <pair<string, int>> onlineUsers;
+        int status2 = user->getOnlineUsers(onlineUsers);
+        if (status1 == status2 == MSG_SUCCESS){
+            HomeWindow *homeWindow = new HomeWindow(user, -10, samples, onlineUsers, this);
+            homeWindow->show();
+            destroy();
+        }
     }
     else if (status == PARAM_ERROR)
     {
         ui->label_successMessage->setText("Wrong username or password");
-    } else {
+    } else if (status == LOGIN_FAIL){
+        ui->label_successMessage->setText("User already logged in");
+    }
+    else {
         ui->label_successMessage->setText("Connection error. Please try again later.");
     }
 }
@@ -46,10 +53,14 @@ void MainWindow::on_pushButton_signup_clicked()
     int status = user->signup(username.toStdString(), password.toStdString());
     if (status == MSG_SUCCESS){
         map<string, vector<imageSample>> samples;
-        user->getUsersSamples(samples);
-        HomeWindow *homeWindow = new HomeWindow(user, -10, samples, this);
-        homeWindow->show();
-        destroy();
+        int status1 = user->getUsersSamples(samples);
+        vector <pair<string, int>> onlineUsers;
+        int status2 = user->getOnlineUsers(onlineUsers);
+        if (status1 == status2 && status1 == MSG_SUCCESS){
+            HomeWindow *homeWindow = new HomeWindow(user, -10, samples, onlineUsers, this);
+            homeWindow->show();
+            destroy();
+        }
     }
     else if (status == PARAM_ERROR){
         ui->label_successMessage->setText("Username taken");

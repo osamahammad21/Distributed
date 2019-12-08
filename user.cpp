@@ -14,6 +14,8 @@ int User :: login(string username, string password){
             return PARAM_ERROR;
        if (reply == CONN_TIMEOUT)
            return CONN_FAILURE;
+       if (reply == "user already logged in")
+           return LOGIN_FAIL;
         this->username = username;
         this->token = reply;
         peer->startStatusUpdates(this->token);
@@ -136,7 +138,6 @@ int User:: getUsersSamples(map<string, vector<imageSample>> & samples){
     if (status == MSG_SUCCESS)
         samples =  usersImageSamples;
     return status;
-
 }
 
 int User :: getAllOwnerImages(string ownerUsername, vector <imageSample> &allOwnerImages){
@@ -190,15 +191,8 @@ void User :: serveRequestViews(){
 }
 
 int User :: requestImageAccess(string ownerUsername, string imageName){
-    cout << "Message sent from user to DS\n";
-    string reply = peer->getPortnIP(token, ownerUsername);
-    if (reply == CONN_TIMEOUT)
-        return CONN_FAILURE;
-    cout << "Reply received by user from DS\n";
-    vector <string> args;
-    split(reply, args, ',');
     cout << "Message sent to peer\n";
-    peer->requestImageAccess(username, ownerUsername, args[1],stoi(args[0]),imageName);
+    peer->requestImageAccess(token, ownerUsername, imageName);
     return MSG_SUCCESS;
 }
 
@@ -233,14 +227,19 @@ int User :: removeImage(string imageName){
 }
 
 int User:: sendImageAccess(string targetUsername, string imageName, int views){
-    cout << "Message sent from user to DS\n";
-    string reply = peer->getPortnIP(token, targetUsername);
-    if (reply == CONN_TIMEOUT)
-        return CONN_FAILURE;
-    cout << "Reply received by user from DS\n";
+    cout << "Message sent to peer\n";
+    peer->sendImageAccess(token, targetUsername, imageName, views);
+    return MSG_SUCCESS;
+}
+
+int User :: getOnlineUsers(vector <pair<string, int>> &onlineUsers){
+    string reply = peer->getOnlineUsers(token);
+    if (reply == "invalid token")
+        return PARAM_ERROR;
     vector <string> args;
     split(reply, args, ',');
-    cout << "Message sent to peer\n";
-    peer->sendImageAccess(username, targetUsername, args[1], stoi(args[0]), imageName, views);
+    for (int i = 0; i < args.size(); i+=2){
+        onlineUsers.push_back(pair<string, int>(args[i], stoi(args[i+1])));
+    }
     return MSG_SUCCESS;
 }

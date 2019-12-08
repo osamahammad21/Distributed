@@ -74,15 +74,8 @@ void viewsRequests::on_pushButton_giveAccess_clicked()
         image.updateProperties();
         image.desteg();
 
-        cout << "Message sent from user to DS\n";
-        string reply = peer->getPortnIP(token, requesterUsername);
-        cout << "Reply received by user from DS\n";
-        if (reply == CONN_TIMEOUT)
-            ui->label_status->setText("Connection error. Try again later");
-        vector <string> args;
-        split(reply, args, ',');
         cout << "Message sent to peer\n";
-        peer->sendImageAccess(ownerUsername, requesterUsername, args[1], stoi(args[0]), imageName, views);
+        peer->sendImageAccess(token, requesterUsername, imageName, views);
         destroy();
     }
 }
