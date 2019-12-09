@@ -22,7 +22,7 @@ HomeWindow::HomeWindow(User * user, int uploadStatus, map<string, vector<imageSa
     ui->tabWidget->addTab( new viewSamples(user, samples, this),"User's samples");
     ui->tabWidget->addTab( new ViewMyPhotos(user, this),"My Photos");
     ui->tabWidget->addTab( new onlineUsersList(user,  onlineUsers, this), "Online Users");
-    ui->tabWidget->addTab( new accessRequestList(user, this), "Access requests");
+
 
     switch (uploadStatus){
         case CONN_FAILURE:
@@ -41,6 +41,9 @@ HomeWindow::HomeWindow(User * user, int uploadStatus, map<string, vector<imageSa
             ui->label_uploadStatus->clear();
 
     }
+    //added sleep here remove it if you want 3ala damantak
+    sleep(2);
+    ui->tabWidget->addTab( new accessRequestList(user, this), "Access requests");
 }
 
 HomeWindow::~HomeWindow()

@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     Peer *peer= new Peer(stoi(argv[1]));
     User *user = new User(peer);
-    peer->setDS("directoryGroupH1", 89);
+    peer->setDS("directoryGroupHv2", 89);
     QApplication a(argc, argv);
     MainWindow w(user);
     w.show();
