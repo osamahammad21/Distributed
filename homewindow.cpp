@@ -42,7 +42,7 @@ HomeWindow::HomeWindow(User * user, int uploadStatus, map<string, vector<imageSa
 
     }
     //added sleep here remove it if you want 3ala damantak
-    sleep(2);
+    //sleep(2);
     ui->tabWidget->addTab( new accessRequestList(user, this), "Access requests");
 }
 

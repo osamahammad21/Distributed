@@ -107,7 +107,7 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
                          break;
                      }                   
                 }
-
+            }
             if (!found){
                 cout << "not found\n";
                 string imageName;
@@ -123,7 +123,6 @@ void PhotoSettingsWindow::on_pushButton_upload_clicked()
                     ui->label_status->setText("Connection error. User's views not updated.");
                     break;
                 }
-            }
             }
         }
         cout << "updating properties" << endl;
